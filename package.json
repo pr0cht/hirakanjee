@@ -1,5 +1,29 @@
 {
+  "name": "Hirakanjee",
+  "version": "1.0.0",
+  "description": "Description",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eugene Andreu J. Cuello",
+  "license": "MIT",
   "devDependencies": {
-    "electron": "^40.4.1"
+    "@electron-forge/cli": "^7.11.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^40.4.1",
+    "vite": "^8.0.3",
+    "wait-on": "^9.0.4"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-icons": "^5.6.0",
+    "react-router-dom": "^7.14.1"
   }
 }
