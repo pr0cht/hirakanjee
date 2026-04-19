@@ -9,6 +9,7 @@ import {
   AiOutlineSetting,
   AiOutlineMessage,
   AiOutlineLink,
+  AiOutlineEdit,
   AiOutlineDown,
   AiOutlineSearch,
 } from 'react-icons/ai';
@@ -28,6 +29,7 @@ const Sidebar = () => {
   const navItems = [
     { label: 'Home', href: '/', icon: AiOutlineHome },
     { label: 'Dashboard', href: '/dashboard', icon: AiOutlineDashboard },
+    { label: 'Practice', href: '/practice', icon: AiOutlineEdit },
     { label: 'Projects', href: '/projects', icon: AiOutlineProject },
     { divider: true },
     {

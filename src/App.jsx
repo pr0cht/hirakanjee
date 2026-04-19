@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import KanjiDrawingPad from './components/KanjiDrawingPad';
 import './App.css';
 
 // Page Components
@@ -79,6 +80,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/practice" element={<KanjiDrawingPad />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/folders" element={<FoldersPage />} />
             <Route path="/folders/view-all" element={<FoldersPage />} />
