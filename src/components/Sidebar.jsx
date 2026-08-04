@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   AiOutlineHome,
   AiOutlineDashboard,
-  AiOutlineProject,
+  AiOutlineBook,
   AiOutlineFolderOpen,
   AiOutlineBarChart,
   AiOutlineSetting,
@@ -30,17 +30,14 @@ const Sidebar = () => {
     { label: 'Home', href: '/', icon: AiOutlineHome },
     { label: 'Dashboard', href: '/dashboard', icon: AiOutlineDashboard },
     { label: 'Practice', href: '/practice', icon: AiOutlineEdit },
-    { label: 'Projects', href: '/projects', icon: AiOutlineProject },
+    { label: 'Learn', href: '/learn', icon: AiOutlineBook },
     { divider: true },
     {
       label: 'Folders',
       icon: AiOutlineFolderOpen,
       href: '/folders',
       items: [
-        { label: 'View all', badge: 18, href: '/folders/view-all' },
-        { label: 'Recent', badge: 8, href: '/folders/recent' },
-        { label: 'Favorites', badge: 6, href: '/folders/favorites' },
-        { label: 'Shared', badge: 4, href: '/folders/shared' },
+        { label: 'Sample', badge: 18, href: '/folders/sample' },
       ],
     },
     { divider: true },

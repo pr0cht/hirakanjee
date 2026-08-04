@@ -4,6 +4,8 @@ const KanjiDrawingPad = () => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isGrading, setIsGrading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -57,10 +59,20 @@ const KanjiDrawingPad = () => {
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
 
-  const submitToAI = () => {
+  const submitToAI = async () => {
     const canvas = canvasRef.current;
     const imageData = canvas.toDataURL('image/png');
-    console.log('Sending to AI...', imageData);
+    setIsGrading(true);
+    setFeedback(null);
+
+    try {
+      const result = await window.ai.gradeImage(imageData, 'あ');
+      setFeedback(result);
+    } catch (error) {
+      setFeedback({ error: error.message || 'The grader could not run.' });
+    } finally {
+      setIsGrading(false);
+    }
   };
 
   return (
@@ -81,8 +93,24 @@ const KanjiDrawingPad = () => {
       />
       <div style={{ marginTop: '1rem', gap: '10px', display: 'flex' }}>
         <button onClick={clearCanvas}>消去 (Clear)</button>
-        <button onClick={submitToAI}>判定 (Grade)</button>
+        <button onClick={submitToAI} disabled={isGrading}>
+          {isGrading ? '判定中...' : '判定 (Grade)'}
+        </button>
       </div>
+      {feedback && (
+        <div style={{ marginTop: '1rem', width: '300px', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px', background: '#fbfbfb' }}>
+          {feedback.error ? (
+            <p style={{ margin: 0, color: '#b91c1c' }}>{feedback.error}</p>
+          ) : (
+            <>
+              <p style={{ margin: '0 0 0.25rem' }}><strong>Prediction:</strong> {feedback.identity?.predicted_class_index ?? 'unknown'}</p>
+              <p style={{ margin: '0 0 0.25rem' }}><strong>Confidence:</strong> {(feedback.identity?.confidence * 100 || 0).toFixed(1)}%</p>
+              <p style={{ margin: '0 0 0.25rem' }}><strong>Quality:</strong> {feedback.quality?.percent?.toFixed(1) || '0.0'}%</p>
+              <p style={{ margin: 0 }}>{feedback.message}</p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

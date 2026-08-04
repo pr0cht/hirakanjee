@@ -21,6 +21,7 @@
     "wait-on": "^9.0.4"
   },
   "dependencies": {
+    "better-sqlite3": "^13.0.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.6.0",
