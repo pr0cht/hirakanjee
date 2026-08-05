@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { AiOutlineReload } from 'react-icons/ai';
 
 const KanjiDrawingPad = () => {
   const canvasRef = useRef(null);
@@ -6,6 +7,7 @@ const KanjiDrawingPad = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [isGrading, setIsGrading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [target, setTarget] = useState({ char: 'あ', romaji: 'a' });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,6 +24,24 @@ const KanjiDrawingPad = () => {
     context.lineWidth = 15;
 
     contextRef.current = context;
+  }, []);
+
+  // Basic hiragana set to randomize target when this page loads
+  useEffect(() => {
+    const basic = [
+      { char: 'あ', romaji: 'a' },{ char: 'い', romaji: 'i' },{ char: 'う', romaji: 'u' },{ char: 'え', romaji: 'e' },{ char: 'お', romaji: 'o' },
+      { char: 'か', romaji: 'ka' },{ char: 'き', romaji: 'ki' },{ char: 'く', romaji: 'ku' },{ char: 'け', romaji: 'ke' },{ char: 'こ', romaji: 'ko' },
+      { char: 'さ', romaji: 'sa' },{ char: 'し', romaji: 'shi' },{ char: 'す', romaji: 'su' },{ char: 'せ', romaji: 'se' },{ char: 'そ', romaji: 'so' },
+      { char: 'た', romaji: 'ta' },{ char: 'ち', romaji: 'chi' },{ char: 'つ', romaji: 'tsu' },{ char: 'て', romaji: 'te' },{ char: 'と', romaji: 'to' },
+      { char: 'な', romaji: 'na' },{ char: 'に', romaji: 'ni' },{ char: 'ぬ', romaji: 'nu' },{ char: 'ね', romaji: 'ne' },{ char: 'の', romaji: 'no' },
+      { char: 'は', romaji: 'ha' },{ char: 'ひ', romaji: 'hi' },{ char: 'ふ', romaji: 'fu' },{ char: 'へ', romaji: 'he' },{ char: 'ほ', romaji: 'ho' },
+      { char: 'ま', romaji: 'ma' },{ char: 'み', romaji: 'mi' },{ char: 'む', romaji: 'mu' },{ char: 'め', romaji: 'me' },{ char: 'も', romaji: 'mo' },
+      { char: 'や', romaji: 'ya' },{ char: 'ゆ', romaji: 'yu' },{ char: 'よ', romaji: 'yo' },
+      { char: 'ら', romaji: 'ra' },{ char: 'り', romaji: 'ri' },{ char: 'る', romaji: 'ru' },{ char: 'れ', romaji: 're' },{ char: 'ろ', romaji: 'ro' },
+      { char: 'わ', romaji: 'wa' },{ char: 'を', romaji: 'wo' },{ char: 'ん', romaji: 'n' },
+    ];
+    const pick = basic[Math.floor(Math.random() * basic.length)];
+    setTarget(pick);
   }, []);
 
   const getPoint = (nativeEvent) => {
@@ -66,7 +86,7 @@ const KanjiDrawingPad = () => {
     setFeedback(null);
 
     try {
-      const result = await window.ai.gradeImage(imageData, 'あ');
+      const result = await window.ai.gradeImage(imageData, target.char);
       setFeedback(result);
     } catch (error) {
       setFeedback({ error: error.message || 'The grader could not run.' });
@@ -77,7 +97,32 @@ const KanjiDrawingPad = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h3>Write: あ (a)</h3>
+      <h3>Write: {target.char} ({target.romaji})</h3>
+      <div style={{ marginTop: 6 }}>
+        <button
+          title="Pick new character"
+          onClick={() => {
+            // randomize to a new target (with romaji mapping)
+            const basic = [
+              { char: 'あ', romaji: 'a' },{ char: 'い', romaji: 'i' },{ char: 'う', romaji: 'u' },{ char: 'え', romaji: 'e' },{ char: 'お', romaji: 'o' },
+              { char: 'か', romaji: 'ka' },{ char: 'き', romaji: 'ki' },{ char: 'く', romaji: 'ku' },{ char: 'け', romaji: 'ke' },{ char: 'こ', romaji: 'ko' },
+              { char: 'さ', romaji: 'sa' },{ char: 'し', romaji: 'shi' },{ char: 'す', romaji: 'su' },{ char: 'せ', romaji: 'se' },{ char: 'そ', romaji: 'so' },
+              { char: 'た', romaji: 'ta' },{ char: 'ち', romaji: 'chi' },{ char: 'つ', romaji: 'tsu' },{ char: 'て', romaji: 'te' },{ char: 'と', romaji: 'to' },
+              { char: 'な', romaji: 'na' },{ char: 'に', romaji: 'ni' },{ char: 'ぬ', romaji: 'nu' },{ char: 'ね', romaji: 'ne' },{ char: 'の', romaji: 'no' },
+              { char: 'は', romaji: 'ha' },{ char: 'ひ', romaji: 'hi' },{ char: 'ふ', romaji: 'fu' },{ char: 'へ', romaji: 'he' },{ char: 'ほ', romaji: 'ho' },
+              { char: 'ま', romaji: 'ma' },{ char: 'み', romaji: 'mi' },{ char: 'む', romaji: 'mu' },{ char: 'め', romaji: 'me' },{ char: 'も', romaji: 'mo' },
+              { char: 'や', romaji: 'ya' },{ char: 'ゆ', romaji: 'yu' },{ char: 'よ', romaji: 'yo' },
+              { char: 'ら', romaji: 'ra' },{ char: 'り', romaji: 'ri' },{ char: 'る', romaji: 'ru' },{ char: 'れ', romaji: 're' },{ char: 'ろ', romaji: 'ro' },
+              { char: 'わ', romaji: 'wa' },{ char: 'を', romaji: 'wo' },{ char: 'ん', romaji: 'n' },
+            ];
+            const pick = basic[Math.floor(Math.random() * basic.length)];
+            setTarget(pick);
+          }}
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 6 }}
+        >
+          <AiOutlineReload size={20} />
+        </button>
+      </div>
       <canvas
         ref={canvasRef}
         onPointerDown={startDrawing}

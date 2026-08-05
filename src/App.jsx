@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import KanjiDrawingPad from './components/KanjiDrawingPad';
+import { Link } from 'react-router-dom';
+import HiraganaPage from './pages/HiraganaPage';
+import KatakanaPage from './pages/KatakanaPage';
+import KanjiPage from './pages/KanjiPage';
+import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import './App.css';
 
 // Page Components
@@ -15,6 +20,12 @@ function HomePage() {
     };
     func();
   }, []);
+  return (
+    <div className="page-content">
+      <h1>Welcome</h1>
+      <p>App status: {pingResponse}</p>
+    </div>
+  );
 }
 
 function DashboardPage() {
@@ -39,17 +50,17 @@ function LearnPage() {
             <div className="topic-card">
               <h3>Hiragana</h3>
               <p>Learn the fundamental Japanese syllabary used for native words.</p>
-              <button className="btn-primary">Start Learning</button>
+              <Link to="/learn/hiragana" className="btn-primary">Start Learning</Link>
             </div>
             <div className="topic-card">
               <h3>Katakana</h3>
               <p>Master the script for foreign words and onomatopoeia.</p>
-              <button className="btn-primary">Start Learning</button>
+              <Link to="/learn/katakana" className="btn-primary">Start Learning</Link>
             </div>
             <div className="topic-card">
               <h3>Kanji</h3>
               <p>Begin with basic kanji characters essential for N5 level.</p>
-              <button className="btn-primary">Start Learning</button>
+              <Link to="/learn/kanji" className="btn-primary">Start Learning</Link>
             </div>
           </div>
         </section>
@@ -147,8 +158,19 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/learn" element={<LearnPage />} />
+            <Route path="/learn/hiragana" element={<HiraganaPage />} />
+            <Route path="/learn/katakana" element={<KatakanaPage />} />
+            <Route path="/learn/kanji" element={<KanjiPage />} />
+            <Route path="/learn/basic-sentences" element={<PlaceholderLesson title="Basic Sentences" />} />
+            <Route path="/learn/adjectives" element={<PlaceholderLesson title="Adjectives (い-adjectives & な-adjectives)" />} />
+            <Route path="/learn/verbs" element={<PlaceholderLesson title="Verbs" />} />
+            <Route path="/learn/particles" element={<PlaceholderLesson title="Particles" />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/practice" element={<KanjiDrawingPad />} />
+            <Route path="/learn/basic-sentences" element={<PlaceholderLesson title="Basic Sentences" />} />
+            <Route path="/learn/adjectives" element={<PlaceholderLesson title="Adjectives (い-adjectives & な-adjectives)" />} />
+            <Route path="/learn/verbs" element={<PlaceholderLesson title="Verbs" />} />
+            <Route path="/learn/particles" element={<PlaceholderLesson title="Particles" />} />
             <Route path="/folders" element={<FoldersPage />} />
             <Route path="/folders/sample" element={<FoldersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
