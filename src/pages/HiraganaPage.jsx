@@ -63,7 +63,7 @@ export default function HiraganaPage() {
         <h1 style={{margin:0}}>Hiragana</h1>
       </div>
       <p>Explore Hiragana characters and their variations.</p>
-      <ScriptGrid sections={sections} />
+      <ScriptGrid sections={sections} scriptName="hiragana" />
     </div>
   );
 }

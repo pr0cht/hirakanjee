@@ -63,7 +63,7 @@ export default function KatakanaPage() {
         <h1 style={{margin:0}}>Katakana</h1>
       </div>
       <p>Explore Katakana characters and their variations.</p>
-      <ScriptGrid sections={sections} />
+      <ScriptGrid sections={sections} scriptName="katakana" />
     </div>
   );
 }

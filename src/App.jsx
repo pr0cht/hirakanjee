@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import HiraganaPage from './pages/HiraganaPage';
 import KatakanaPage from './pages/KatakanaPage';
 import KanjiPage from './pages/KanjiPage';
+import CharacterPracticePage from './pages/CharacterPracticePage';
 import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import './App.css';
 
@@ -167,10 +168,7 @@ function App() {
             <Route path="/learn/particles" element={<PlaceholderLesson title="Particles" />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/practice" element={<KanjiDrawingPad />} />
-            <Route path="/learn/basic-sentences" element={<PlaceholderLesson title="Basic Sentences" />} />
-            <Route path="/learn/adjectives" element={<PlaceholderLesson title="Adjectives (い-adjectives & な-adjectives)" />} />
-            <Route path="/learn/verbs" element={<PlaceholderLesson title="Verbs" />} />
-            <Route path="/learn/particles" element={<PlaceholderLesson title="Particles" />} />
+            <Route path="/learn/practice/:script/:char" element={<CharacterPracticePage />} />
             <Route path="/folders" element={<FoldersPage />} />
             <Route path="/folders/sample" element={<FoldersPage />} />
             <Route path="/settings" element={<SettingsPage />} />

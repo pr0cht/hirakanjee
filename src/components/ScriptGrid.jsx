@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './ScriptGrid.css';
 
 function CharBlock({ char, romaji, style, dataSpan, onClick }) {
@@ -27,7 +28,7 @@ function computeSpan(text) {
   return 4;
 }
 
-export default function ScriptGrid({ sections }) {
+export default function ScriptGrid({ sections, scriptName = 'hiragana' }) {
   const [selected, setSelected] = useState(null);
   const [showStroke, setShowStroke] = useState(false);
 
@@ -74,6 +75,7 @@ export default function ScriptGrid({ sections }) {
               <div style={{marginTop:12}}>
                 <button onClick={() => playAudio(selected.char)} className="modal-btn">Play Audio</button>
                 <button onClick={() => setShowStroke((s) => !s)} className="modal-btn">{showStroke ? 'Hide' : 'Show'} Stroke Order</button>
+                <Link to={`/learn/practice/${scriptName}/${encodeURIComponent(selected.char)}`} className="modal-btn practice-link">Practice</Link>
               </div>
               {showStroke && (
                 <div className="stroke-placeholder">
