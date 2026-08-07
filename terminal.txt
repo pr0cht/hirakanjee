@@ -1,0 +1,10 @@
+npm run dev
+
+npm run build
+npm run start
+
+importing project into forge: (https://www.electronjs.org/docs/latest/tutorial/tutorial-packaging)
+
+/////
+
+https://gist.github.com/mdzhang/899a427eb3d0181cd762

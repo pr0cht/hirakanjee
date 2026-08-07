@@ -49,6 +49,182 @@ body {
   line-height: 1.6;
 }
 
+.settings-page {
+  display: grid;
+  gap: 24px;
+}
+
+.settings-header {
+  max-width: 760px;
+}
+
+.settings-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.settings-card h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+.settings-card p {
+  margin-bottom: 22px;
+  color: #4b5563;
+}
+
+.setting-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.setting-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.setting-control {
+  min-width: 180px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.setting-select,
+.toggle-pill {
+  min-width: 180px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 12px 16px;
+  background: #f8fafc;
+  color: #111827;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.setting-select:hover,
+.toggle-pill:hover {
+  background: #ffffff;
+  border-color: #9ca3af;
+}
+
+.toggle-pill.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.accent-grid {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.accent-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.accent-swatch:hover {
+  transform: scale(1.08);
+}
+
+.accent-swatch.selected {
+  border-color: #111827;
+}
+
+.settings-note {
+  background: #f8fafc;
+}
+
+.theme-dark .app-main,
+.theme-dark body {
+  background: #111827;
+  color: #f9fafb;
+}
+
+.theme-dark .page-content,
+.theme-dark .settings-card,
+.theme-dark .topic-card,
+.theme-dark .practice-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.theme-dark .page-content h1,
+.theme-dark .settings-card h2,
+.theme-dark .topic-card h3 {
+  color: #f9fafb;
+}
+
+.theme-dark .page-content p,
+.theme-dark .setting-label,
+.theme-dark .settings-card p,
+.theme-dark .topic-card p,
+.theme-dark .practice-target,
+.theme-dark .nav-link,
+.theme-dark .nav-subitem,
+.theme-dark .user-name,
+.theme-dark .user-email {
+  color: #d1d5db;
+}
+
+.theme-dark .sidebar {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.theme-dark .nav-divider,
+.theme-dark .sidebar-header,
+.theme-dark .sidebar-search input,
+.theme-dark .sidebar-footer,
+.theme-dark .nav-subitems {
+  background: #111827;
+}
+
+.theme-dark .sidebar-search input,
+.theme-dark .nav-link,
+.theme-dark .nav-subitem,
+.theme-dark .user-profile {
+  border-color: #1f2937;
+}
+
+.theme-dark .nav-link:hover,
+.theme-dark .nav-subitem:hover,
+.theme-dark .user-profile:hover {
+  background: #111827;
+}
+
+.theme-dark .nav-item.active .nav-link {
+  background: #1f2937;
+  color: #60a5fa;
+}
+
+.theme-dark .sidebar-search input {
+  background: #0f172a;
+}
+
+.theme-dark .btn-primary {
+  background: #60a5fa;
+}
+
+.theme-dark .btn-primary:hover {
+  background: #3b82f6;
+}
+
 /* Learn Page Styles */
 .learn-sections {
   margin-top: 32px;

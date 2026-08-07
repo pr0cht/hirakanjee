@@ -10,6 +10,20 @@ import CharacterPracticePage from './pages/CharacterPracticePage';
 import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import './App.css';
 
+const accentMap = {
+  blue: '#3b82f6',
+  green: '#22c55e',
+  purple: '#8b5cf6',
+  charcoal: '#4b5563',
+};
+
+function getPreferredSystemTheme() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return 'light';
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 // Page Components
 function HomePage() {
   const [pingResponse, setPingResponse] = useState('');
@@ -141,10 +155,115 @@ function ReportingPage() {
 }
 
 function SettingsPage() {
+  const [darkMode, setDarkMode] = useState(getPreferredSystemTheme() === 'dark');
+  const [appearance, setAppearance] = useState('classic');
+  const [accent, setAccent] = useState('blue');
+  const [showNotifications, setShowNotifications] = useState(true);
+  const [autoLaunch, setAutoLaunch] = useState(false);
+  const [defaultPracticeMode, setDefaultPracticeMode] = useState('hiragana');
+
+  useEffect(() => {
+    const bodyClass = document.body.classList;
+    bodyClass.toggle('theme-dark', darkMode);
+  }, [darkMode]);
+
   return (
-    <div className="page-content">
-      <h1>Settings</h1>
-      <p>Configure your preferences here</p>
+    <div className="page-content settings-page">
+      <div className="settings-header">
+        <h1>Settings</h1>
+        <p>Choose the app appearance and desktop preferences.</p>
+      </div>
+
+      <section className="settings-card">
+        <h2>Theme</h2>
+        <p>Toggle light and dark mode, and choose how the app looks.</p>
+
+        <div className="setting-row">
+          <label className="setting-label">Dark Mode</label>
+          <div className="setting-control">
+            <button
+              className={`toggle-pill ${darkMode ? 'active' : ''}`}
+              onClick={() => setDarkMode((value) => !value)}
+            >
+              {darkMode ? 'Enabled' : 'Disabled'}
+            </button>
+          </div>
+        </div>
+
+        <div className="setting-row">
+          <label className="setting-label">Appearance</label>
+          <select
+            value={appearance}
+            onChange={(event) => setAppearance(event.target.value)}
+            className="setting-select"
+          >
+            <option value="classic">Classic</option>
+            <option value="compact">Compact</option>
+            <option value="spacious">Spacious</option>
+          </select>
+        </div>
+
+        <div className="setting-row">
+          <label className="setting-label">Accent Color</label>
+          <div className="accent-grid">
+            {Object.entries(accentMap).map(([key, color]) => (
+              <button
+                key={key}
+                className={`accent-swatch ${accent === key ? 'selected' : ''}`}
+                style={{ background: color }}
+                onClick={() => setAccent(key)}
+                aria-label={`Accent ${key}`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="settings-card">
+        <h2>Desktop Preferences</h2>
+        <p>These controls are placeholders for desktop-specific app features.</p>
+
+        <div className="setting-row">
+          <label className="setting-label">Auto-launch on startup</label>
+          <button
+            className={`toggle-pill ${autoLaunch ? 'active' : ''}`}
+            onClick={() => setAutoLaunch((value) => !value)}
+          >
+            {autoLaunch ? 'On' : 'Off'}
+          </button>
+        </div>
+
+        <div className="setting-row">
+          <label className="setting-label">Show desktop notifications</label>
+          <button
+            className={`toggle-pill ${showNotifications ? 'active' : ''}`}
+            onClick={() => setShowNotifications((value) => !value)}
+          >
+            {showNotifications ? 'On' : 'Off'}
+          </button>
+        </div>
+
+        <div className="setting-row">
+          <label className="setting-label">Default Practice Mode</label>
+          <select
+            value={defaultPracticeMode}
+            onChange={(event) => setDefaultPracticeMode(event.target.value)}
+            className="setting-select"
+          >
+            <option value="hiragana">Hiragana</option>
+            <option value="katakana">Katakana</option>
+            <option value="kanji">Kanji</option>
+          </select>
+        </div>
+      </section>
+
+      <section className="settings-card settings-note">
+        <h2>Note</h2>
+        <p>
+          These settings are currently placeholders. They show how desktop features like theme, appearance,
+          startup launch, notifications, and default practice mode can be surfaced in the app.
+        </p>
+      </section>
     </div>
   );
 }
