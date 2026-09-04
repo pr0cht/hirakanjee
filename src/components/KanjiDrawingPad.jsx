@@ -1,163 +1,211 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { AiOutlineReload } from 'react-icons/ai';
+import React, { useState } from 'react';
+import { AiOutlineReload, AiOutlineSound } from 'react-icons/ai';
+import DrawingCanvas from './DrawingCanvas';
+import { kanjiN5Data } from '../data/kanjiN5Data';
+import { speakJapanese } from '../utils/audio';
 
-const KanjiDrawingPad = () => {
-  const canvasRef = useRef(null);
-  const contextRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [isGrading, setIsGrading] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-  const [target, setTarget] = useState({ char: 'あ', romaji: 'a' });
+const hiraganaList = [
+  { char: 'あ', romaji: 'a', strokes: 3, script: 'hiragana' },
+  { char: 'い', romaji: 'i', strokes: 2, script: 'hiragana' },
+  { char: 'う', romaji: 'u', strokes: 2, script: 'hiragana' },
+  { char: 'え', romaji: 'e', strokes: 2, script: 'hiragana' },
+  { char: 'お', romaji: 'o', strokes: 3, script: 'hiragana' },
+  { char: 'か', romaji: 'ka', strokes: 3, script: 'hiragana' },
+  { char: 'き', romaji: 'ki', strokes: 4, script: 'hiragana' },
+  { char: 'く', romaji: 'ku', strokes: 1, script: 'hiragana' },
+  { char: 'け', romaji: 'ke', strokes: 3, script: 'hiragana' },
+  { char: 'こ', romaji: 'ko', strokes: 2, script: 'hiragana' },
+  { char: 'さ', romaji: 'sa', strokes: 3, script: 'hiragana' },
+  { char: 'し', romaji: 'shi', strokes: 1, script: 'hiragana' },
+  { char: 'す', romaji: 'su', strokes: 2, script: 'hiragana' },
+  { char: 'せ', romaji: 'se', strokes: 3, script: 'hiragana' },
+  { char: 'そ', romaji: 'so', strokes: 1, script: 'hiragana' },
+  { char: 'た', romaji: 'ta', strokes: 4, script: 'hiragana' },
+  { char: 'ち', romaji: 'chi', strokes: 2, script: 'hiragana' },
+  { char: 'つ', romaji: 'tsu', strokes: 1, script: 'hiragana' },
+  { char: 'て', romaji: 'te', strokes: 1, script: 'hiragana' },
+  { char: 'と', romaji: 'to', strokes: 2, script: 'hiragana' },
+  { char: 'な', romaji: 'na', strokes: 4, script: 'hiragana' },
+  { char: 'に', romaji: 'ni', strokes: 3, script: 'hiragana' },
+  { char: 'ぬ', romaji: 'nu', strokes: 2, script: 'hiragana' },
+  { char: 'ね', romaji: 'ne', strokes: 2, script: 'hiragana' },
+  { char: 'の', romaji: 'no', strokes: 1, script: 'hiragana' },
+  { char: 'は', romaji: 'ha', strokes: 3, script: 'hiragana' },
+  { char: 'ひ', romaji: 'hi', strokes: 1, script: 'hiragana' },
+  { char: 'ふ', romaji: 'fu', strokes: 4, script: 'hiragana' },
+  { char: 'へ', romaji: 'he', strokes: 1, script: 'hiragana' },
+  { char: 'ほ', romaji: 'ho', strokes: 4, script: 'hiragana' },
+  { char: 'ま', romaji: 'ma', strokes: 3, script: 'hiragana' },
+  { char: 'み', romaji: 'mi', strokes: 2, script: 'hiragana' },
+  { char: 'む', romaji: 'mu', strokes: 3, script: 'hiragana' },
+  { char: 'め', romaji: 'me', strokes: 2, script: 'hiragana' },
+  { char: 'も', romaji: 'mo', strokes: 3, script: 'hiragana' },
+  { char: 'や', romaji: 'ya', strokes: 3, script: 'hiragana' },
+  { char: 'ゆ', romaji: 'yu', strokes: 2, script: 'hiragana' },
+  { char: 'よ', romaji: 'yo', strokes: 2, script: 'hiragana' },
+  { char: 'ら', romaji: 'ra', strokes: 2, script: 'hiragana' },
+  { char: 'り', romaji: 'ri', strokes: 2, script: 'hiragana' },
+  { char: 'る', romaji: 'ru', strokes: 1, script: 'hiragana' },
+  { char: 'れ', romaji: 're', strokes: 2, script: 'hiragana' },
+  { char: 'ろ', romaji: 'ro', strokes: 1, script: 'hiragana' },
+  { char: 'わ', romaji: 'wa', strokes: 2, script: 'hiragana' },
+  { char: 'を', romaji: 'wo', strokes: 3, script: 'hiragana' },
+  { char: 'ん', romaji: 'n', strokes: 1, script: 'hiragana' },
+];
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    canvas.width = 300;
-    canvas.height = 300;
-    canvas.style.width = '300px';
-    canvas.style.height = '300px';
+const kanjiList = kanjiN5Data.map((k) => ({
+  char: k.char,
+  romaji: k.meaning,
+  strokes: k.strokes,
+  script: 'kanji',
+  meaning: k.meaning,
+  onyomi: k.onyomi,
+  kunyomi: k.kunyomi,
+}));
 
-    const context = canvas.getContext('2d');
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.lineCap = 'round';
-    context.strokeStyle = 'black';
-    context.lineWidth = 15;
+export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
+  const [selectedScript, setSelectedScript] = useState(() => {
+    if (defaultScript === 'kanji') return 'kanji';
+    if (defaultScript === 'hiragana') return 'hiragana';
+    return 'all';
+  });
+  const [showWatermark, setShowWatermark] = useState(false);
 
-    contextRef.current = context;
-  }, []);
-
-  // Basic hiragana set to randomize target when this page loads
-  useEffect(() => {
-    const basic = [
-      { char: 'あ', romaji: 'a' },{ char: 'い', romaji: 'i' },{ char: 'う', romaji: 'u' },{ char: 'え', romaji: 'e' },{ char: 'お', romaji: 'o' },
-      { char: 'か', romaji: 'ka' },{ char: 'き', romaji: 'ki' },{ char: 'く', romaji: 'ku' },{ char: 'け', romaji: 'ke' },{ char: 'こ', romaji: 'ko' },
-      { char: 'さ', romaji: 'sa' },{ char: 'し', romaji: 'shi' },{ char: 'す', romaji: 'su' },{ char: 'せ', romaji: 'se' },{ char: 'そ', romaji: 'so' },
-      { char: 'た', romaji: 'ta' },{ char: 'ち', romaji: 'chi' },{ char: 'つ', romaji: 'tsu' },{ char: 'て', romaji: 'te' },{ char: 'と', romaji: 'to' },
-      { char: 'な', romaji: 'na' },{ char: 'に', romaji: 'ni' },{ char: 'ぬ', romaji: 'nu' },{ char: 'ね', romaji: 'ne' },{ char: 'の', romaji: 'no' },
-      { char: 'は', romaji: 'ha' },{ char: 'ひ', romaji: 'hi' },{ char: 'ふ', romaji: 'fu' },{ char: 'へ', romaji: 'he' },{ char: 'ほ', romaji: 'ho' },
-      { char: 'ま', romaji: 'ma' },{ char: 'み', romaji: 'mi' },{ char: 'む', romaji: 'mu' },{ char: 'め', romaji: 'me' },{ char: 'も', romaji: 'mo' },
-      { char: 'や', romaji: 'ya' },{ char: 'ゆ', romaji: 'yu' },{ char: 'よ', romaji: 'yo' },
-      { char: 'ら', romaji: 'ra' },{ char: 'り', romaji: 'ri' },{ char: 'る', romaji: 'ru' },{ char: 'れ', romaji: 're' },{ char: 'ろ', romaji: 'ro' },
-      { char: 'わ', romaji: 'wa' },{ char: 'を', romaji: 'wo' },{ char: 'ん', romaji: 'n' },
-    ];
-    const pick = basic[Math.floor(Math.random() * basic.length)];
-    setTarget(pick);
-  }, []);
-
-  const getPoint = (nativeEvent) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    return {
-      offsetX: nativeEvent.clientX - rect.left,
-      offsetY: nativeEvent.clientY - rect.top,
-    };
+  const getCombinedPool = () => {
+    if (selectedScript === 'hiragana') return hiraganaList;
+    if (selectedScript === 'kanji') return kanjiList;
+    return [...hiraganaList, ...kanjiList];
   };
 
-  const startDrawing = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = getPoint(nativeEvent);
-    contextRef.current.beginPath();
-    contextRef.current.moveTo(offsetX, offsetY);
-    setIsDrawing(true);
-  };
+  const [target, setTarget] = useState(() => {
+    if (defaultScript === 'kanji') return kanjiList[0];
+    return hiraganaList[0];
+  });
 
-  const draw = ({ nativeEvent }) => {
-    if (!isDrawing) return;
-    const { offsetX, offsetY } = getPoint(nativeEvent);
-    contextRef.current.lineTo(offsetX, offsetY);
-    contextRef.current.stroke();
-  };
-
-  const stopDrawing = () => {
-    if (!isDrawing) return;
-    contextRef.current.closePath();
-    setIsDrawing(false);
-  };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const submitToAI = async () => {
-    const canvas = canvasRef.current;
-    const imageData = canvas.toDataURL('image/png');
-    setIsGrading(true);
-    setFeedback(null);
-
-    try {
-      const result = await window.ai.gradeImage(imageData, target.char);
-      setFeedback(result);
-    } catch (error) {
-      setFeedback({ error: error.message || 'The grader could not run.' });
-    } finally {
-      setIsGrading(false);
-    }
+  const pickRandom = (scriptOverride = selectedScript) => {
+    let pool = hiraganaList;
+    if (scriptOverride === 'kanji') pool = kanjiList;
+    else if (scriptOverride === 'all') pool = [...hiraganaList, ...kanjiList];
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    setTarget(item);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h3>Write: {target.char} ({target.romaji})</h3>
-      <div style={{ marginTop: 6 }}>
-        <button
-          title="Pick new character"
-          onClick={() => {
-            // randomize to a new target (with romaji mapping)
-            const basic = [
-              { char: 'あ', romaji: 'a' },{ char: 'い', romaji: 'i' },{ char: 'う', romaji: 'u' },{ char: 'え', romaji: 'e' },{ char: 'お', romaji: 'o' },
-              { char: 'か', romaji: 'ka' },{ char: 'き', romaji: 'ki' },{ char: 'く', romaji: 'ku' },{ char: 'け', romaji: 'ke' },{ char: 'こ', romaji: 'ko' },
-              { char: 'さ', romaji: 'sa' },{ char: 'し', romaji: 'shi' },{ char: 'す', romaji: 'su' },{ char: 'せ', romaji: 'se' },{ char: 'そ', romaji: 'so' },
-              { char: 'た', romaji: 'ta' },{ char: 'ち', romaji: 'chi' },{ char: 'つ', romaji: 'tsu' },{ char: 'て', romaji: 'te' },{ char: 'と', romaji: 'to' },
-              { char: 'な', romaji: 'na' },{ char: 'に', romaji: 'ni' },{ char: 'ぬ', romaji: 'nu' },{ char: 'ね', romaji: 'ne' },{ char: 'の', romaji: 'no' },
-              { char: 'は', romaji: 'ha' },{ char: 'ひ', romaji: 'hi' },{ char: 'ふ', romaji: 'fu' },{ char: 'へ', romaji: 'he' },{ char: 'ほ', romaji: 'ho' },
-              { char: 'ま', romaji: 'ma' },{ char: 'み', romaji: 'mi' },{ char: 'む', romaji: 'mu' },{ char: 'め', romaji: 'me' },{ char: 'も', romaji: 'mo' },
-              { char: 'や', romaji: 'ya' },{ char: 'ゆ', romaji: 'yu' },{ char: 'よ', romaji: 'yo' },
-              { char: 'ら', romaji: 'ra' },{ char: 'り', romaji: 'ri' },{ char: 'る', romaji: 'ru' },{ char: 'れ', romaji: 're' },{ char: 'ろ', romaji: 'ro' },
-              { char: 'わ', romaji: 'wa' },{ char: 'を', romaji: 'wo' },{ char: 'ん', romaji: 'n' },
-            ];
-            const pick = basic[Math.floor(Math.random() * basic.length)];
-            setTarget(pick);
-          }}
-          style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 6 }}
-        >
-          <AiOutlineReload size={20} />
-        </button>
-      </div>
-      <canvas
-        ref={canvasRef}
-        onPointerDown={startDrawing}
-        onPointerMove={draw}
-        onPointerUp={stopDrawing}
-        onPointerLeave={stopDrawing}
+    <div style={{ maxWidth: '420px', margin: '0 auto', padding: '1rem' }}>
+      <div
         style={{
-          border: '2px solid #333',
-          cursor: 'crosshair',
-          boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
-          background: 'white',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
         }}
-      />
-      <div style={{ marginTop: '1rem', gap: '10px', display: 'flex' }}>
-        <button onClick={clearCanvas}>消去 (Clear)</button>
-        <button onClick={submitToAI} disabled={isGrading}>
-          {isGrading ? '判定中...' : '判定 (Grade)'}
+      >
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button
+            className={`category-tab ${selectedScript === 'all' ? 'active' : ''}`}
+            onClick={() => {
+              setSelectedScript('all');
+              pickRandom('all');
+            }}
+          >
+            All
+          </button>
+          <button
+            className={`category-tab ${selectedScript === 'hiragana' ? 'active' : ''}`}
+            onClick={() => {
+              setSelectedScript('hiragana');
+              pickRandom('hiragana');
+            }}
+          >
+            Hiragana
+          </button>
+          <button
+            className={`category-tab ${selectedScript === 'kanji' ? 'active' : ''}`}
+            onClick={() => {
+              setSelectedScript('kanji');
+              pickRandom('kanji');
+            }}
+          >
+            Kanji
+          </button>
+        </div>
+
+        <button
+          onClick={() => pickRandom()}
+          title="Pick random character"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'none',
+            border: '1px solid var(--border-color, #d1d5db)',
+            color: 'var(--text-primary, #111827)',
+            borderRadius: '6px',
+            padding: '4px 8px',
+            cursor: 'pointer',
+            fontSize: '0.85rem',
+          }}
+        >
+          <AiOutlineReload size={14} />
+          Next
         </button>
       </div>
-      {feedback && (
-        <div style={{ marginTop: '1rem', width: '300px', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px', background: '#fbfbfb' }}>
-          {feedback.error ? (
-            <p style={{ margin: 0, color: '#b91c1c' }}>{feedback.error}</p>
-          ) : (
-            <>
-              <p style={{ margin: '0 0 0.25rem' }}><strong>Prediction:</strong> {feedback.identity?.predicted_class_index ?? 'unknown'}</p>
-              <p style={{ margin: '0 0 0.25rem' }}><strong>Confidence:</strong> {(feedback.identity?.confidence * 100 || 0).toFixed(1)}%</p>
-              <p style={{ margin: '0 0 0.25rem' }}><strong>Quality:</strong> {feedback.quality?.percent?.toFixed(1) || '0.0'}%</p>
-              <p style={{ margin: 0 }}>{feedback.message}</p>
-            </>
-          )}
+
+      <div
+        style={{
+          background: 'var(--bg-card, #ffffff)',
+          padding: '1rem',
+          borderRadius: '12px',
+          border: '1px solid var(--border-color, rgba(0,0,0,0.06))',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          marginBottom: '1rem',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--text-primary, #111827)' }}>
+            Write: {target.char}
+          </h2>
+          <button
+            onClick={() => speakJapanese(target.kunyomi?.split(',')[0] || target.char)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6' }}
+            title={`Pronounce ${target.char}`}
+          >
+            <AiOutlineSound size={20} />
+          </button>
         </div>
-      )}
+
+        <p style={{ margin: '4px 0 0', color: 'var(--text-muted, #6b7280)', fontSize: '0.95rem' }}>
+          {target.meaning ? `${target.meaning} (${target.romaji})` : target.romaji}
+        </p>
+
+        {target.onyomi && (
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim, #9ca3af)', marginTop: '4px' }}>
+            音: {target.onyomi} | 訓: {target.kunyomi}
+          </div>
+        )}
+
+        <div style={{ marginTop: '8px' }}>
+          <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary, #4b5563)', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={showWatermark}
+              onChange={(e) => setShowWatermark(e.target.checked)}
+              style={{ marginRight: '6px' }}
+            />
+            Show guide trace watermark
+          </label>
+        </div>
+      </div>
+
+      <DrawingCanvas
+        key={`${target.char}-${target.script}`}
+        targetChar={target.char}
+        overlayChar={showWatermark ? target.char : null}
+        expectedStrokes={target.strokes}
+        script={target.script}
+        autoRecordSRS={true}
+      />
     </div>
   );
-};
-
-export default KanjiDrawingPad;
+}

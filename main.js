@@ -2,7 +2,19 @@ const { app, BrowserWindow, ipcMain } = require('electron/main');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const { initializeDatabase, db } = require('./src/database');
+const {
+  initializeDatabase,
+  db,
+  recordReview,
+  getSRSQueue,
+  getStats,
+  getStreakHistory,
+  getWeakCharacters,
+  getSettings,
+  saveSetting,
+  getLessonProgress,
+  saveLessonProgress,
+} = require('./src/database');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -44,7 +56,43 @@ app.whenReady().then(() => {
     stmt.run(1, hiragana, mastery);
   });
 
-  ipcMain.handle('ai:gradeImage', async (event, dataUrl, targetChar) => {
+  ipcMain.handle('db:recordReview', (event, script, char, score) => {
+    return recordReview(1, script, char, score);
+  });
+
+  ipcMain.handle('db:getSRSQueue', (event, limit) => {
+    return getSRSQueue(1, limit || 20);
+  });
+
+  ipcMain.handle('db:getStats', (event) => {
+    return getStats(1);
+  });
+
+  ipcMain.handle('db:getStreakHistory', (event) => {
+    return getStreakHistory(1);
+  });
+
+  ipcMain.handle('db:getWeakCharacters', (event, limit) => {
+    return getWeakCharacters(1, limit || 8);
+  });
+
+  ipcMain.handle('db:getSettings', () => {
+    return getSettings();
+  });
+
+  ipcMain.handle('db:saveSetting', (event, key, value) => {
+    return saveSetting(key, value);
+  });
+
+  ipcMain.handle('db:getLessonProgress', () => {
+    return getLessonProgress(1);
+  });
+
+  ipcMain.handle('db:saveLessonProgress', (event, lessonId, completed, quizScore) => {
+    return saveLessonProgress(1, lessonId, completed, quizScore);
+  });
+
+  ipcMain.handle('ai:gradeImage', async (event, dataUrl, targetChar, script) => {
     const tempDir = app.getPath('temp');
     const tempPath = path.join(tempDir, `hirakanjee-${Date.now()}.png`);
     const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
@@ -61,9 +109,14 @@ app.whenReady().then(() => {
     const pythonPath = pythonCandidates[0];
     const scriptPath = path.join(__dirname, 'python', 'ai_check.py');
 
+    const spawnArgs = [scriptPath, 'grade', '--image', tempPath, '--target', targetChar || 'あ'];
+    if (script) {
+      spawnArgs.push('--script', script);
+    }
+
     try {
       const output = await new Promise((resolve, reject) => {
-        const child = spawn(pythonPath, [scriptPath, 'grade', '--image', tempPath, '--target', targetChar || 'あ'], {
+        const child = spawn(pythonPath, spawnArgs, {
           cwd: __dirname,
           env: process.env,
         });

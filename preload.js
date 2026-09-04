@@ -10,8 +10,17 @@ contextBridge.exposeInMainWorld('versions', {
 contextBridge.exposeInMainWorld('db', {
   getMastery: (hiragana) => ipcRenderer.invoke('db:getMastery', hiragana),
   setMastery: (hiragana, mastery) => ipcRenderer.invoke('db:setMastery', hiragana, mastery),
+  recordReview: (script, char, score) => ipcRenderer.invoke('db:recordReview', script, char, score),
+  getSRSQueue: (limit) => ipcRenderer.invoke('db:getSRSQueue', limit),
+  getStats: () => ipcRenderer.invoke('db:getStats'),
+  getStreakHistory: () => ipcRenderer.invoke('db:getStreakHistory'),
+  getWeakCharacters: (limit) => ipcRenderer.invoke('db:getWeakCharacters', limit),
+  getSettings: () => ipcRenderer.invoke('db:getSettings'),
+  saveSetting: (key, value) => ipcRenderer.invoke('db:saveSetting', key, value),
+  getLessonProgress: () => ipcRenderer.invoke('db:getLessonProgress'),
+  saveLessonProgress: (lessonId, completed, quizScore) => ipcRenderer.invoke('db:saveLessonProgress', lessonId, completed, quizScore),
 });
 
 contextBridge.exposeInMainWorld('ai', {
-  gradeImage: (dataUrl, targetChar) => ipcRenderer.invoke('ai:gradeImage', dataUrl, targetChar),
+  gradeImage: (dataUrl, targetChar, script) => ipcRenderer.invoke('ai:gradeImage', dataUrl, targetChar, script),
 });

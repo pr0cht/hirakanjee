@@ -1,0 +1,356 @@
+.drawing-canvas-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  touch-action: none;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.canvas-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  gap: 8px;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.02);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-btn {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.tool-btn:hover:not(:disabled) {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.tool-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.tool-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stroke-count-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4b5563;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+.stroke-count-indicator.mismatch {
+  color: #d97706;
+  background: #fef3c7;
+}
+
+.stroke-count-indicator.match {
+  color: #059669;
+  background: #d1fae5;
+}
+
+.canvas-container {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  background: white;
+  border: 2px solid #2d3748;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  cursor: crosshair;
+}
+
+.main-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.grid-line-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.grid-line-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  border-left: 1px dashed #cbd5e1;
+}
+
+.grid-line-d1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 141.4%;
+  height: 1px;
+  border-top: 1px dashed #e2e8f0;
+  transform: rotate(45deg);
+  transform-origin: top left;
+}
+
+.grid-line-d2 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 141.4%;
+  height: 1px;
+  border-top: 1px dashed #e2e8f0;
+  transform: rotate(-45deg);
+  transform-origin: bottom left;
+}
+
+.watermark-char {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 190px;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+  color: rgba(15, 23, 42, 0.12);
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  line-height: 1;
+}
+
+.canvas-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.clear-btn {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.clear-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.grade-btn {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.grade-btn:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.grade-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.feedback-card {
+  margin-top: 14px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.feedback-card.excellent {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.feedback-card.needs-work {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.feedback-score {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.feedback-score.low {
+  color: #b45309;
+}
+
+.feedback-srs {
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.feedback-msg {
+  font-size: 0.9rem;
+  color: #334155;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.feedback-warning {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #d97706;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Drawing Canvas Dark Theme Styles
+   ========================================================================== */
+.theme-dark .canvas-toolbar {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.theme-dark .tool-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.theme-dark .tool-btn:hover:not(:disabled) {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.theme-dark .tool-btn.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.theme-dark .stroke-count-indicator {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+.theme-dark .stroke-count-indicator.mismatch {
+  background: #382405;
+  color: #f59e0b;
+}
+
+.theme-dark .stroke-count-indicator.match {
+  background: #063c28;
+  color: #34d399;
+}
+
+.theme-dark .action-btn.clear-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.theme-dark .action-btn.clear-btn:hover {
+  background: #1e293b;
+}
+
+.theme-dark .feedback-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.theme-dark .feedback-card.excellent {
+  background: #0a2919;
+  border-color: #166534;
+}
+
+.theme-dark .feedback-card.needs-work {
+  background: #311c08;
+  border-color: #92400e;
+}
+
+.theme-dark .feedback-score {
+  color: #4ade80;
+}
+
+.theme-dark .feedback-score.low {
+  color: #fbbf24;
+}
+
+.theme-dark .feedback-srs {
+  background: #0c4a6e;
+  color: #7dd3fc;
+}
+
+.theme-dark .feedback-msg {
+  color: #e2e8f0;
+}

@@ -87,3 +87,50 @@
   color: #ffd86b;
   opacity: 0.9;
 }
+
+/* ==========================================================================
+   Script Grid Dark Theme Styles
+   ========================================================================== */
+.theme-dark .script-section h3 {
+  color: #f8fafc;
+}
+
+.theme-dark .back-link {
+  color: #94a3b8;
+}
+
+.theme-dark .back-link:hover {
+  color: #60a5fa;
+}
+
+.theme-dark .back-icon {
+  color: #94a3b8;
+}
+
+.theme-dark .modal {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.theme-dark .modal-header h3 {
+  color: #f8fafc;
+}
+
+.theme-dark .modal-close {
+  color: #94a3b8;
+}
+
+.theme-dark .modal-close:hover {
+  color: #f8fafc;
+}
+
+.theme-dark .modal-large-char {
+  color: #f8fafc;
+}
+
+.theme-dark .stroke-box {
+  border-color: #475569;
+  color: #f8fafc;
+  background: #0f172a;
+}

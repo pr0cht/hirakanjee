@@ -108,9 +108,57 @@ def softmax(x):
     e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
-def grade_image(image_path, target_char=None):
+def evaluate_structural_similarity(input_tensor, target_char):
+    """
+    Evaluates handwriting similarity against reference Japanese font skeleton for characters
+    not present in the ETL9G 157-class CNN model (e.g. Katakana characters).
+    """
+    from PIL import ImageDraw, ImageFont, ImageFilter
+    user_img = Image.fromarray((input_tensor[0, 0] * 255).astype(np.uint8))
+    
+    font = None
+    for font_name in ['meiryo.ttc', 'msgothic.ttc', 'YuGothM.ttc', 'msmincho.ttc', 'arial.ttf']:
+        fp = os.path.join('C:/Windows/Fonts', font_name)
+        if os.path.exists(fp):
+            try:
+                font = ImageFont.truetype(fp, 44)
+                break
+            except Exception:
+                continue
+                
+    ref_img = Image.new('L', (64, 64), 0)
+    draw = ImageDraw.Draw(ref_img)
+    if font:
+        draw.text((10, 6), target_char, fill=255, font=font)
+    else:
+        draw.text((10, 6), target_char, fill=255)
+        
+    ref_thick = ref_img.filter(ImageFilter.MaxFilter(3))
+    
+    arr_user = np.array(user_img, dtype=np.float32) / 255.0
+    arr_ref = np.array(ref_thick, dtype=np.float32) / 255.0
+    
+    user_bin = arr_user > 0.2
+    ref_bin = arr_ref > 0.2
+    
+    intersection = float(np.logical_and(user_bin, ref_bin).sum())
+    union = float(np.logical_or(user_bin, ref_bin).sum())
+    iou = float(intersection / (union + 1e-6))
+    
+    if iou >= 0.40:
+        score = 80.0 + min(18.0, (iou - 0.40) * 55.0)
+    elif iou >= 0.20:
+        score = 65.0 + (iou - 0.20) * 75.0
+    else:
+        score = max(10.0, iou * 250.0)
+        
+    is_match = (score >= 65.0)
+    return is_match, score, min(0.98, max(0.40, iou * 1.6))
+
+def grade_image(image_path, target_char=None, script=None):
     """
     Grades an input image against a target character or finds the best character match.
+    Applies script masking so Hiragana drawings are evaluated within Hiragana, Kanji within Kanji, etc.
     """
     try:
         session, labels_meta = get_model_and_labels()
@@ -141,14 +189,35 @@ def grade_image(image_path, target_char=None):
             "message": "No character detected. Please draw on the pad before grading."
         }
         
-    # Run inference
+    target = target_char.strip() if target_char else None
+    
+    # Auto-infer script from target if not explicitly passed
+    if not script and target:
+        if '\u3040' <= target[0] <= '\u309f':
+            script = 'hiragana'
+        elif '\u30a0' <= target[0] <= '\u30ff':
+            script = 'katakana'
+        elif '\u4e00' <= target[0] <= '\u9fff':
+            script = 'kanji'
+            
+    # Run CNN inference
     input_name = session.get_inputs()[0].name
     output_name = session.get_outputs()[0].name
     logits = session.run([output_name], {input_name: input_tensor})[0]
     
-    probs = softmax(logits)[0]
+    # Script-specific candidate masking:
+    # Restrict candidate pool to the active script so Kanji never competes with Hiragana
+    masked_logits = logits.copy()
+    if script == 'hiragana':
+        hira_mask = np.array([('\u3040' <= c <= '\u309f') for c in chars])
+        masked_logits[0, ~hira_mask] = -1e9
+    elif script == 'kanji':
+        kanji_mask = np.array([('\u4e00' <= c <= '\u9fff') for c in chars])
+        masked_logits[0, ~kanji_mask] = -1e9
+        
+    probs = softmax(masked_logits)[0]
     
-    # Top predictions
+    # Top predictions within active script
     top_indices = np.argsort(probs)[::-1][:5]
     top_predictions = [
         {"char": chars[idx], "confidence": float(probs[idx])}
@@ -160,36 +229,37 @@ def grade_image(image_path, target_char=None):
     pred_conf = float(probs[top_idx])
     
     # Target character evaluation
-    target = target_char.strip() if target_char else pred_char
+    if not target:
+        target = pred_char
+        
     is_target_in_vocab = target in char_to_id
     
-    if is_target_in_vocab:
+    if is_target_in_vocab and script != 'katakana':
         target_idx = char_to_id[target]
         target_conf = float(probs[target_idx])
         is_correct = (pred_char == target)
         rank = int(np.where(np.argsort(probs)[::-1] == target_idx)[0][0]) + 1
-    else:
-        target_conf = 0.0
-        is_correct = (pred_char == target)
-        rank = -1
         
-    # Calculate Quality Percentage (0.0 to 100.0)
-    # Combines confidence, classification rank, and stroke structure
-    if is_correct:
-        # High confidence match
-        if pred_conf >= 0.85:
-            base_quality = 85.0 + (pred_conf - 0.85) * (15.0 / 0.15) * 0.95
-        elif pred_conf >= 0.50:
-            base_quality = 75.0 + (pred_conf - 0.50) * (10.0 / 0.35)
+        # Calculate Quality Percentage (0.0 to 100.0)
+        if is_correct:
+            if pred_conf >= 0.50:
+                base_quality = 85.0 + min(13.0, (pred_conf - 0.50) * 26.0)
+            elif pred_conf >= 0.25:
+                base_quality = 76.0 + (pred_conf - 0.25) * 36.0
+            else:
+                base_quality = 68.0 + max(0.0, (pred_conf - 0.10) * 45.0)
         else:
-            base_quality = 65.0 + (pred_conf - 0.20) * (10.0 / 0.30)
+            if rank == 2:
+                base_quality = max(55.0, 50.0 + target_conf * 45.0)
+            elif rank == 3:
+                base_quality = max(42.0, 38.0 + target_conf * 35.0)
+            else:
+                base_quality = max(10.0, target_conf * 40.0)
     else:
-        if rank == 2:
-            base_quality = max(55.0, 50.0 + target_conf * 30.0)
-        elif rank == 3:
-            base_quality = max(45.0, 40.0 + target_conf * 25.0)
-        else:
-            base_quality = max(10.0, target_conf * 40.0)
+        # Fallback for Katakana or out-of-vocab characters using structural skeleton template matching
+        is_correct, base_quality, target_conf = evaluate_structural_similarity(input_tensor, target)
+        rank = 1 if is_correct else 2
+        pred_char = target if is_correct else pred_char
             
     # Small stroke density adjustment (penalize completely empty/single dot or huge solid blobs)
     if stroke_density < 0.01:
@@ -203,8 +273,8 @@ def grade_image(image_path, target_char=None):
     if is_correct:
         if quality_percent >= 80.0:
             message = f"Excellent! Character '{target}' recognized clearly."
-        elif quality_percent >= 60.0:
-            message = f"Good attempt at '{target}'. Try practicing stroke balance."
+        elif quality_percent >= 65.0:
+            message = f"Good attempt at '{target}'. Try refining stroke balance."
         else:
             message = f"Recognized as '{target}', but try drawing with clearer, more distinct strokes."
     elif rank in [2, 3]:
@@ -239,13 +309,14 @@ def main():
     grade_parser = subparsers.add_parser('grade', help="Grade an image file")
     grade_parser.add_argument('--image', required=True, help="Path to input image")
     grade_parser.add_argument('--target', default='あ', help="Target Japanese character")
+    grade_parser.add_argument('--script', default=None, choices=['hiragana', 'katakana', 'kanji'], help="Japanese script context")
     
     test_parser = subparsers.add_parser('test', help="Test grader status")
     
     args = parser.parse_args()
     
     if args.command == 'grade':
-        res = grade_image(args.image, target_char=args.target)
+        res = grade_image(args.image, target_char=args.target, script=args.script)
         print(json.dumps(res, ensure_ascii=False, indent=2))
     elif args.command == 'test':
         session, labels = get_model_and_labels()
