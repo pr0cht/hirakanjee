@@ -108,10 +108,18 @@ def softmax(x):
     e_x = np.exp(x - np.max(x, axis=-1, keepdims=True))
     return e_x / np.sum(e_x, axis=-1, keepdims=True)
 
+HIGH_SIMILARITY_PAIRS = {
+    'ソ': ['ン'], 'ン': ['ソ'],
+    'シ': ['ツ'], 'ツ': ['シ'],
+    'ア': ['マ'], 'マ': ['ア'],
+    'ウ': ['ラ'], 'ラ': ['ウ'],
+}
+
 def evaluate_structural_similarity(input_tensor, target_char):
     """
     Evaluates handwriting similarity against reference Japanese font skeleton for characters
     not present in the ETL9G 157-class CNN model (e.g. Katakana characters).
+    Applies stricter thresholds for lookalike Katakana pairs (e.g. ソ/ン, シ/ツ).
     """
     from PIL import ImageDraw, ImageFont, ImageFilter
     user_img = Image.fromarray((input_tensor[0, 0] * 255).astype(np.uint8))
@@ -152,7 +160,12 @@ def evaluate_structural_similarity(input_tensor, target_char):
     else:
         score = max(10.0, iou * 250.0)
         
-    is_match = (score >= 65.0)
+    # Raise matching threshold for confusable lookalike Katakana pairs (GRAD-02)
+    if target_char in HIGH_SIMILARITY_PAIRS:
+        is_match = (score >= 72.0 and iou >= 0.30)
+    else:
+        is_match = (score >= 65.0)
+        
     return is_match, score, min(0.98, max(0.40, iou * 1.6))
 
 def grade_image(image_path, target_char=None, script=None):
@@ -261,24 +274,32 @@ def grade_image(image_path, target_char=None, script=None):
         rank = 1 if is_correct else 2
         pred_char = target if is_correct else pred_char
             
-    # Small stroke density adjustment (penalize completely empty/single dot or huge solid blobs)
+    # Complex Kanji density ceiling adjustment (prevent false blob penalty for high-stroke kanji)
+    # Only characters in the explicit high-stroke set get the raised 0.80 ceiling;
+    # all other kanji (and non-kanji scripts) use the standard 0.70 ceiling.
+    COMPLEX_KANJI = set('語間聞話勉強読駅食飲校買曜書新電道帰漢朝高答黒勝寒暑遊')
+    is_complex_kanji = (script == 'kanji') and bool(target and target in COMPLEX_KANJI)
+    density_ceiling = 0.80 if is_complex_kanji else 0.70
+    
     if stroke_density < 0.01:
         base_quality *= 0.5
-    elif stroke_density > 0.70:
+    elif stroke_density > density_ceiling:
         base_quality *= 0.7
         
     quality_percent = float(np.clip(base_quality, 0.0, 99.5))
     
-    # Construct message
+    # Construct tiered feedback message
     if is_correct:
-        if quality_percent >= 80.0:
+        if quality_percent >= 90.0:
+            message = f"Perfect! Beautiful stroke form for '{target}'."
+        elif quality_percent >= 80.0:
             message = f"Excellent! Character '{target}' recognized clearly."
         elif quality_percent >= 65.0:
-            message = f"Good attempt at '{target}'. Try refining stroke balance."
+            message = f"Good work on '{target}'. Try refining stroke balance or spacing."
         else:
             message = f"Recognized as '{target}', but try drawing with clearer, more distinct strokes."
-    elif rank in [2, 3]:
-        message = f"Looks close to '{target}', but recognized as '{pred_char}'. Check stroke order and shape."
+    elif rank in [2, 3] or (55.0 <= quality_percent < 65.0):
+        message = f"Almost there! Looks close to '{target}'. Check the stroke proportions and shape."
     else:
         message = f"Character drawn appears to be '{pred_char}' rather than '{target}'. Try again!"
 

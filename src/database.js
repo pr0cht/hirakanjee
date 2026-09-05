@@ -394,6 +394,48 @@ function saveLessonProgress(userId = 1, lessonId, completed = true, quizScore = 
   return getLessonProgress(userId);
 }
 
+/**
+ * Returns a map of character mastery stats for a given script ('kanji', 'hiragana', 'katakana').
+ */
+function getScriptMastery(userId = 1, script = 'kanji') {
+  const stmt = db.prepare(`
+    SELECT char, mastery, srs_stage, total_reviews, correct_reviews, last_practiced_at
+    FROM CharacterMastery
+    WHERE user_id = ? AND script = ?
+  `);
+  const rows = stmt.all(userId, script);
+  const map = {};
+  for (const r of rows) {
+    map[r.char] = {
+      mastery: r.mastery,
+      srsStage: r.srs_stage,
+      totalReviews: r.total_reviews,
+      correctReviews: r.correct_reviews,
+      lastPracticedAt: r.last_practiced_at,
+    };
+  }
+  return map;
+}
+
+/**
+ * Resets all learning progress (mastery, logs, lesson completions) for the user.
+ * Preserves UserSettings.
+ */
+function resetAllProgress(userId = 1) {
+  const deleteMastery = db.prepare('DELETE FROM CharacterMastery WHERE user_id = ?');
+  const deleteLogs = db.prepare('DELETE FROM PracticeLogs WHERE user_id = ?');
+  const deleteLessons = db.prepare('DELETE FROM LessonProgress WHERE user_id = ?');
+
+  const txn = db.transaction(() => {
+    deleteMastery.run(userId);
+    deleteLogs.run(userId);
+    deleteLessons.run(userId);
+  });
+  txn();
+
+  return { success: true };
+}
+
 module.exports = {
   db,
   initializeDatabase,
@@ -406,4 +448,6 @@ module.exports = {
   saveSetting,
   getLessonProgress,
   saveLessonProgress,
+  getScriptMastery,
+  resetAllProgress,
 };

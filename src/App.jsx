@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import KanjiDrawingPad from './components/KanjiDrawingPad';
 import HiraganaPage from './pages/HiraganaPage';
@@ -7,7 +7,7 @@ import KatakanaPage from './pages/KatakanaPage';
 import KanjiPage from './pages/KanjiPage';
 import CharacterPracticePage from './pages/CharacterPracticePage';
 import N5LessonPage from './pages/N5LessonPage';
-import { n5CoreLessons } from './data/n5CoreLessonsData';
+import { n5Curriculum, allN5Lessons } from './data/n5CurriculumData';
 import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import {
   AiOutlineFire,
@@ -270,120 +270,119 @@ function LearnPage() {
       <p>Master the basics of Japanese with structured lessons, stroke animations, grammar guides, and interactive quizzes.</p>
 
       <div className="learn-sections">
-        {/* Section 1: Core Requirements (from mlcjapanese.co.jp) */}
-        <section className="learn-section">
-          <div className="section-header-row">
-            <div>
-              <h2>1. Core Requirements</h2>
-              <p className="section-header-sub">
-                12 Essential JLPT N5 grammar rules, structures, vocabulary, and interactive knowledge quizzes referenced from MLC Japanese (mlcjapanese.co.jp).
-              </p>
-            </div>
-            <div className="curriculum-progress-badge">
-              <AiOutlineTrophy size={16} />
-              <span>{completedCount} / {n5CoreLessons.length} Completed</span>
-            </div>
-          </div>
+        {/* Render MLC Japanese N5 Curriculum Sections (1-8) */}
+        {n5Curriculum.map((section) => {
+          const sectionCompletedCount = section.lessons.filter((l) => lessonProgress[l.id]?.completed).length;
 
-          <div className="n5-core-grid">
-            {n5CoreLessons.map((lesson) => {
-              const prog = lessonProgress[lesson.id];
-              const isCompleted = Boolean(prog?.completed);
-              const quizScore = prog?.quizScore ?? 0;
-
-              return (
-                <div
-                  key={lesson.id}
-                  className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''}`}
-                >
-                  <div className="n5-card-header">
-                    <span className="n5-lesson-num">Lesson {lesson.number}</span>
-                    {isCompleted ? (
-                      <span className="n5-score-pill completed">
-                        <AiOutlineCheckCircle size={13} /> {quizScore}% Score
-                      </span>
-                    ) : (
-                      <span className="n5-score-pill pending">Ready</span>
-                    )}
-                  </div>
-                  <h3 className="n5-card-title">{lesson.shortTitle}</h3>
-                  <p className="n5-card-desc">{lesson.subtitle}</p>
-                  <div className="n5-card-footer">
-                    <Link
-                      to={`/learn/n5/${lesson.id}`}
-                      className="btn-primary n5-action-btn"
-                    >
-                      {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
-                    </Link>
-                  </div>
+          return (
+            <section key={section.id} className="learn-section">
+              <div className="section-header-row">
+                <div>
+                  <h2>{section.title}</h2>
+                  <p className="section-header-sub">
+                    {section.description || section.subtitle}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </section>
+                <div className="curriculum-progress-badge">
+                  <AiOutlineTrophy size={16} />
+                  <span>{sectionCompletedCount} / {section.lessons.length} Completed</span>
+                </div>
+              </div>
 
-        {/* Section 2: Basic Scripts */}
+              <div className="n5-core-grid">
+                {section.lessons.map((lesson) => {
+                  const prog = lessonProgress[lesson.id];
+                  const isCompleted = Boolean(prog?.completed);
+                  const quizScore = prog?.quizScore ?? 0;
+
+                  return (
+                    <div
+                      key={lesson.id}
+                      className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''}`}
+                    >
+                      <div className="n5-card-header">
+                        <span className="n5-lesson-num">Lesson {lesson.number}</span>
+                        {isCompleted ? (
+                          <span className="n5-score-pill completed">
+                            <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                          </span>
+                        ) : (
+                          <span className="n5-score-pill pending">Ready</span>
+                        )}
+                      </div>
+                      <h3 className="n5-card-title">{lesson.shortTitle}</h3>
+                      <p className="n5-card-desc">{lesson.subtitle}</p>
+                      <div className="n5-card-footer">
+                        <Link
+                          to={`/learn/n5/${lesson.id}`}
+                          className="btn-primary n5-action-btn"
+                        >
+                          {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+
+        {/* Section: Basic Handwriting Scripts */}
         <section className="learn-section">
-          <h2>Basic Scripts</h2>
+          <h2>Basic Handwriting Scripts</h2>
           <div className="section-grid">
             <div className="topic-card">
-              <h3>Hiragana</h3>
+              <h3>Hiragana (71)</h3>
               <p>Learn the fundamental Japanese syllabary used for native words and grammatical markers.</p>
               <Link to="/learn/hiragana" className="btn-primary">Start Learning</Link>
             </div>
             <div className="topic-card">
-              <h3>Katakana</h3>
+              <h3>Katakana (72)</h3>
               <p>Master the syllabary used for loanwords, foreign names, and onomatopoeia.</p>
               <Link to="/learn/katakana" className="btn-primary">Start Learning</Link>
             </div>
             <div className="topic-card">
               <h3>JLPT N5 Kanji</h3>
-              <p>Master all 86 basic kanji essential for the N5 level with On/Kun readings.</p>
+              <p>Master all basic kanji essential for the N5 level with On/Kun readings.</p>
               <Link to="/learn/kanji" className="btn-primary">Start Learning</Link>
             </div>
           </div>
         </section>
 
-        {/* Section 3: Grammar & Vocabulary */}
+        {/* Section: Quick Jump by Topic */}
         <section className="learn-section">
-          <h2>Grammar & Vocabulary</h2>
+          <h2>Quick Topic Jump</h2>
           <div className="section-grid">
             <div className="topic-card">
               <h3>Basic Sentences</h3>
               <p>Learn to construct simple sentences, topic-comment patterns, and greetings.</p>
-              <Link to="/learn/basic-sentences" className="btn-primary">Start Lesson</Link>
+              <Link to="/learn/n5/basic-structure" className="btn-primary">Start Lesson</Link>
             </div>
             <div className="topic-card">
               <h3>Particles (は, が, を, に, で)</h3>
-              <p>Understand key grammatical markers that tie sentences together.</p>
-              <Link to="/learn/particles" className="btn-primary">Start Lesson</Link>
+              <p>Understand key grammatical markers, contrast, locations, and time deadlines.</p>
+              <Link to="/learn/n5/part-wa-ga" className="btn-primary">Start Lesson</Link>
             </div>
             <div className="topic-card">
               <h3>Adjectives (い & な)</h3>
-              <p>Learn affirmative, negative, and past conjugations of descriptive adjectives.</p>
-              <Link to="/learn/adjectives" className="btn-primary">Start Lesson</Link>
+              <p>Learn 104+ adjectives, degree words, exceptions, and conjugations.</p>
+              <Link to="/learn/n5/adj-i-and-na-104" className="btn-primary">Start Lesson</Link>
             </div>
             <div className="topic-card">
               <h3>Verbs</h3>
-              <p>Master Godan, Ichidan, and Irregular verbs with polite ます and て forms.</p>
-              <Link to="/learn/verbs" className="btn-primary">Start Lesson</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 4: N5 Topics */}
-        <section className="learn-section">
-          <h2>N5 Topics</h2>
-          <div className="section-grid">
-            <div className="topic-card">
-              <h3>Numbers & Time</h3>
-              <p>Counting, dates, telling time in Japanese, and calendar units.</p>
-              <Link to="/learn/numbers-time" className="btn-primary">Start Lesson</Link>
+              <p>Master movement, existence, 40 core masu verbs, te-form, and plain forms.</p>
+              <Link to="/learn/n5/verb-movement" className="btn-primary">Start Lesson</Link>
             </div>
             <div className="topic-card">
-              <h3>Daily Life</h3>
-              <p>Routines, hobbies, and everyday conversational phrases.</p>
-              <Link to="/learn/daily-life" className="btn-primary">Start Lesson</Link>
+              <h3>Special Topics</h3>
+              <p>Fractions, quiz symbols, expressing opinions (sou omoimasu), and apologies.</p>
+              <Link to="/learn/n5/special-fractions" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Listening Comprehension</h3>
+              <p>Real-world Japanese audio dialogues, tasks, and Te-form listening patterns.</p>
+              <Link to="/learn/n5/listening-n5-mastery" className="btn-primary">Start Lesson</Link>
             </div>
           </div>
         </section>
@@ -449,8 +448,27 @@ function ReportingPage() {
 }
 
 // Settings Page with SQLite Persistence
-function SettingsPage({ settings, onUpdateSetting }) {
-  const { darkMode, appearance, accent, defaultPracticeMode, showNotifications, autoLaunch } = settings;
+function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
+  const { darkMode, appearance, accent, defaultPracticeMode, showNotifications, autoLaunch, showRomaji = true } = settings;
+  const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  const handleConfirmReset = async () => {
+    setIsResetting(true);
+    try {
+      if (onResetProgress) {
+        await onResetProgress();
+      }
+      setResetSuccess(true);
+      setShowConfirmReset(false);
+      setTimeout(() => setResetSuccess(false), 5000);
+    } catch (err) {
+      console.error('Reset error:', err);
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="page-content settings-page">
@@ -543,6 +561,82 @@ function SettingsPage({ settings, onUpdateSetting }) {
             {autoLaunch ? 'On' : 'Off'}
           </button>
         </div>
+
+        <div className="setting-row">
+          <div>
+            <label className="setting-label">Show Romaji in Quizzes</label>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Display pronunciation reading guide under Japanese sentences
+            </div>
+          </div>
+          <button
+            type="button"
+            className={`toggle-pill ${showRomaji ? 'active' : ''}`}
+            onClick={() => onUpdateSetting('showRomaji', !showRomaji)}
+          >
+            {showRomaji ? 'On' : 'Off'}
+          </button>
+        </div>
+      </section>
+
+      <section className="settings-card settings-danger-card">
+        <div className="danger-header">
+          <h2>Data Management</h2>
+          <span className="danger-badge">Caution</span>
+        </div>
+        <p>Manage your local learning progress, quiz history, and SRS practice records.</p>
+
+        <div className="setting-row" style={{ alignItems: 'flex-start' }}>
+          <div>
+            <label className="setting-label" style={{ color: 'var(--text-primary)' }}>
+              Reset All Learning Progress
+            </label>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px', maxWidth: '460px', lineHeight: '1.5' }}>
+              Clears all JLPT N5 lesson completions, quiz scores, character SRS mastery, and practice streaks.
+              Your visual settings (dark mode, theme accents, and romaji toggles) will be preserved.
+            </div>
+          </div>
+
+          <div className="setting-control">
+            {!showConfirmReset ? (
+              <button
+                type="button"
+                className="btn-danger"
+                onClick={() => setShowConfirmReset(true)}
+              >
+                Reset Progress
+              </button>
+            ) : (
+              <div className="reset-confirm-box">
+                <span className="reset-confirm-warning">Are you sure? This cannot be undone.</span>
+                <div className="reset-confirm-actions">
+                  <button
+                    type="button"
+                    className="btn-danger-confirm"
+                    onClick={handleConfirmReset}
+                    disabled={isResetting}
+                  >
+                    {isResetting ? 'Resetting...' : 'Yes, Reset All'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary-sm"
+                    onClick={() => setShowConfirmReset(false)}
+                    disabled={isResetting}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {resetSuccess && (
+          <div className="reset-success-alert">
+            ✓ All learning progress has been successfully reset.
+          </div>
+        )}
       </section>
     </div>
   );
@@ -558,6 +652,7 @@ function App() {
       defaultPracticeMode: 'hiragana',
       showNotifications: true,
       autoLaunch: false,
+      showRomaji: true,
     };
     try {
       for (const k of Object.keys(initial)) {
@@ -583,6 +678,7 @@ function App() {
             if (saved.defaultPracticeMode) next.defaultPracticeMode = saved.defaultPracticeMode;
             if (saved.showNotifications !== undefined) next.showNotifications = saved.showNotifications;
             if (saved.autoLaunch !== undefined) next.autoLaunch = saved.autoLaunch;
+            if (saved.showRomaji !== undefined) next.showRomaji = saved.showRomaji;
 
             // Cache to localStorage for instant startup next time
             try {
@@ -625,6 +721,38 @@ function App() {
     }
   };
 
+  const handleResetProgress = async () => {
+    try {
+      if (window.db?.resetAllProgress) {
+        await window.db.resetAllProgress();
+      }
+      // Remove cached progress in localStorage
+      const keys = [
+        'hirakanjee_kanji_mastery',
+        'hirakanjee_lesson_progress',
+        'hirakanjee_practice_logs',
+        'hirakanjee_stats',
+      ];
+      keys.forEach((k) => {
+        try {
+          localStorage.removeItem(k);
+        } catch (e) {}
+      });
+
+      // Refresh lesson progress in active state
+      if (window.db?.getLessonProgress) {
+        const prog = await window.db.getLessonProgress();
+        setLessonProgress(prog || {});
+      } else {
+        setLessonProgress({});
+      }
+      return true;
+    } catch (err) {
+      console.error('Failed to reset progress:', err);
+      return false;
+    }
+  };
+
   return (
     <Router>
       <div className="app-container">
@@ -633,16 +761,16 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/learn" element={<LearnPage />} />
-            <Route path="/learn/n5/:lessonId" element={<N5LessonPage />} />
+            <Route path="/learn/n5/:lessonId" element={<N5LessonPage settings={settings} />} />
             <Route path="/learn/hiragana" element={<HiraganaPage />} />
             <Route path="/learn/katakana" element={<KatakanaPage />} />
             <Route path="/learn/kanji" element={<KanjiPage />} />
-            <Route path="/learn/basic-sentences" element={<PlaceholderLesson title="Basic Sentences" />} />
-            <Route path="/learn/adjectives" element={<PlaceholderLesson title="Adjectives (い-adjectives & な-adjectives)" />} />
-            <Route path="/learn/verbs" element={<PlaceholderLesson title="Verbs" />} />
-            <Route path="/learn/particles" element={<PlaceholderLesson title="Particles" />} />
-            <Route path="/learn/numbers-time" element={<PlaceholderLesson title="Numbers & Time" />} />
-            <Route path="/learn/daily-life" element={<PlaceholderLesson title="Daily Life" />} />
+            <Route path="/learn/basic-sentences" element={<Navigate to="/learn/n5/basic-structure" replace />} />
+            <Route path="/learn/adjectives" element={<Navigate to="/learn/n5/adj-i-and-na-104" replace />} />
+            <Route path="/learn/verbs" element={<Navigate to="/learn/n5/verb-movement" replace />} />
+            <Route path="/learn/particles" element={<Navigate to="/learn/n5/part-wa-ga" replace />} />
+            <Route path="/learn/numbers-time" element={<Navigate to="/learn/n5/time-calendar" replace />} />
+            <Route path="/learn/daily-life" element={<Navigate to="/learn/n5/vocab-802-core" replace />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/reporting" element={<ReportingPage />} />
             <Route path="/practice" element={<KanjiDrawingPad defaultScript={settings.defaultPracticeMode} />} />
@@ -651,7 +779,13 @@ function App() {
             <Route path="/folders/sample" element={<FoldersPage />} />
             <Route
               path="/settings"
-              element={<SettingsPage settings={settings} onUpdateSetting={handleUpdateSetting} />}
+              element={
+                <SettingsPage
+                  settings={settings}
+                  onUpdateSetting={handleUpdateSetting}
+                  onResetProgress={handleResetProgress}
+                />
+              }
             />
           </Routes>
         </main>

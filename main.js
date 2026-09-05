@@ -14,6 +14,8 @@ const {
   saveSetting,
   getLessonProgress,
   saveLessonProgress,
+  getScriptMastery,
+  resetAllProgress,
 } = require('./src/database');
 
 const createWindow = () => {
@@ -90,6 +92,14 @@ app.whenReady().then(() => {
 
   ipcMain.handle('db:saveLessonProgress', (event, lessonId, completed, quizScore) => {
     return saveLessonProgress(1, lessonId, completed, quizScore);
+  });
+
+  ipcMain.handle('db:getScriptMastery', (event, script) => {
+    return getScriptMastery(1, script || 'kanji');
+  });
+
+  ipcMain.handle('db:resetAllProgress', () => {
+    return resetAllProgress(1);
   });
 
   ipcMain.handle('ai:gradeImage', async (event, dataUrl, targetChar, script) => {

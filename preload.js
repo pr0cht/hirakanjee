@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld('db', {
   saveSetting: (key, value) => ipcRenderer.invoke('db:saveSetting', key, value),
   getLessonProgress: () => ipcRenderer.invoke('db:getLessonProgress'),
   saveLessonProgress: (lessonId, completed, quizScore) => ipcRenderer.invoke('db:saveLessonProgress', lessonId, completed, quizScore),
+  getScriptMastery: (script) => ipcRenderer.invoke('db:getScriptMastery', script),
+  resetAllProgress: () => ipcRenderer.invoke('db:resetAllProgress'),
 });
 
 contextBridge.exposeInMainWorld('ai', {
