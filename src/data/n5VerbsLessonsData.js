@@ -161,6 +161,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb1-q5",
         "type": "multiple-choice",
+        "prompt": "What is the irregular kanji reading of the particle \"へ\"?",
+
         "question": "What is the irregular kanji reading of the particle \"へ\"?",
         "options": [
           "e",
@@ -231,6 +233,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb1-q9",
         "type": "multiple-choice",
+        "prompt": "Which sentence means \"I did not go to school on Sunday\"?",
+
         "question": "Which sentence means \"I did not go to school on Sunday\"?",
         "options": [
           "にちようび は がっこう に いきませんでした。",
@@ -250,7 +254,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb1-q10",
         "type": "fill-blank",
-        "prompt": "Select the verb: \"What time will you [ ? ] home?\" (return)",
+        "prompt": "Complete: \"What time will you return home?\" -> \"なんじ に うち へ [ ? ] か？\"",
+        "sentence": "なんじ に うち へ [ ? ] か？",
         "options": [
           "かえります",
           "いきます",
@@ -259,7 +264,7 @@ export const n5VerbsLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "かえります specifically means to return to one's home or base.",
-        "romaji": "What time will you [ ? ] home?",
+        "romaji": "nanji ni uchi e [ ? ] ka?",
         "romajiOptions": [
           "kaerimasu",
           "ikimasu",
@@ -432,6 +437,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb2-q5",
         "type": "multiple-choice",
+        "prompt": "Which verb is used for abstract nouns like \"じかん\" (time) or \"おかね\" (money)?",
+
         "question": "Which verb is used for abstract nouns like \"じかん\" (time) or \"おかね\" (money)?",
         "options": [
           "あります",
@@ -487,6 +494,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb2-q8",
         "type": "multiple-choice",
+        "prompt": "How do you say \"There was a meeting yesterday\"?",
+
         "question": "How do you say \"There was a meeting yesterday\"?",
         "options": [
           "きのう かいぎ が ありました。",
@@ -750,6 +759,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb3-q5",
         "type": "multiple-choice",
+        "prompt": "Which of the following belongs to Group 3 (Irregular Verbs)?",
+
         "question": "Which of the following belongs to Group 3 (Irregular Verbs)?",
         "options": [
           "します (to do)",
@@ -792,6 +803,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb3-q8",
         "type": "multiple-choice",
+        "prompt": "What is the negative past form of かいます (to buy)?",
+
         "question": "What is the negative past form of かいます (to buy)?",
         "options": [
           "かいませんでした",
@@ -1033,6 +1046,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb4-q5",
         "type": "multiple-choice",
+        "prompt": "Which adverb indicates 100% habitual consistency?",
+
         "question": "Which adverb indicates 100% habitual consistency?",
         "options": [
           "いつも",
@@ -1074,6 +1089,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb4-q8",
         "type": "multiple-choice",
+        "prompt": "Which sentence correctly means \"I don't study very much\"?",
+
         "question": "Which sentence correctly means \"I don't study very much\"?",
         "options": [
           "あまり べんきょうしません。",
@@ -1256,6 +1273,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb5-q5",
         "type": "multiple-choice",
+        "prompt": "Which particle can replace \"に\" when receiving from someone with \"もらいます\"?",
+
         "question": "Which particle can replace \"に\" when receiving from someone with \"もらいます\"?",
         "options": [
           "から (from)",
@@ -1298,6 +1317,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb5-q8",
         "type": "multiple-choice",
+        "prompt": "What is the literal meaning of \"もらいます\"?",
+
         "question": "What is the literal meaning of \"もらいます\"?",
         "options": [
           "To receive / get",
@@ -1497,6 +1518,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb6-q5",
         "type": "multiple-choice",
+        "prompt": "What is the past negative form of \"いきたい です\" (want to go)?",
+
         "question": "What is the past negative form of \"いきたい です\" (want to go)?",
         "options": [
           "いきたくなかった です",
@@ -1538,6 +1561,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb6-q8",
         "type": "multiple-choice",
+        "prompt": "Which particle can replace \"を\" when using the ~たい form?",
+
         "question": "Which particle can replace \"を\" when using the ~たい form?",
         "options": [
           "が",
@@ -1718,6 +1743,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb7-q5",
         "type": "multiple-choice",
+        "prompt": "What is the natural response to \"おちゃ を のみましょうか\" (Shall we drink tea)?",
+
         "question": "What is the natural response to \"おちゃ を のみましょうか\" (Shall we drink tea)?",
         "options": [
           "ええ、そう しましょう。(Yes, let's do so.)",
@@ -1759,6 +1786,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb7-q8",
         "type": "multiple-choice",
+        "prompt": "When offering personal help to someone, which pattern do you use?",
+
         "question": "When offering personal help to someone, which pattern do you use?",
         "options": [
           "~ましょうか",
@@ -1979,6 +2008,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb8-q5",
         "type": "multiple-choice",
+        "prompt": "What is the te-form of はなします (to speak)?",
+
         "question": "What is the te-form of はなします (to speak)?",
         "options": [
           "はなして",
@@ -2020,6 +2051,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb8-q8",
         "type": "multiple-choice",
+        "prompt": "How do you express prohibition (\"You must not do...\")?",
+
         "question": "How do you express prohibition (\"You must not do...\")?",
         "options": [
           "~ては いけません",
@@ -2193,6 +2226,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb9-q1",
         "type": "multiple-choice",
+        "prompt": "What is the plain negative form of かう (to buy)?",
+
         "question": "What is the plain negative form of かう (to buy)?",
         "options": [
           "かわない",
@@ -2253,6 +2288,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb9-q5",
         "type": "multiple-choice",
+        "prompt": "What is the plain past form of the irregular verb いく (to go)?",
+
         "question": "What is the plain past form of the irregular verb いく (to go)?",
         "options": [
           "いった",
@@ -2293,6 +2330,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb9-q8",
         "type": "multiple-choice",
+        "prompt": "What is the plain past negative form of まつ (to wait)?",
+
         "question": "What is the plain past negative form of まつ (to wait)?",
         "options": [
           "またなかった",
@@ -2490,6 +2529,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb10-q5",
         "type": "multiple-choice",
+        "prompt": "Which particle marks the subject inside a noun-modifying clause?",
+
         "question": "Which particle marks the subject inside a noun-modifying clause?",
         "options": [
           "が",
@@ -2532,6 +2573,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb10-q8",
         "type": "multiple-choice",
+        "prompt": "How do you say \"A song I don't know\"?",
+
         "question": "How do you say \"A song I don't know\"?",
         "options": [
           "しらない うた",
@@ -2671,6 +2714,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb11-q2",
         "type": "multiple-choice",
+        "prompt": "What is the correct negative form of \"しっています\" (I know)?",
+
         "question": "What is the correct negative form of \"しっています\" (I know)?",
         "options": [
           "しりません (shirimasen)",
@@ -2745,6 +2790,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb11-q7",
         "type": "multiple-choice",
+        "prompt": "Which sentence correctly expresses \"I know the answer\"?",
+
         "question": "Which sentence correctly expresses \"I know the answer\"?",
         "options": [
           "こたえ を しっています。",
@@ -2758,7 +2805,8 @@ export const n5VerbsLessons = [
       {
         "id": "verb11-q8",
         "type": "fill-blank",
-        "prompt": "Choose the verb: \"I don't [ ? ] the reason.\" (comprehend)",
+        "prompt": "Complete: \"I don't understand the reason.\" -> \"りゆう が [ ? ]。\"",
+        "sentence": "りゆう が [ ? ]。",
         "options": [
           "わかりません",
           "しりません",
@@ -2766,7 +2814,14 @@ export const n5VerbsLessons = [
           "ききません"
         ],
         "correctAnswer": 0,
-        "explanation": "Comprehending a reason or concept uses わかります / わかりません."
+        "explanation": "Comprehending a reason or concept uses わかります / わかりません.",
+        "romaji": "riyuu ga [ ? ].",
+        "romajiOptions": [
+          "wakarimasen",
+          "shirimasen",
+          "iimasen",
+          "kikimasen"
+        ]
       },
       {
         "id": "verb11-q9",

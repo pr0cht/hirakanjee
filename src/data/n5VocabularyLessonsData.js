@@ -205,6 +205,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab1-q1",
         "type": "multiple-choice",
+        "prompt": "What is the Japanese word for \"bicycle\"?",
+
         "question": "What is the Japanese word for \"bicycle\"?",
         "options": [
           "じてんしゃ",
@@ -285,6 +287,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab1-q6",
         "type": "multiple-choice",
+        "prompt": "What does \"あさごはん\" mean?",
+
         "question": "What does \"あさごはん\" mean?",
         "options": [
           "Breakfast",
@@ -340,6 +344,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab1-q10",
         "type": "multiple-choice",
+        "prompt": "What is the word for \"ticket kiosk / shop\"?",
+
         "question": "What is the word for \"ticket kiosk / shop\"?",
         "options": [
           "みせ (shop) / ばいてん (kiosk)",
@@ -464,6 +470,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab2-q1",
         "type": "multiple-choice",
+        "prompt": "When talking to your boss about your own mother, what word do you use?",
+
         "question": "When talking to your boss about your own mother, what word do you use?",
         "options": [
           "はは (haha)",
@@ -524,6 +532,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab2-q5",
         "type": "multiple-choice",
+        "prompt": "What is the respectful word for someone else's wife?",
+
         "question": "What is the respectful word for someone else's wife?",
         "options": [
           "おくさん (okusan)",
@@ -579,6 +589,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab2-q9",
         "type": "multiple-choice",
+        "prompt": "What is the humble term for \"my son\"?",
+
         "question": "What is the humble term for \"my son\"?",
         "options": [
           "むすこ (musuko)",
@@ -735,6 +747,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab3-q1",
         "type": "multiple-choice",
+        "prompt": "Which season is \"あき\" (aki)?",
+
         "question": "Which season is \"あき\" (aki)?",
         "options": [
           "Autumn / Fall",
@@ -809,6 +823,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab3-q6",
         "type": "multiple-choice",
+        "prompt": "Which word means \"cloudy\"?",
+
         "question": "Which word means \"cloudy\"?",
         "options": [
           "くもり (kumori)",
@@ -864,6 +880,8 @@ export const n5VocabularyLessons = [
       {
         "id": "vocab3-q10",
         "type": "multiple-choice",
+        "prompt": "What is the word for \"typhoon\"?",
+
         "question": "What is the word for \"typhoon\"?",
         "options": [
           "たいふう (taifuu)",

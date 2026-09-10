@@ -1,8 +1,3 @@
-/**
- * Web Audio API Sound Effects Utility
- * Generates lightweight, pleasant chimes and sound effects natively without external audio files.
- */
-
 class SoundEffectsPlayer {
   constructor() {
     this.ctx = null;
@@ -16,14 +11,11 @@ class SoundEffectsPlayer {
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     return this.ctx;
   }
 
-  /**
-   * Cheerful two-tone chime for correct answers
-   */
   playCorrect() {
     try {
       const ctx = this.getAudioContext();

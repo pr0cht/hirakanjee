@@ -168,6 +168,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part1-q5",
         "type": "multiple-choice",
+        "prompt": "Which particle is used to mark an immediate natural observation (e.g. \"Look, it is raining!\")?",
+
         "question": "Which particle is used to mark an immediate natural observation (e.g. \"Look, it is raining!\")?",
         "options": [
           "が (e.g. あめ が ふって います)",
@@ -209,6 +211,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part1-q8",
         "type": "multiple-choice",
+        "prompt": "In \"わたし は すし が すき です\", what are the roles of は and が?",
+
         "question": "In \"わたし は すし が すき です\", what are the roles of は and が?",
         "options": [
           "は marks the topic (I), and が marks the object of preference (sushi).",
@@ -462,6 +466,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part2-q5",
         "type": "multiple-choice",
+        "prompt": "Which sentence-ending particle means \"right?\" or \"isn't it?\", asking for agreement?",
+
         "question": "Which sentence-ending particle means \"right?\" or \"isn't it?\", asking for agreement?",
         "options": [
           "ね",
@@ -503,6 +509,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part2-q8",
         "type": "multiple-choice",
+        "prompt": "What is the key difference between と and や?",
+
         "question": "What is the key difference between と and や?",
         "options": [
           "と is an exhaustive list (only those items); や is non-exhaustive (gives examples among others).",
@@ -684,6 +692,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part3-q5",
         "type": "multiple-choice",
+        "prompt": "Which verb of arrival takes に for the destination?",
+
         "question": "Which verb of arrival takes に for the destination?",
         "options": [
           "つきます (arrive)",
@@ -739,6 +749,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part3-q9",
         "type": "multiple-choice",
+        "prompt": "Why does \"ホテル に とまります\" (stay at a hotel) take \"に\" rather than \"で\"?",
+
         "question": "Why does \"ホテル に とまります\" (stay at a hotel) take \"に\" rather than \"で\"?",
         "options": [
           "Because とまります denotes lodging/settling in a location, not an active dynamic event.",
@@ -897,6 +909,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part4-q4",
         "type": "multiple-choice",
+        "prompt": "When visiting a superior or teacher for an appointment, which particle is most natural with あいます?",
+
         "question": "When visiting a superior or teacher for an appointment, which particle is most natural with あいます?",
         "options": [
           "に (e.g. せんせい に あいます)",
@@ -952,6 +966,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part4-q8",
         "type": "multiple-choice",
+        "prompt": "Can you use \"を\" with \"あいます\" (e.g. \"ともだち を あいます\")?",
+
         "question": "Can you use \"を\" with \"あいます\" (e.g. \"ともだち を あいます\")?",
         "options": [
           "No, あいます is an intransitive verb and never takes を.",
@@ -1129,6 +1145,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part5-q5",
         "type": "multiple-choice",
+        "prompt": "Which of the following verbs naturally pairs with \"までに\" (by)?",
+
         "question": "Which of the following verbs naturally pairs with \"までに\" (by)?",
         "options": [
           "だします (submit / hand in)",
@@ -1170,6 +1188,8 @@ export const n5ParticlesLessons = [
       {
         "id": "part5-q8",
         "type": "multiple-choice",
+        "prompt": "What does \"5じ まで います\" mean?",
+
         "question": "What does \"5じ まで います\" mean?",
         "options": [
           "I will be here until 5:00.",

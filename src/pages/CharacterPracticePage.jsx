@@ -10,6 +10,7 @@ import {
 import DrawingCanvas from '../components/DrawingCanvas';
 import { kanjiN5Data } from '../data/kanjiN5Data';
 import { speakJapanese } from '../utils/audio';
+import { sfx } from '../utils/sfx';
 
 const hiraganaChars = [
   { char: 'あ', romaji: 'a', strokes: 3 }, { char: 'い', romaji: 'i', strokes: 2 }, { char: 'う', romaji: 'u', strokes: 2 }, { char: 'え', romaji: 'e', strokes: 2 }, { char: 'お', romaji: 'o', strokes: 3 },
@@ -178,6 +179,7 @@ export default function CharacterPracticePage() {
   const nextQuestion = () => {
     const nextIdx = questionIndex + 1;
     if (nextIdx >= questions.length) {
+      sfx.playLevelUp();
       setCompleted(true);
       return;
     }
@@ -190,15 +192,18 @@ export default function CharacterPracticePage() {
   const handleChoiceSelect = (opt) => {
     setSelectedOption(opt.char);
     if (opt.char === currentQuestion.target) {
+      sfx.playCorrect();
       setChoiceFeedback({ isCorrect: true, text: `Correct! '${opt.char}' is '${opt.romaji}'.` });
       setTimeout(() => nextQuestion(), 750);
     } else {
+      sfx.playIncorrect();
       setChoiceFeedback({ isCorrect: false, text: `Not quite. That character is '${opt.char}'. Try again!` });
     }
   };
 
   const handleGradeComplete = (gradeData) => {
-    if (gradeData.isCorrect) {
+    if (gradeData.isCorrect || gradeData.score >= 70) {
+      sfx.playCorrect();
       setTimeout(() => nextQuestion(), 850);
     }
   };

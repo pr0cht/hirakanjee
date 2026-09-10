@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { AiOutlineReload, AiOutlineSound } from 'react-icons/ai';
+import React, { useState, useRef, useEffect } from 'react';
+import { AiOutlineReload, AiOutlineSound, AiOutlineCheckCircle } from 'react-icons/ai';
 import DrawingCanvas from './DrawingCanvas';
 import { kanjiN5Data } from '../data/kanjiN5Data';
 import { speakJapanese } from '../utils/audio';
+import { sfx } from '../utils/sfx';
 
 const hiraganaList = [
   { char: 'あ', romaji: 'a', strokes: 3, script: 'hiragana' },
@@ -69,11 +70,14 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
     if (defaultScript === 'hiragana') return 'hiragana';
     return 'all';
   });
-  const [showWatermark, setShowWatermark] = useState(false);
+  const [showWatermark, setShowWatermark] = useState(true);
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  const [advanceNotice, setAdvanceNotice] = useState(null);
+  const advanceTimerRef = useRef(null);
 
-  const getCombinedPool = () => {
-    if (selectedScript === 'hiragana') return hiraganaList;
-    if (selectedScript === 'kanji') return kanjiList;
+  const getCombinedPool = (scriptOverride = selectedScript) => {
+    if (scriptOverride === 'hiragana') return hiraganaList;
+    if (scriptOverride === 'kanji') return kanjiList;
     return [...hiraganaList, ...kanjiList];
   };
 
@@ -82,13 +86,36 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
     return hiraganaList[0];
   });
 
-  const pickRandom = (scriptOverride = selectedScript) => {
-    let pool = hiraganaList;
-    if (scriptOverride === 'kanji') pool = kanjiList;
-    else if (scriptOverride === 'all') pool = [...hiraganaList, ...kanjiList];
-    const item = pool[Math.floor(Math.random() * pool.length)];
-    setTarget(item);
+  const pickNextCharacter = (scriptOverride = selectedScript) => {
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    setAdvanceNotice(null);
+
+    const pool = getCombinedPool(scriptOverride);
+    if (pool.length <= 1) return;
+    const remaining = pool.filter((c) => c.char !== target.char);
+    const next = remaining[Math.floor(Math.random() * remaining.length)] || pool[0];
+    setTarget(next);
   };
+
+  const handleGradeComplete = (gradeData) => {
+    const isGood = gradeData.isCorrect || gradeData.score >= 70;
+    if (isGood) {
+      sfx.playCorrect();
+      if (autoAdvance) {
+        setAdvanceNotice(`Great job (${Math.round(gradeData.score)}%)! Moving to next character...`);
+        if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+        advanceTimerRef.current = setTimeout(() => {
+          pickNextCharacter();
+        }, 1400);
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
 
   return (
     <div style={{ maxWidth: '420px', margin: '0 auto', padding: '1rem' }}>
@@ -105,7 +132,7 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
             className={`category-tab ${selectedScript === 'all' ? 'active' : ''}`}
             onClick={() => {
               setSelectedScript('all');
-              pickRandom('all');
+              pickNextCharacter('all');
             }}
           >
             All
@@ -114,7 +141,7 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
             className={`category-tab ${selectedScript === 'hiragana' ? 'active' : ''}`}
             onClick={() => {
               setSelectedScript('hiragana');
-              pickRandom('hiragana');
+              pickNextCharacter('hiragana');
             }}
           >
             Hiragana
@@ -123,7 +150,7 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
             className={`category-tab ${selectedScript === 'kanji' ? 'active' : ''}`}
             onClick={() => {
               setSelectedScript('kanji');
-              pickRandom('kanji');
+              pickNextCharacter('kanji');
             }}
           >
             Kanji
@@ -131,8 +158,8 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
         </div>
 
         <button
-          onClick={() => pickRandom()}
-          title="Pick random character"
+          onClick={() => pickNextCharacter()}
+          title="Pick next character"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -185,17 +212,56 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
           </div>
         )}
 
-        <div style={{ marginTop: '8px' }}>
-          <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary, #4b5563)', cursor: 'pointer' }}>
+        <div
+          style={{
+            marginTop: '10px',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '16px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary, #4b5563)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
             <input
               type="checkbox"
               checked={showWatermark}
               onChange={(e) => setShowWatermark(e.target.checked)}
               style={{ marginRight: '6px' }}
             />
-            Show guide trace watermark
+            Guide trace watermark
+          </label>
+          <label style={{ fontSize: '0.82rem', color: 'var(--text-secondary, #4b5563)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <input
+              type="checkbox"
+              checked={autoAdvance}
+              onChange={(e) => setAutoAdvance(e.target.checked)}
+              style={{ marginRight: '6px' }}
+            />
+            Auto-advance on pass
           </label>
         </div>
+
+        {advanceNotice && (
+          <div
+            style={{
+              marginTop: '10px',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              background: 'rgba(34, 197, 94, 0.12)',
+              color: '#16a34a',
+              border: '1px solid rgba(34, 197, 94, 0.25)',
+              fontSize: '0.86rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+            }}
+          >
+            <AiOutlineCheckCircle size={16} />
+            <span>{advanceNotice}</span>
+          </div>
+        )}
       </div>
 
       <DrawingCanvas
@@ -204,6 +270,7 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
         overlayChar={showWatermark ? target.char : null}
         expectedStrokes={target.strokes}
         script={target.script}
+        onGradeComplete={handleGradeComplete}
         autoRecordSRS={true}
       />
     </div>

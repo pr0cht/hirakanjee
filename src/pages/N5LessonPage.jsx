@@ -599,8 +599,8 @@ export default function N5LessonPage({ settings = {} }) {
           </div>
 
           <div className="practice-prompt-row">
-            <h2 className="practice-prompt-text">{currentQuestion.prompt}</h2>
-            {currentQuestion.audioText && (
+            <h2 className="practice-prompt-text">{currentQuestion.prompt || currentQuestion.question}</h2>
+            {currentQuestion.audioText && currentQuestion.type !== 'audio-listening' && (
               <button
                 type="button"
                 className={`practice-audio-trigger ${audioPlaying ? 'active' : ''}`}
@@ -633,12 +633,17 @@ export default function N5LessonPage({ settings = {} }) {
                         className="placed-chip"
                         onClick={() => handleRemoveChip(chipIdx)}
                         disabled={checkStatus !== 'idle'}
+                        title="Click to return to tray"
                       >
                         {currentQuestion.chips[chipIdx]}
                       </button>
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div className="builder-separator-line">
+                <span>Word Bank</span>
               </div>
 
               <div className="chip-bank-tray">
@@ -663,6 +668,24 @@ export default function N5LessonPage({ settings = {} }) {
           {/* 2. FILL IN THE BLANK */}
           {currentQuestion.type === 'fill-blank' && (
             <div className="fill-blank-layout">
+              {currentQuestion.sentence && (
+                <div className="sentence-card">
+                  {(() => {
+                    const parts = currentQuestion.sentence.split(/___|\[\s*\?\s*\]/g);
+                    const currentAnswerText = selectedOption !== null ? currentQuestion.options[selectedOption] : null;
+                    return (
+                      <>
+                        {parts[0]}
+                        <span className={`blank-slot ${selectedOption !== null ? 'filled' : ''}`}>
+                          {currentAnswerText || '___'}
+                        </span>
+                        {parts.slice(1).join('')}
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
               {showRomaji && currentQuestion.romaji && (
                 <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
                   {currentQuestion.romaji}
@@ -723,11 +746,16 @@ export default function N5LessonPage({ settings = {} }) {
               <div className="audio-card-center">
                 <button
                   type="button"
-                  className="big-audio-replay-btn"
+                  className={`big-audio-replay-btn ${audioPlaying ? 'active' : ''}`}
                   onClick={() => handlePlayPromptAudio(currentQuestion.audioText)}
                 >
-                  <AiOutlineSound size={32} />
-                  <span>Tap to Listen</span>
+                  <div className="audio-block-icon">
+                    <AiOutlineSound size={26} />
+                  </div>
+                  <div className="audio-block-text">
+                    <span className="audio-primary-label">Tap to Listen</span>
+                    <span className="audio-secondary-label">Play sentence audio</span>
+                  </div>
                 </button>
               </div>
 

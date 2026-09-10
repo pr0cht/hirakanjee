@@ -8,6 +8,7 @@ import {
 } from 'react-icons/ai';
 import { BsEraser, BsPencil, BsGrid3X3 } from 'react-icons/bs';
 import { speakJapanese } from '../utils/audio';
+import { hiraganaStrokeData } from '../data/hiraganaStrokeData';
 import './DrawingCanvas.css';
 
 export default function DrawingCanvas({
@@ -27,6 +28,8 @@ export default function DrawingCanvas({
   const [gridMode, setGridMode] = useState('rice'); // 'rice' | 'cross' | 'none'
   const [isGrading, setIsGrading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+
+  const strokeGuide = overlayChar ? hiraganaStrokeData[overlayChar] : null;
 
   // Redraw all strokes onto the canvas
   const redrawCanvas = useCallback((strokeList, inProgressStroke = null) => {
@@ -319,7 +322,38 @@ export default function DrawingCanvas({
           </div>
         )}
 
-        {overlayChar && <div className="watermark-char">{overlayChar}</div>}
+        {overlayChar && (
+          strokeGuide ? (
+            <svg
+              className="watermark-svg"
+              viewBox="0 0 109 109"
+              aria-hidden="true"
+            >
+              <g className="guide-strokes-base">
+                {strokeGuide.strokes.map((d, i) => (
+                  <path key={`base-${i}`} d={d} />
+                ))}
+              </g>
+              <g className="guide-strokes-dash">
+                {strokeGuide.strokes.map((d, i) => (
+                  <path key={`dash-${i}`} d={d} />
+                ))}
+              </g>
+              <g className="guide-stroke-numbers">
+                {strokeGuide.numbers.map((n, i) => (
+                  <g key={`num-${i}`} transform={`translate(${n.x}, ${n.y})`}>
+                    <circle cx="0" cy="0" r="3.8" className="stroke-num-circle" />
+                    <text x="0" y="0.2" className="stroke-num-text" textAnchor="middle" dominantBaseline="central">
+                      {n.num}
+                    </text>
+                  </g>
+                ))}
+              </g>
+            </svg>
+          ) : (
+            <div className="watermark-char">{overlayChar}</div>
+          )
+        )}
 
         <canvas
           ref={canvasRef}

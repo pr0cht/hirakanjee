@@ -142,6 +142,8 @@ export const n5CoreLessons = [
       {
         "id": "l1-q1",
         "type": "multiple-choice",
+        "prompt": "How is the topic-marking particle 'は' pronounced when used after a topic?",
+
         "question": "How is the topic-marking particle 'は' pronounced when used after a topic?",
         "options": [
           "ha",
@@ -267,6 +269,8 @@ export const n5CoreLessons = [
       {
         "id": "l1-q8",
         "type": "multiple-choice",
+        "prompt": "What is the key difference between 'じゃありません' and 'ではありません'?",
+
         "question": "What is the key difference between 'じゃありません' and 'ではありません'?",
         "options": [
           "ではありません is more formal and used in writing, while じゃありません is conversational.",
@@ -324,7 +328,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'じゃありません' expresses the present negative state ('am not').",
-        "romaji": "watashi wa gakusei ___。"
+        "romaji": "watashi wa gakusei [ ? ]."
       }
     ]
   },
@@ -468,6 +472,8 @@ export const n5CoreLessons = [
       {
         "id": "l2-q1",
         "type": "multiple-choice",
+        "prompt": "Why is 'あなた' (you) frequently avoided when speaking to a teacher or boss?",
+
         "question": "Why is 'あなた' (you) frequently avoided when speaking to a teacher or boss?",
         "options": [
           "It is considered overly direct; using their name + さん (or title like 先生) is polite.",
@@ -567,7 +573,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "Adding か turns the statement into a polite question without needing to say あなた.",
-        "romaji": "ashita toukyou [ ? ] ikimasu."
+        "romaji": "ashita toukyou e ikimasu [ ? ]."
       },
       {
         "id": "l2-q7",
@@ -591,6 +597,8 @@ export const n5CoreLessons = [
       {
         "id": "l2-q8",
         "type": "multiple-choice",
+        "prompt": "Which pronoun specifically refers to 'They (all-female group)'?",
+
         "question": "Which pronoun specifically refers to 'They (all-female group)'?",
         "options": [
           "かのじょたち",
@@ -770,6 +778,8 @@ export const n5CoreLessons = [
       {
         "id": "l3-q1",
         "type": "multiple-choice",
+        "prompt": "What is the Japanese word for 'the day before yesterday'?",
+
         "question": "What is the Japanese word for 'the day before yesterday'?",
         "options": [
           "おととい",
@@ -899,6 +909,8 @@ export const n5CoreLessons = [
       {
         "id": "l3-q8",
         "type": "multiple-choice",
+        "prompt": "How do you say 'last year' in Japanese?",
+
         "question": "How do you say 'last year' in Japanese?",
         "options": [
           "きょねん",
@@ -1105,6 +1117,8 @@ export const n5CoreLessons = [
       {
         "id": "l4-q1",
         "type": "multiple-choice",
+        "prompt": "What are the Japanese words for 'right' and 'left'?",
+
         "question": "What are the Japanese words for 'right' and 'left'?",
         "options": [
           "みぎ (right) and ひだり (left)",
@@ -1242,6 +1256,8 @@ export const n5CoreLessons = [
       {
         "id": "l4-q8",
         "type": "multiple-choice",
+        "prompt": "Which compass direction is 'Higashi' (ひがし)?",
+
         "question": "Which compass direction is 'Higashi' (ひがし)?",
         "options": [
           "East",
@@ -1387,6 +1403,8 @@ export const n5CoreLessons = [
       {
         "id": "l5-q1",
         "type": "multiple-choice",
+        "prompt": "How is 300 pronounced in Japanese with the irregular sound mutation?",
+
         "question": "How is 300 pronounced in Japanese with the irregular sound mutation?",
         "options": [
           "さんびゃく",
@@ -1443,7 +1461,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "600 is pronounced 'ろっぴゃく' (roppyaku).",
-        "romaji": "600 is pronounced ___。"
+        "romaji": "600 wa [ ? ] to yomimasu."
       },
       {
         "id": "l5-q4",
@@ -1492,7 +1510,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "3,000 shifts to 'さんぜん' (sanzen).",
-        "romaji": "3,000 is pronounced ___。"
+        "romaji": "3,000 wa [ ? ] to yomimasu."
       },
       {
         "id": "l5-q7",
@@ -1516,6 +1534,8 @@ export const n5CoreLessons = [
       {
         "id": "l5-q8",
         "type": "multiple-choice",
+        "prompt": "How do you say 50,000 in Japanese?",
+
         "question": "How do you say 50,000 in Japanese?",
         "options": [
           "ごまん",
@@ -1563,7 +1583,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "800 is 'はっぴゃく' (happyaku).",
-        "romaji": "800 is pronounced ___。"
+        "romaji": "800 wa [ ? ] to yomimasu."
       }
     ]
   },
@@ -1645,6 +1665,8 @@ export const n5CoreLessons = [
       {
         "id": "l6-q1",
         "type": "multiple-choice",
+        "prompt": "How is 4:00 o'clock pronounced in Japanese?",
+
         "question": "How is 4:00 o'clock pronounced in Japanese?",
         "options": [
           "よじ",
@@ -1699,7 +1721,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "7:00 is standardly pronounced 'しちじ' (shichiji).",
-        "romaji": "7:00 o'clock is pronounced ___。"
+        "romaji": "7:00 wa [ ? ] to yomimasu."
       },
       {
         "id": "l6-q4",
@@ -1750,7 +1772,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "9:00 is read as 'くじ' (kuji), NEVER 'きゅうじ'.",
-        "romaji": "9:00 o'clock is pronounced ___。"
+        "romaji": "9:00 wa [ ? ] to yomimasu."
       },
       {
         "id": "l6-q7",
@@ -1774,6 +1796,8 @@ export const n5CoreLessons = [
       {
         "id": "l6-q8",
         "type": "multiple-choice",
+        "prompt": "What is the difference between 'さんじ' and 'さんじかん'?",
+
         "question": "What is the difference between 'さんじ' and 'さんじかん'?",
         "options": [
           "さんじ is a point in time (3:00); さんじかん is a duration (3 hours).",
@@ -1824,7 +1848,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'はん' (半) means half past.",
-        "romaji": "30 minutes is called either sanjuppun or ___."
+        "romaji": "30-pun wa sanjuppun matawa [ ? ] to yobimasu."
       }
     ]
   },
@@ -1904,6 +1928,8 @@ export const n5CoreLessons = [
       {
         "id": "l7-q1",
         "type": "multiple-choice",
+        "prompt": "How do you say the 1st day of the month in Japanese?",
+
         "question": "How do you say the 1st day of the month in Japanese?",
         "options": [
           "ついたち",
@@ -1958,7 +1984,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "The 20th is uniquely called 'はつか' (hatsuka).",
-        "romaji": "The 20th day of the month is called ___。"
+        "romaji": "20-nichi wa [ ? ] to yobimasu."
       },
       {
         "id": "l7-q4",
@@ -2006,7 +2032,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "Wednesday is 'すいようび' (水曜日).",
-        "romaji": "Wednesday is ___youbi."
+        "romaji": "suiyoubi wa [ ? ]-youbi desu."
       },
       {
         "id": "l7-q7",
@@ -2030,6 +2056,8 @@ export const n5CoreLessons = [
       {
         "id": "l7-q8",
         "type": "multiple-choice",
+        "prompt": "What day of the week is 'げつようび'?",
+
         "question": "What day of the week is 'げつようび'?",
         "options": [
           "Monday",
@@ -2078,7 +2106,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "April is read as 'しがつ' (四月).",
-        "romaji": "April is pronounced ___gatsu."
+        "romaji": "4-gatsu wa [ ? ]-gatsu to yomimasu."
       }
     ]
   },
@@ -2166,6 +2194,8 @@ export const n5CoreLessons = [
       {
         "id": "l8-q1",
         "type": "multiple-choice",
+        "prompt": "What Japanese question word means 'Where'?",
+
         "question": "What Japanese question word means 'Where'?",
         "options": [
           "どこ",
@@ -2273,7 +2303,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "Adding か to だれ forms 'someone / somebody'.",
-        "romaji": "dare + ka = ___。"
+        "romaji": "dare + ka = [ ? ]."
       },
       {
         "id": "l8-q7",
@@ -2297,6 +2327,8 @@ export const n5CoreLessons = [
       {
         "id": "l8-q8",
         "type": "multiple-choice",
+        "prompt": "How do you ask 'How / In what way' in Japanese?",
+
         "question": "How do you ask 'How / In what way' in Japanese?",
         "options": [
           "どう",
@@ -2354,7 +2386,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "なに + か = 'something'.",
-        "romaji": "nanika no imi wa [ ? ] desu."
+        "romaji": "nanika no imi wa \"[ ? ]\" desu."
       }
     ]
   },
@@ -2436,6 +2468,8 @@ export const n5CoreLessons = [
       {
         "id": "l9-q1",
         "type": "multiple-choice",
+        "prompt": "Which frequency word MUST be paired with a negative verb?",
+
         "question": "Which frequency word MUST be paired with a negative verb?",
         "options": [
           "ぜんぜん",
@@ -2569,6 +2603,8 @@ export const n5CoreLessons = [
       {
         "id": "l9-q8",
         "type": "multiple-choice",
+        "prompt": "What does 'ときどき' mean?",
+
         "question": "What does 'ときどき' mean?",
         "options": [
           "Sometimes",
@@ -2617,7 +2653,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "毎 (まい) + 月 (つき) = Every month.",
-        "romaji": "maitsuki = Every ___。"
+        "romaji": "maitsuki wa \"Every [ ? ]\" no imi desu."
       }
     ]
   },
@@ -2681,6 +2717,8 @@ export const n5CoreLessons = [
       {
         "id": "l10-q1",
         "type": "multiple-choice",
+        "prompt": "What is the crucial grammatical rule distinguishing 'これ' from 'この'?",
+
         "question": "What is the crucial grammatical rule distinguishing 'これ' from 'この'?",
         "options": [
           "これ stands alone as a noun; この MUST be immediately followed by a noun.",
@@ -2796,7 +2834,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "あそこ represents a place distant from both speakers.",
-        "romaji": "asoko = ___。"
+        "romaji": "asoko = [ ? ]."
       },
       {
         "id": "l10-q7",
@@ -2820,6 +2858,8 @@ export const n5CoreLessons = [
       {
         "id": "l10-q8",
         "type": "multiple-choice",
+        "prompt": "What is the polite/formal directional version of 'ここ' (here)?",
+
         "question": "What is the polite/formal directional version of 'ここ' (here)?",
         "options": [
           "こちら",
@@ -2864,7 +2904,7 @@ export const n5CoreLessons = [
         "id": "l10-q10",
         "type": "fill-blank",
         "prompt": "Which word connects directly to a noun to ask \"Which person?\"",
-        "sentence": "どの ひと です か？",
+        "sentence": "___ ひと です か？",
         "blankWord": "どの",
         "options": [
           "どの",
@@ -2874,7 +2914,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'どの' must be used immediately before a noun ('どの ひと').",
-        "romaji": "Which person? = [ ? ] hito desu ka?"
+        "romaji": "[ ? ] hito desu ka?"
       }
     ]
   },
@@ -2940,6 +2980,8 @@ export const n5CoreLessons = [
       {
         "id": "l11-q1",
         "type": "multiple-choice",
+        "prompt": "Which 'but' word is used at the START of a new sentence in everyday spoken Japanese?",
+
         "question": "Which 'but' word is used at the START of a new sentence in everyday spoken Japanese?",
         "options": [
           "でも",
@@ -2997,7 +3039,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'けど' connects two clauses mid-sentence colloquially.",
-        "romaji": "takai desu ___, oishii desu."
+        "romaji": "takai desu [ ? ], oishii desu."
       },
       {
         "id": "l11-q4",
@@ -3040,7 +3082,7 @@ export const n5CoreLessons = [
           "です"
         ],
         "explanation": "'しかし' begins a formal contrasting sentence.",
-        "romaji": "benkyou shimashita 。 shikashi tesuto wa muzukashikatta desu"
+        "romaji": "benkyou shimashita. shikashi tesuto wa muzukashikatta desu."
       },
       {
         "id": "l11-q6",
@@ -3056,7 +3098,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'しかし' (shikashi) is used in speeches, formal writing, and essays.",
-        "romaji": "[ ? ] wa formal or written contrast connector used at sentence start."
+        "romaji": "[ ? ] wa buntou de tsukau setsuzokushi desu."
       },
       {
         "id": "l11-q7",
@@ -3080,6 +3122,8 @@ export const n5CoreLessons = [
       {
         "id": "l11-q8",
         "type": "multiple-choice",
+        "prompt": "When softening a statement or hesitating politely, speakers often trail off with:",
+
         "question": "When softening a statement or hesitating politely, speakers often trail off with:",
         "options": [
           "～けど or ～が",
@@ -3134,7 +3178,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "が acts as a conjunction joining two clauses into a single compound sentence.",
-        "romaji": "Conjunction 'ga' connects two contrasting clauses in a [ ? ] sentence."
+        "romaji": "setsuzokushi 'ga' wa hitotsu no bun de [ ? ] o tsunagimasu."
       }
     ]
   },
@@ -3190,6 +3234,8 @@ export const n5CoreLessons = [
       {
         "id": "l12-q1",
         "type": "multiple-choice",
+        "prompt": "How do you connect two nouns with 'or' (e.g. 'Coffee or tea')?",
+
         "question": "How do you connect two nouns with 'or' (e.g. 'Coffee or tea')?",
         "options": [
           "コーヒー か おちゃ",
@@ -3248,7 +3294,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'それとも' (soretomo) begins the second question: 'Or is it...?'",
-        "romaji": "ashita wa hare desu ka? ___, ame desu ka?"
+        "romaji": "ashita wa hare desu ka? [ ? ], ame desu ka?"
       },
       {
         "id": "l12-q4",
@@ -3307,7 +3353,7 @@ export const n5CoreLessons = [
         ],
         "correctAnswer": 0,
         "explanation": "'または' (又は) is the standard formal word for 'or'.",
-        "romaji": "[ ? ] is commonly found on official forms and contracts for 'or / alternatively'."
+        "romaji": "[ ? ] wa keiyakusho nado de tsukau kotoba desu."
       },
       {
         "id": "l12-q7",
@@ -3331,6 +3377,8 @@ export const n5CoreLessons = [
       {
         "id": "l12-q8",
         "type": "multiple-choice",
+        "prompt": "Which choice word specifically starts a follow-up question?",
+
         "question": "Which choice word specifically starts a follow-up question?",
         "options": [
           "それとも",

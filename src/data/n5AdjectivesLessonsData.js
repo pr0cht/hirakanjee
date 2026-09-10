@@ -261,6 +261,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj1-q4",
         "type": "multiple-choice",
+        "prompt": "Which of the following is an い-adjective?",
+
         "question": "Which of the following is an い-adjective?",
         "options": [
           "ふるい",
@@ -280,6 +282,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj1-q5",
         "type": "multiple-choice",
+        "prompt": "What is the opposite/antonym of たかい (expensive)?",
+
         "question": "What is the opposite/antonym of たかい (expensive)?",
         "options": [
           "やすい (cheap)",
@@ -334,6 +338,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj1-q8",
         "type": "multiple-choice",
+        "prompt": "What is the correct way to say \"My teacher is kind/gentle\"?",
+
         "question": "What is the correct way to say \"My teacher is kind/gentle\"?",
         "options": [
           "わたし の せんせい は やさしい です。",
@@ -572,6 +578,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj2-q5",
         "type": "multiple-choice",
+        "prompt": "Which degree word means \"super / immensely\" in casual Japanese?",
+
         "question": "Which degree word means \"super / immensely\" in casual Japanese?",
         "options": [
           "すごく",
@@ -628,6 +636,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj2-q8",
         "type": "multiple-choice",
+        "prompt": "What is the opposite degree of とても (very)?",
+
         "question": "What is the opposite degree of とても (very)?",
         "options": [
           "ぜんぜん ~ない (not at all)",
@@ -823,6 +833,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj3-q1",
         "type": "multiple-choice",
+        "prompt": "What is the antonym of あたらしい (new)?",
+
         "question": "What is the antonym of あたらしい (new)?",
         "options": [
           "ふるい",
@@ -893,6 +905,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj3-q5",
         "type": "multiple-choice",
+        "prompt": "What is the opposite of じょうず (skillful / good at)?",
+
         "question": "What is the opposite of じょうず (skillful / good at)?",
         "options": [
           "へた",
@@ -982,6 +996,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj3-q10",
         "type": "multiple-choice",
+        "prompt": "Which pair consists of exact antonyms?",
+
         "question": "Which pair consists of exact antonyms?",
         "options": [
           "たかい (expensive) <---> やすい (cheap)",
@@ -1157,6 +1173,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj4-q4",
         "type": "multiple-choice",
+        "prompt": "What is the correct connective form of いい (good)?",
+
         "question": "What is the correct connective form of いい (good)?",
         "options": [
           "よくて",
@@ -1231,6 +1249,8 @@ export const n5AdjectivesLessons = [
       {
         "id": "adj4-q8",
         "type": "multiple-choice",
+        "prompt": "How do you say \"Please be quiet\" in Japanese?",
+
         "question": "How do you say \"Please be quiet\" in Japanese?",
         "options": [
           "しずかに して ください。",

@@ -253,6 +253,7 @@ function DashboardPage() {
 // Learn Page Component
 function LearnPage() {
   const [lessonProgress, setLessonProgress] = useState({});
+  const [activeLevel, setActiveLevel] = useState('N5');
 
   useEffect(() => {
     if (window.db?.getLessonProgress) {
@@ -264,129 +265,229 @@ function LearnPage() {
 
   const completedCount = Object.values(lessonProgress).filter((p) => p.completed).length;
 
+  const jlptLevels = [
+    { id: 'N5', label: 'JLPT N5', desc: 'Beginner' },
+    { id: 'N4', label: 'JLPT N4', desc: 'Elementary' },
+    { id: 'N3', label: 'JLPT N3', desc: 'Intermediate' },
+    { id: 'N2', label: 'JLPT N2', desc: 'Pre-Advanced' },
+    { id: 'N1', label: 'JLPT N1', desc: 'Advanced' },
+  ];
+
+  const placeholderData = {
+    N4: {
+      title: 'JLPT N4 Curriculum (Elementary / 初級後半)',
+      subtitle: 'Advance from beginner basics to conversational fluency. Covers 300 essential Kanji, complex verb inflections (passive, causative, potential), conditional forms (~tara, ~nara), and everyday reading/listening.',
+      sections: [
+        { title: 'Core Grammar Structures', desc: 'Conjugations including ~te kara, ~temo ii, ~nakereba narimasen, ~sou desu, and plain conditionals.' },
+        { title: 'JLPT N4 Kanji (300 Kanji)', desc: 'Fundamental Kanji characters with comprehensive stroke order practice, On-yomi, and Kun-yomi.' },
+        { title: 'Honorifics & Social Speech', desc: 'Polite and humble speech fundamentals (Sonkeigo and Kenjougo) for everyday interactions.' },
+        { title: 'Conversational Listening', desc: 'Realistic listening comprehension tasks for train stations, restaurants, shopping, and campus life.' },
+      ]
+    },
+    N3: {
+      title: 'JLPT N3 Curriculum (Intermediate / 中級)',
+      subtitle: 'The gateway to natural Japanese fluency. Bridges everyday communication and formal expression with 650+ Kanji, nuanced sentence connectors, and near-native audio clips.',
+      sections: [
+        { title: 'Intermediate Grammar Nuances', desc: 'Subtle grammar points including ~wake ga nai, ~ni shite mo, ~ni taishite, and ~wo komete.' },
+        { title: 'JLPT N3 Kanji (650 Kanji)', desc: 'Expanded Kanji repertoire covering abstract ideas, media terms, and compound words.' },
+        { title: 'Essay & Article Reading', desc: 'Short opinion essays, newspaper columns, and instructional notices with comprehension quizzes.' },
+        { title: 'Natural-Speed Listening', desc: 'Authentic multi-speaker dialogues, interviews, and radio programs at standard speaking speed.' },
+      ]
+    },
+    N2: {
+      title: 'JLPT N2 Curriculum (Pre-Advanced / 上級手前)',
+      subtitle: 'Professional, academic, and business-ready Japanese. Master 1,000+ Kanji, newspaper editorials, business correspondence, and workplace conversations.',
+      sections: [
+        { title: 'Advanced Grammar & Discourse', desc: 'Formal and literary expressions including ~ni hoka naranai, ~wo keiki ni, and ~bakari ka.' },
+        { title: 'JLPT N2 Kanji (1,000 Kanji)', desc: 'High-frequency kanji found in business contracts, editorials, and formal correspondence.' },
+        { title: 'Business Japanese & Etiquette', desc: 'Corporate email templates, meeting discussions, client negotiations, and keigo refinement.' },
+        { title: 'News & Media Comprehension', desc: 'In-depth news reports, documentary excerpts, and topical panel discussions.' },
+      ]
+    },
+    N1: {
+      title: 'JLPT N1 Curriculum (Advanced / 最上級)',
+      subtitle: 'The highest tier of Japanese proficiency. Comprehend intricate literary prose, academic lectures, complex philosophical debates, and all 2,136 Joyo Kanji.',
+      sections: [
+        { title: 'Literary & Classical Expressions', desc: 'Nuanced grammar forms including ~ya ina ya, ~ga hayai ka, and ~wo kawakiri ni.' },
+        { title: 'Complete Joyo Kanji (2,136 Kanji)', desc: 'Full mastery of all standard educational kanji with rare onyomi/kunyomi readings.' },
+        { title: 'Critical Reading & Editorial Analysis', desc: 'Advanced texts covering philosophy, sociology, economics, and technical commentary.' },
+        { title: 'Academic & Professional Audio', desc: 'University lectures, roundtable debates, press conferences, and abstract presentations.' },
+      ]
+    }
+  };
+
   return (
     <div className="page-content">
-      <h1>Learn Japanese - N5 Level</h1>
-      <p>Master the basics of Japanese with structured lessons, stroke animations, grammar guides, and interactive quizzes.</p>
+      <h1>Learn Japanese</h1>
+      <p>Master Japanese with structured lessons, handwriting stroke practice, grammar guides, and interactive quizzes.</p>
 
-      <div className="learn-sections">
-        {/* Render MLC Japanese N5 Curriculum Sections (1-8) */}
-        {n5Curriculum.map((section) => {
-          const sectionCompletedCount = section.lessons.filter((l) => lessonProgress[l.id]?.completed).length;
-
-          return (
-            <section key={section.id} className="learn-section">
-              <div className="section-header-row">
-                <div>
-                  <h2>{section.title}</h2>
-                  <p className="section-header-sub">
-                    {section.description || section.subtitle}
-                  </p>
-                </div>
-                <div className="curriculum-progress-badge">
-                  <AiOutlineTrophy size={16} />
-                  <span>{sectionCompletedCount} / {section.lessons.length} Completed</span>
-                </div>
-              </div>
-
-              <div className="n5-core-grid">
-                {section.lessons.map((lesson) => {
-                  const prog = lessonProgress[lesson.id];
-                  const isCompleted = Boolean(prog?.completed);
-                  const quizScore = prog?.quizScore ?? 0;
-
-                  return (
-                    <div
-                      key={lesson.id}
-                      className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''}`}
-                    >
-                      <div className="n5-card-header">
-                        <span className="n5-lesson-num">Lesson {lesson.number}</span>
-                        {isCompleted ? (
-                          <span className="n5-score-pill completed">
-                            <AiOutlineCheckCircle size={13} /> {quizScore}% Score
-                          </span>
-                        ) : (
-                          <span className="n5-score-pill pending">Ready</span>
-                        )}
-                      </div>
-                      <h3 className="n5-card-title">{lesson.shortTitle}</h3>
-                      <p className="n5-card-desc">{lesson.subtitle}</p>
-                      <div className="n5-card-footer">
-                        <Link
-                          to={`/learn/n5/${lesson.id}`}
-                          className="btn-primary n5-action-btn"
-                        >
-                          {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
-
-        {/* Section: Basic Handwriting Scripts */}
-        <section className="learn-section">
-          <h2>Basic Handwriting Scripts</h2>
-          <div className="section-grid">
-            <div className="topic-card">
-              <h3>Hiragana (71)</h3>
-              <p>Learn the fundamental Japanese syllabary used for native words and grammatical markers.</p>
-              <Link to="/learn/hiragana" className="btn-primary">Start Learning</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Katakana (72)</h3>
-              <p>Master the syllabary used for loanwords, foreign names, and onomatopoeia.</p>
-              <Link to="/learn/katakana" className="btn-primary">Start Learning</Link>
-            </div>
-            <div className="topic-card">
-              <h3>JLPT N5 Kanji</h3>
-              <p>Master all basic kanji essential for the N5 level with On/Kun readings.</p>
-              <Link to="/learn/kanji" className="btn-primary">Start Learning</Link>
-            </div>
+      {/* 1. Basic Handwriting Scripts on Top */}
+      <section className="learn-section" style={{ marginTop: '28px' }}>
+        <h2>Basic Handwriting Scripts</h2>
+        <div className="section-grid">
+          <div className="topic-card">
+            <h3>Hiragana (71)</h3>
+            <p>Learn the fundamental Japanese syllabary used for native words and grammatical markers.</p>
+            <Link to="/learn/hiragana" className="btn-primary">Start Learning</Link>
           </div>
-        </section>
-
-        {/* Section: Quick Jump by Topic */}
-        <section className="learn-section">
-          <h2>Quick Topic Jump</h2>
-          <div className="section-grid">
-            <div className="topic-card">
-              <h3>Basic Sentences</h3>
-              <p>Learn to construct simple sentences, topic-comment patterns, and greetings.</p>
-              <Link to="/learn/n5/basic-structure" className="btn-primary">Start Lesson</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Particles (は, が, を, に, で)</h3>
-              <p>Understand key grammatical markers, contrast, locations, and time deadlines.</p>
-              <Link to="/learn/n5/part-wa-ga" className="btn-primary">Start Lesson</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Adjectives (い & な)</h3>
-              <p>Learn 104+ adjectives, degree words, exceptions, and conjugations.</p>
-              <Link to="/learn/n5/adj-i-and-na-104" className="btn-primary">Start Lesson</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Verbs</h3>
-              <p>Master movement, existence, 40 core masu verbs, te-form, and plain forms.</p>
-              <Link to="/learn/n5/verb-movement" className="btn-primary">Start Lesson</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Special Topics</h3>
-              <p>Fractions, quiz symbols, expressing opinions (sou omoimasu), and apologies.</p>
-              <Link to="/learn/n5/special-fractions" className="btn-primary">Start Lesson</Link>
-            </div>
-            <div className="topic-card">
-              <h3>Listening Comprehension</h3>
-              <p>Real-world Japanese audio dialogues, tasks, and Te-form listening patterns.</p>
-              <Link to="/learn/n5/listening-n5-mastery" className="btn-primary">Start Lesson</Link>
-            </div>
+          <div className="topic-card">
+            <h3>Katakana (72)</h3>
+            <p>Master the syllabary used for loanwords, foreign names, and onomatopoeia.</p>
+            <Link to="/learn/katakana" className="btn-primary">Start Learning</Link>
           </div>
-        </section>
+          <div className="topic-card">
+            <h3>JLPT N5 Kanji</h3>
+            <p>Master all basic kanji essential for the N5 level with On/Kun readings.</p>
+            <Link to="/learn/kanji" className="btn-primary">Start Learning</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. JLPT Level Tabs Navigation */}
+      <div className="jlpt-tabs-container">
+        <div className="jlpt-tabs-bar">
+          {jlptLevels.map((lvl) => (
+            <button
+              key={lvl.id}
+              type="button"
+              className={`jlpt-tab-btn ${activeLevel === lvl.id ? 'active' : ''}`}
+              onClick={() => setActiveLevel(lvl.id)}
+            >
+              <span>{lvl.label}</span>
+              <span className="jlpt-tab-pill">{lvl.desc}</span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* 3. Level Curriculum Content */}
+      {activeLevel === 'N5' ? (
+        <div className="learn-sections">
+          {/* Render MLC Japanese N5 Curriculum Sections (1-8) */}
+          {n5Curriculum.map((section) => {
+            const sectionCompletedCount = section.lessons.filter((l) => lessonProgress[l.id]?.completed).length;
+
+            return (
+              <section key={section.id} className="learn-section">
+                <div className="section-header-row">
+                  <div>
+                    <h2>{section.title}</h2>
+                    <p className="section-header-sub">
+                      {section.description || section.subtitle}
+                    </p>
+                  </div>
+                  <div className="curriculum-progress-badge">
+                    <AiOutlineTrophy size={16} />
+                    <span>{sectionCompletedCount} / {section.lessons.length} Completed</span>
+                  </div>
+                </div>
+
+                <div className="n5-core-grid">
+                  {section.lessons.map((lesson) => {
+                    const prog = lessonProgress[lesson.id];
+                    const isCompleted = Boolean(prog?.completed);
+                    const quizScore = prog?.quizScore ?? 0;
+
+                    return (
+                      <div
+                        key={lesson.id}
+                        className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''}`}
+                      >
+                        <div className="n5-card-header">
+                          <span className="n5-lesson-num">Lesson {lesson.number}</span>
+                          {isCompleted ? (
+                            <span className="n5-score-pill completed">
+                              <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                            </span>
+                          ) : (
+                            <span className="n5-score-pill pending">Ready</span>
+                          )}
+                        </div>
+                        <h3 className="n5-card-title">{lesson.shortTitle}</h3>
+                        <p className="n5-card-desc">{lesson.subtitle}</p>
+                        <div className="n5-card-footer">
+                          <Link
+                            to={`/learn/n5/${lesson.id}`}
+                            className="btn-primary n5-action-btn"
+                          >
+                            {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+
+          {/* Section: Quick Jump by Topic */}
+          <section className="learn-section">
+            <h2>Quick Topic Jump</h2>
+            <div className="section-grid">
+              <div className="topic-card">
+                <h3>Basic Sentences</h3>
+                <p>Learn to construct simple sentences, topic-comment patterns, and greetings.</p>
+                <Link to="/learn/n5/basic-structure" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Particles (は, が, を, に, で)</h3>
+                <p>Understand key grammatical markers, contrast, locations, and time deadlines.</p>
+                <Link to="/learn/n5/part-wa-ga" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Adjectives (い & な)</h3>
+                <p>Learn 104+ adjectives, degree words, exceptions, and conjugations.</p>
+                <Link to="/learn/n5/adj-i-and-na-104" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Verbs</h3>
+                <p>Master movement, existence, 40 core masu verbs, te-form, and plain forms.</p>
+                <Link to="/learn/n5/verb-movement" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Special Topics</h3>
+                <p>Fractions, quiz symbols, expressing opinions (sou omoimasu), and apologies.</p>
+                <Link to="/learn/n5/special-fractions" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Listening Comprehension</h3>
+                <p>Real-world Japanese audio dialogues, tasks, and Te-form listening patterns.</p>
+                <Link to="/learn/n5/listening-n5-mastery" className="btn-primary">Start Lesson</Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : (
+        /* Placeholder for N4 - N1 */
+        <div className="learn-sections">
+          <div className="jlpt-placeholder-hero">
+            <div>
+              <div className="jlpt-placeholder-title">{placeholderData[activeLevel].title}</div>
+              <p className="jlpt-placeholder-sub">{placeholderData[activeLevel].subtitle}</p>
+            </div>
+            <div className="jlpt-status-tag">
+              <span>Under Active Development</span>
+            </div>
+          </div>
+
+          <section className="learn-section">
+            <h2>Planned Curriculum Modules</h2>
+            <div className="jlpt-preview-grid">
+              {placeholderData[activeLevel].sections.map((sec, idx) => (
+                <div key={idx} className="jlpt-preview-card">
+                  <span className="jlpt-preview-badge">Module 0{idx + 1}</span>
+                  <h4>{sec.title}</h4>
+                  <p>{sec.desc}</p>
+                  <span className="jlpt-status-tag" style={{ fontSize: '0.78rem', padding: '4px 10px' }}>
+                    Coming Soon
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
