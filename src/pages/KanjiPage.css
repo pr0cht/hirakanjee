@@ -78,8 +78,8 @@
 }
 
 .kanji-search-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
 }
 
 .kanji-toggle-btn {
@@ -102,9 +102,9 @@
 }
 
 .kanji-toggle-btn.active {
-  background: #3b82f6;
+  background: #ea580c;
   color: white;
-  border-color: #3b82f6;
+  border-color: #ea580c;
 }
 
 .kanji-categories {
@@ -125,14 +125,14 @@
 }
 
 .category-tab:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+  border-color: #ea580c;
+  color: #ea580c;
 }
 
 .category-tab.active {
-  background: #3b82f6;
+  background: #ea580c;
   color: white;
-  border-color: #3b82f6;
+  border-color: #ea580c;
   font-weight: 600;
 }
 
@@ -248,19 +248,26 @@
 
 .kanji-practice-btn {
   width: 100%;
-  padding: 0.5rem;
-  background: #3b82f6;
+  padding: 0.6rem;
+  background: #ea580c;
   color: white;
-  border-radius: 6px;
+  border-radius: 12px;
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 800;
   display: inline-block;
-  transition: background-color 0.15s;
+  box-shadow: 0 4px 0 #9a3412;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  text-align: center;
 }
 
 .kanji-practice-btn:hover {
-  background: #2563eb;
+  background: #f97316;
+}
+
+.kanji-practice-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #9a3412;
 }
 
 .empty-state {
@@ -286,7 +293,7 @@
 }
 
 .theme-dark .kanji-search-input:focus {
-  border-color: #3b82f6;
+  border-color: #ea580c;
 }
 
 .theme-dark .kanji-toggle-btn {
@@ -306,8 +313,8 @@
 }
 
 .theme-dark .category-tab:hover {
-  border-color: #3b82f6;
-  color: #60a5fa;
+  border-color: #ea580c;
+  color: #fb923c;
 }
 
 .theme-dark .kanji-card {

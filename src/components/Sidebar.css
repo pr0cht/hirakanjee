@@ -29,14 +29,15 @@
 .logo-icon {
   width: 40px;
   height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 18px;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
 }
 
 /* Search */
@@ -59,8 +60,8 @@
 }
 
 .sidebar-search input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
 }
 
 .search-icon {
@@ -112,9 +113,9 @@
 }
 
 .nav-item.active .nav-link {
-  color: #667eea;
-  background: #eef2ff;
-  font-weight: 500;
+  color: #ea580c;
+  background: #fff7ed;
+  font-weight: 700;
 }
 
 .nav-icon {
@@ -196,8 +197,8 @@
 }
 
 .nav-subitem.active {
-  color: #667eea;
-  font-weight: 500;
+  color: #ea580c;
+  font-weight: 700;
 }
 
 .subitem-label {
@@ -239,14 +240,15 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.25);
 }
 
 .user-info {

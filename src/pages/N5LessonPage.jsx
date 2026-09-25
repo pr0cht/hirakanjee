@@ -21,7 +21,8 @@ import {
   getRandomKanjiQuiz,
   getRandomListeningQuiz,
   listeningTracks,
-} from '../data/n5CurriculumData';
+} from '../data/n5/n5Curriculum';
+import { allN4Lessons, n4Curriculum } from '../data/n4/n4Curriculum';
 import { kanjiN5Data } from '../data/kanjiN5Data';
 import { speakJapanese } from '../utils/audio';
 import { sfx } from '../utils/sfx';
@@ -31,19 +32,37 @@ export default function N5LessonPage({ settings = {} }) {
   const { lessonId } = useParams();
   const navigate = useNavigate();
 
-  // Settings: check showRomaji preference
-  const showRomaji = settings?.showRomaji !== false;
+  // Combine N5 and N4 lessons for universal lesson routing
+  const combinedLessons = useMemo(() => [...allN5Lessons, ...allN4Lessons], []);
+  const combinedCurriculum = useMemo(() => [...n5Curriculum, ...n4Curriculum], []);
 
-  const lessonIndex = allN5Lessons.findIndex((l) => l.id === lessonId);
-  const currentLesson = lessonIndex !== -1 ? allN5Lessons[lessonIndex] : allN5Lessons[0];
-  const prevLesson = lessonIndex > 0 ? allN5Lessons[lessonIndex - 1] : null;
-  const nextLesson = lessonIndex < allN5Lessons.length - 1 ? allN5Lessons[lessonIndex + 1] : null;
+  const lessonIndex = combinedLessons.findIndex((l) => l.id === lessonId);
+  const currentLesson = lessonIndex !== -1 ? combinedLessons[lessonIndex] : combinedLessons[0];
+  const isN4 = allN4Lessons.some((l) => l.id === currentLesson?.id);
+  const levelPrefix = isN4 ? 'n4' : 'n5';
+
+  const prevLesson = lessonIndex > 0 ? combinedLessons[lessonIndex - 1] : null;
+  const nextLesson = lessonIndex < combinedLessons.length - 1 ? combinedLessons[lessonIndex + 1] : null;
 
   // Current curriculum section
   const currentSection =
-    n5Curriculum.find((sec) => sec.lessons.some((l) => l.id === currentLesson.id)) || n5Curriculum[0];
+    combinedCurriculum.find((sec) => sec.lessons.some((l) => l.id === currentLesson?.id)) || combinedCurriculum[0];
   const sectionLessonNumber =
-    currentLesson.number || currentSection.lessons.findIndex((l) => l.id === currentLesson.id) + 1;
+    currentLesson?.number || currentSection.lessons.findIndex((l) => l.id === currentLesson?.id) + 1;
+
+  // Settings: check showRomaji preference; suppress for Listening Comprehension and Sentence Builder
+  const isListeningOrBuilderLesson = Boolean(
+    currentLesson?.id === 'listening-n5-mastery' ||
+    currentLesson?.id?.includes('listening') ||
+    currentLesson?.title?.toLowerCase().includes('listening') ||
+    currentLesson?.shortTitle?.toLowerCase().includes('listening') ||
+    currentLesson?.id?.includes('sentence') ||
+    currentLesson?.title?.toLowerCase().includes('sentence') ||
+    currentLesson?.shortTitle?.toLowerCase().includes('sentence')
+  );
+
+  const shouldShowRomaji = settings?.showRomaji !== false && !isListeningOrBuilderLesson;
+  const showRomaji = shouldShowRomaji;
 
   // Database progress
   const [dbProgress, setDbProgress] = useState({});
@@ -137,7 +156,7 @@ export default function N5LessonPage({ settings = {} }) {
           setKanjiMasteryMap(dbData);
           try {
             localStorage.setItem('hirakanjee_kanji_mastery', JSON.stringify(dbData));
-          } catch (e) {}
+          } catch (e) { }
           return;
         }
       }
@@ -148,7 +167,7 @@ export default function N5LessonPage({ settings = {} }) {
     try {
       const local = JSON.parse(localStorage.getItem('hirakanjee_kanji_mastery') || '{}');
       setKanjiMasteryMap(local);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   // Record individual Kanji Character Mastery into SQLite + LocalStorage
@@ -179,7 +198,7 @@ export default function N5LessonPage({ settings = {} }) {
       };
       localStorage.setItem('hirakanjee_kanji_mastery', JSON.stringify(local));
       setKanjiMasteryMap({ ...local });
-    } catch (e) {}
+    } catch (e) { }
   };
 
   // Fetch SQLite progress on mount
@@ -190,16 +209,16 @@ export default function N5LessonPage({ settings = {} }) {
         .then((prog) => {
           if (prog) setDbProgress(prog);
         })
-        .catch(() => {});
+        .catch(() => { });
     }
     fetchKanjiStats();
-  }, [currentLesson.id]);
+  }, [currentLesson?.id]);
 
   // Reset when lessonId changes
   useEffect(() => {
-    if (currentLesson.id === 'kanji-n5-mastery') {
+    if (currentLesson?.id === 'kanji-n5-mastery') {
       setActiveQuizQuestions(getRandomKanjiQuiz(10));
-    } else if (currentLesson.id === 'listening-n5-mastery') {
+    } else if (currentLesson?.id === 'listening-n5-mastery') {
       setActiveQuizQuestions(getRandomListeningQuiz(10));
     } else {
       setActiveQuizQuestions(currentLesson?.quiz || []);
@@ -225,8 +244,10 @@ export default function N5LessonPage({ settings = {} }) {
   // Auto-play audio once if question is audio-listening
   useEffect(() => {
     if (isPracticing && currentQuestion?.type === 'audio-listening' && checkStatus === 'idle') {
+      const audioText = currentQuestion.audioText || currentQuestion.question || currentQuestion.prompt;
+      if (!audioText) return;
       const timer = setTimeout(() => {
-        speakJapanese(currentQuestion.audioText);
+        speakJapanese(audioText);
       }, 400);
       return () => clearTimeout(timer);
     }
@@ -300,8 +321,8 @@ export default function N5LessonPage({ settings = {} }) {
       const correctJoined = currentQuestion.correctAnswerSentence
         ? currentQuestion.correctAnswerSentence.replace(/\s+/g, '')
         : currentQuestion.correctOrder
-        ? currentQuestion.correctOrder.join('').replace(/\s+/g, '')
-        : '';
+          ? currentQuestion.correctOrder.join('').replace(/\s+/g, '')
+          : '';
       const userJoined = userOrder.join('').replace(/\s+/g, '');
       isCorrect = userJoined === correctJoined;
     } else {
@@ -528,7 +549,10 @@ export default function N5LessonPage({ settings = {} }) {
               {nextLesson && (
                 <button
                   className="practice-btn-primary"
-                  onClick={() => navigate(`/learn/n5/${nextLesson.id}`)}
+                  onClick={() => {
+                    const nextIsN4 = allN4Lessons.some((l) => l.id === nextLesson.id);
+                    navigate(`/learn/${nextIsN4 ? 'n4' : 'n5'}/${nextLesson.id}`);
+                  }}
                 >
                   Next Lesson <AiOutlineArrowRight size={16} />
                 </button>
@@ -615,11 +639,6 @@ export default function N5LessonPage({ settings = {} }) {
           {/* 1. WORD BANK / SENTENCE BUILDER */}
           {currentQuestion.type === 'word-bank' && (
             <div className="word-builder-layout">
-              {showRomaji && currentQuestion.romaji && (
-                <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
-                  {currentQuestion.romaji}
-                </div>
-              )}
 
               <div className="sentence-construction-box">
                 {selectedChips.length === 0 ? (
@@ -686,9 +705,23 @@ export default function N5LessonPage({ settings = {} }) {
                 </div>
               )}
 
-              {showRomaji && currentQuestion.romaji && (
-                <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
-                  {currentQuestion.romaji}
+              {shouldShowRomaji && currentQuestion.romaji && (
+                <div className="romaji-subtext" style={{ marginBottom: '12px' }}>
+                  {(() => {
+                    const parts = currentQuestion.romaji.split(/___|\[\s*\?\s*\]/g);
+                    const selectedText = selectedOption !== null
+                      ? (currentQuestion.romajiOptions?.[selectedOption] || currentQuestion.options?.[selectedOption] || '___')
+                      : '___';
+                    return (
+                      <>
+                        {parts[0]}
+                        <span className={`blank-slot ${selectedOption !== null ? 'filled' : ''}`} style={{ display: 'inline', fontWeight: 700 }}>
+                          {selectedText}
+                        </span>
+                        {parts.slice(1).join('')}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
 
@@ -721,7 +754,7 @@ export default function N5LessonPage({ settings = {} }) {
                       <span className="opt-marker">{String.fromCharCode(65 + optIdx)}</span>
                       <div className="opt-content">
                         <span className="opt-label">{opt}</span>
-                        {showRomaji &&
+                        {shouldShowRomaji &&
                           currentQuestion.romajiOptions?.[optIdx] &&
                           currentQuestion.romajiOptions[optIdx] !== opt && (
                             <span className="opt-romaji">{currentQuestion.romajiOptions[optIdx]}</span>
@@ -758,12 +791,6 @@ export default function N5LessonPage({ settings = {} }) {
                   </div>
                 </button>
               </div>
-
-              {showRomaji && currentQuestion.romaji && (
-                <div className="romaji-subtext" style={{ textAlign: 'center', marginBottom: '16px' }}>
-                  {currentQuestion.romaji}
-                </div>
-              )}
 
               <div className="exercise-options-grid">
                 {currentQuestion.options.map((opt, optIdx) => {
@@ -811,7 +838,7 @@ export default function N5LessonPage({ settings = {} }) {
           {/* 4. ERROR HUNT & MULTIPLE CHOICE / KANJI READING */}
           {(currentQuestion.type === 'error-hunt' || currentQuestion.type === 'multiple-choice') && (
             <div className="choice-challenge-layout">
-              {showRomaji && currentQuestion.romaji && (
+              {shouldShowRomaji && currentQuestion.romaji && (
                 <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
                   {currentQuestion.romaji}
                 </div>
@@ -846,7 +873,7 @@ export default function N5LessonPage({ settings = {} }) {
                       <span className="opt-marker">{String.fromCharCode(65 + optIdx)}</span>
                       <div className="opt-content">
                         <span className="opt-label">{opt}</span>
-                        {showRomaji &&
+                        {shouldShowRomaji &&
                           currentQuestion.romajiOptions?.[optIdx] &&
                           currentQuestion.romajiOptions[optIdx] !== opt && (
                             <span className="opt-romaji">{currentQuestion.romajiOptions[optIdx]}</span>
@@ -986,7 +1013,10 @@ export default function N5LessonPage({ settings = {} }) {
         <div className="lesson-nav-pagination">
           {prevLesson ? (
             <button
-              onClick={() => navigate(`/learn/n5/${prevLesson.id}`)}
+              onClick={() => {
+                const prevIsN4 = allN4Lessons.some((l) => l.id === prevLesson.id);
+                navigate(`/learn/${prevIsN4 ? 'n4' : 'n5'}/${prevLesson.id}`);
+              }}
               className="lesson-nav-btn"
               title={prevLesson.shortTitle}
             >
@@ -997,12 +1027,15 @@ export default function N5LessonPage({ settings = {} }) {
           )}
 
           <span className="lesson-nav-indicator">
-            {currentSection.title}: Lesson {sectionLessonNumber} of {currentSection.lessons.length}
+            {(currentSection.title || '').replace(/^\d+\.\s*/, '')}: Lesson {sectionLessonNumber} of {currentSection.lessons.length}
           </span>
 
           {nextLesson ? (
             <button
-              onClick={() => navigate(`/learn/n5/${nextLesson.id}`)}
+              onClick={() => {
+                const nextIsN4 = allN4Lessons.some((l) => l.id === nextLesson.id);
+                navigate(`/learn/${nextIsN4 ? 'n4' : 'n5'}/${nextLesson.id}`);
+              }}
               className="lesson-nav-btn"
               title={nextLesson.shortTitle}
             >
@@ -1018,7 +1051,13 @@ export default function N5LessonPage({ settings = {} }) {
       <div className="lesson-header-card">
         <div className="lesson-header-top">
           <span className="lesson-badge-number">
-            {currentLesson.id === 'kanji-n5-mastery' ? 'JLPT N5 Kanji' : `JLPT N5 Core #${currentLesson.number}`}
+            {isN4
+              ? `${currentSection?.title || 'JLPT N4'} #${currentLesson?.number}`
+              : currentLesson?.id === 'kanji-n5-mastery'
+                ? 'JLPT N5 Kanji'
+                : currentLesson?.id === 'listening-n5-mastery'
+                  ? 'JLPT N5 Listening'
+                  : `${(currentSection?.title || 'JLPT N5').replace(/^\d+\.\s*/, '')} #${currentLesson?.number}`}
           </span>
           {lessonRecord?.completed && (
             <span className="lesson-status-pill completed">
@@ -1040,23 +1079,27 @@ export default function N5LessonPage({ settings = {} }) {
               {currentLesson.id === 'kanji-n5-mastery'
                 ? 'Randomized Kanji Reading Practice'
                 : currentLesson.id === 'listening-n5-mastery'
-                ? 'Randomized JLPT N5 Listening Test'
-                : 'Interactive Practice Session'}
+                  ? 'Randomized JLPT N5 Listening Test'
+                  : isN4
+                    ? `${currentLesson.shortTitle} Practice`
+                    : 'Interactive Practice Session'}
             </h3>
             <p>
               {currentLesson.id === 'kanji-n5-mastery'
-                ? '10 Randomized Questions from MLC Parts 1–10 • Updates character mastery & checklist'
+                ? '10 Randomized Questions across all kanji quiz banks • Updates character mastery & checklist'
                 : currentLesson.id === 'listening-n5-mastery'
-                ? '10 Randomized Questions across Level 1, Level 2, and 4 Core Te-form Audio Patterns'
-                : '10 Challenging Questions • Sentence Builder, Audio Listening, Error Spotting'}
+                  ? '10 Randomized Questions across Level 1, Level 2, and 4 Core Te-form Audio Patterns'
+                  : isN4
+                    ? `${currentLesson?.quiz?.length || 3} Targeted Questions • Word Bank & Contextual Drills`
+                    : '10 Challenging Questions • Sentence Builder, Audio Listening, Error Spotting'}
             </p>
           </div>
           <button className="hero-start-practice-btn" onClick={handleStartPractice}>
             {currentLesson.id === 'kanji-n5-mastery'
               ? 'Start Random Quiz'
               : currentLesson.id === 'listening-n5-mastery'
-              ? 'Start Listening Quiz'
-              : 'Start Practice'}{' '}
+                ? 'Start Listening Quiz'
+                : 'Start Practice'}{' '}
             <AiOutlineArrowRight size={18} />
           </button>
         </div>
@@ -1350,7 +1393,7 @@ export default function N5LessonPage({ settings = {} }) {
                     <div className="dialogue-speaker-pill">{line.speaker}</div>
                     <div className="dialogue-text-block">
                       <div className="dialogue-jp">{line.text}</div>
-                      {showRomaji && line.romaji && (
+                      {shouldShowRomaji && line.romaji && (
                         <div className="dialogue-romaji">{line.romaji}</div>
                       )}
                       <div className="dialogue-en">{line.en}</div>
@@ -1442,7 +1485,7 @@ export default function N5LessonPage({ settings = {} }) {
                         </button>
                         <div className="example-details">
                           <div className="example-jp">{ex.jp}</div>
-                          {showRomaji && <div className="example-romaji">{ex.romaji}</div>}
+                          {shouldShowRomaji && <div className="example-romaji">{ex.romaji}</div>}
                           <div className="example-en">{ex.en}</div>
                         </div>
                       </div>
@@ -1461,23 +1504,23 @@ export default function N5LessonPage({ settings = {} }) {
               {currentLesson.id === 'kanji-n5-mastery'
                 ? 'Ready to test your Kanji readings?'
                 : currentLesson.id === 'listening-n5-mastery'
-                ? 'Ready to test your listening comprehension?'
-                : 'Ready to test what you learned?'}
+                  ? 'Ready to test your listening comprehension?'
+                  : 'Ready to test what you learned?'}
             </h3>
             <p>
               {currentLesson.id === 'kanji-n5-mastery'
                 ? 'Start a 10-question randomized reading quiz sampled across MLC Parts 1–10!'
                 : currentLesson.id === 'listening-n5-mastery'
-                ? 'Start a 10-question randomized listening test across Level 1, Level 2, and Te-form patterns!'
-                : 'Take the 10-question interactive practice session to earn your mastery badge!'}
+                  ? 'Start a 10-question randomized listening test across Level 1, Level 2, and Te-form patterns!'
+                  : 'Take the 10-question interactive practice session to earn your mastery badge!'}
             </p>
           </div>
           <button className="btn-primary lesson-cta-btn" onClick={handleStartPractice}>
             {currentLesson.id === 'kanji-n5-mastery'
               ? 'Start Random Quiz'
               : currentLesson.id === 'listening-n5-mastery'
-              ? 'Start Listening Quiz'
-              : 'Start Practice Session'}{' '}
+                ? 'Start Listening Quiz'
+                : 'Start Practice Session'}{' '}
             <AiOutlineArrowRight size={16} />
           </button>
         </div>

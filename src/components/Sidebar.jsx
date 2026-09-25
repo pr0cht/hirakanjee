@@ -4,7 +4,6 @@ import {
   AiOutlineHome,
   AiOutlineDashboard,
   AiOutlineBook,
-  AiOutlineFolderOpen,
   AiOutlineBarChart,
   AiOutlineSetting,
   AiOutlineMessage,
@@ -31,15 +30,6 @@ const Sidebar = () => {
     { label: 'Dashboard', href: '/dashboard', icon: AiOutlineDashboard },
     { label: 'Practice', href: '/practice', icon: AiOutlineEdit },
     { label: 'Learn', href: '/learn', icon: AiOutlineBook },
-    { divider: true },
-    {
-      label: 'Folders',
-      icon: AiOutlineFolderOpen,
-      href: '/folders',
-      items: [
-        { label: 'Sample', badge: 18, href: '/folders/sample' },
-      ],
-    },
     { divider: true },
     { label: 'Settings', href: '/settings', icon: AiOutlineSetting },
   ];

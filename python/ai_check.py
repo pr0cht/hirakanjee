@@ -247,30 +247,55 @@ def grade_image(image_path, target_char=None, script=None):
         
     is_target_in_vocab = target in char_to_id
     
+    # Structural similarity evaluation against target template
+    struct_match, struct_score, struct_conf = (False, 0.0, 0.0)
+    if target:
+        struct_match, struct_score, struct_conf = evaluate_structural_similarity(input_tensor, target)
+
     if is_target_in_vocab and script != 'katakana':
         target_idx = char_to_id[target]
         target_conf = float(probs[target_idx])
-        is_correct = (pred_char == target)
         rank = int(np.where(np.argsort(probs)[::-1] == target_idx)[0][0]) + 1
+        
+        # Robust recognition combining CNN classification and structural shape alignment:
+        # 1. Target is CNN's top prediction (rank 1)
+        # 2. OR target is a top candidate (rank <= 5 or target_conf >= 0.03) AND structural shape matches (struct_score >= 64.0)
+        # 3. OR structural skeleton alignment is exceptionally high (struct_score >= 70.0)
+        is_correct = (
+            rank == 1 or
+            (struct_score >= 64.0 and (rank <= 5 or target_conf >= 0.03)) or
+            (struct_score >= 70.0)
+        )
         
         # Calculate Quality Percentage (0.0 to 100.0)
         if is_correct:
-            if pred_conf >= 0.50:
-                base_quality = 85.0 + min(13.0, (pred_conf - 0.50) * 26.0)
-            elif pred_conf >= 0.25:
-                base_quality = 76.0 + (pred_conf - 0.25) * 36.0
+            if rank == 1:
+                cnn_score = 80.0 + min(18.0, target_conf * 22.0)
+            elif rank == 2:
+                cnn_score = 75.0 + min(15.0, target_conf * 25.0)
             else:
-                base_quality = 68.0 + max(0.0, (pred_conf - 0.10) * 45.0)
+                cnn_score = 70.0 + min(12.0, target_conf * 30.0)
+                
+            if struct_score >= 65.0:
+                base_quality = max(struct_score, struct_score * 0.5 + cnn_score * 0.5)
+            else:
+                base_quality = max(cnn_score, struct_score * 0.35 + cnn_score * 0.65)
+                
+            # Character recognized as the intended target
+            pred_char = target
+            pred_conf = max(pred_conf if rank == 1 else target_conf, struct_conf)
         else:
             if rank == 2:
                 base_quality = max(55.0, 50.0 + target_conf * 45.0)
             elif rank == 3:
                 base_quality = max(42.0, 38.0 + target_conf * 35.0)
             else:
-                base_quality = max(10.0, target_conf * 40.0)
+                base_quality = max(15.0, min(50.0, struct_score * 0.6))
     else:
         # Fallback for Katakana or out-of-vocab characters using structural skeleton template matching
-        is_correct, base_quality, target_conf = evaluate_structural_similarity(input_tensor, target)
+        is_correct = struct_match
+        base_quality = struct_score
+        target_conf = struct_conf
         rank = 1 if is_correct else 2
         pred_char = target if is_correct else pred_char
             
@@ -294,11 +319,11 @@ def grade_image(image_path, target_char=None, script=None):
             message = f"Perfect! Beautiful stroke form for '{target}'."
         elif quality_percent >= 80.0:
             message = f"Excellent! Character '{target}' recognized clearly."
-        elif quality_percent >= 65.0:
+        elif quality_percent >= 68.0:
             message = f"Good work on '{target}'. Try refining stroke balance or spacing."
         else:
             message = f"Recognized as '{target}', but try drawing with clearer, more distinct strokes."
-    elif rank in [2, 3] or (55.0 <= quality_percent < 65.0):
+    elif rank in [2, 3] or (55.0 <= quality_percent < 68.0):
         message = f"Almost there! Looks close to '{target}'. Check the stroke proportions and shape."
     else:
         message = f"Character drawn appears to be '{pred_char}' rather than '{target}'. Try again!"

@@ -180,6 +180,19 @@ export default function DrawingCanvas({
       if (autoRecordSRS && window.db?.recordReview) {
         try {
           srsInfo = await window.db.recordReview(script, targetChar, score);
+          try {
+            const storageKey = `hirakanjee_${script}_mastery`;
+            const current = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            current[targetChar] = {
+              mastery: score,
+              srsStage: srsInfo?.srsStage || 1,
+              totalReviews: (current[targetChar]?.totalReviews || 0) + 1,
+              correctReviews: (current[targetChar]?.correctReviews || 0) + (score >= 70 ? 1 : 0),
+              learned: score >= 70,
+              lastPracticedAt: new Date().toISOString(),
+            };
+            localStorage.setItem(storageKey, JSON.stringify(current));
+          } catch (e) {}
         } catch (dbErr) {
           console.warn('Could not record SRS review:', dbErr);
         }

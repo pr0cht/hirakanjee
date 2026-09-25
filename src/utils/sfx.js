@@ -138,6 +138,10 @@ class SoundEffectsPlayer {
       // Ignore audio synthesis errors
     }
   }
+
+  playLevelUp() {
+    this.playVictory();
+  }
 }
 
 export const sfx = new SoundEffectsPlayer();

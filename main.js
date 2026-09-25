@@ -15,6 +15,7 @@ const {
   getLessonProgress,
   saveLessonProgress,
   getScriptMastery,
+  setCharLearned,
   resetAllProgress,
 } = require('./src/database');
 
@@ -96,6 +97,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('db:getScriptMastery', (event, script) => {
     return getScriptMastery(1, script || 'kanji');
+  });
+
+  ipcMain.handle('db:setCharLearned', (event, script, char, isLearned) => {
+    return setCharLearned(1, script || 'hiragana', char, isLearned);
   });
 
   ipcMain.handle('db:resetAllProgress', () => {

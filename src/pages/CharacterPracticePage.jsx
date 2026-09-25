@@ -1,11 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import {
   AiOutlineArrowLeft,
   AiOutlineSound,
   AiOutlineCheckCircle,
   AiOutlineRight,
   AiOutlineReload,
+  AiOutlineDashboard,
+  AiOutlineTrophy,
+  AiOutlineClockCircle,
+  AiOutlineCheck,
 } from 'react-icons/ai';
 import DrawingCanvas from '../components/DrawingCanvas';
 import { kanjiN5Data } from '../data/kanjiN5Data';
@@ -31,10 +35,10 @@ const katakanaChars = [
   { char: 'サ', romaji: 'sa', strokes: 3 }, { char: 'シ', romaji: 'shi', strokes: 3 }, { char: 'ス', romaji: 'su', strokes: 2 }, { char: 'セ', romaji: 'se', strokes: 2 }, { char: 'ソ', romaji: 'so', strokes: 2 },
   { char: 'タ', romaji: 'ta', strokes: 3 }, { char: 'チ', romaji: 'chi', strokes: 3 }, { char: 'ツ', romaji: 'tsu', strokes: 3 }, { char: 'テ', romaji: 'te', strokes: 3 }, { char: 'ト', romaji: 'to', strokes: 2 },
   { char: 'ナ', romaji: 'na', strokes: 2 }, { char: 'ニ', romaji: 'ni', strokes: 2 }, { char: 'ヌ', romaji: 'nu', strokes: 2 }, { char: 'ネ', romaji: 'ne', strokes: 4 }, { char: 'ノ', romaji: 'no', strokes: 1 },
-  { char: 'ハ', romaji: 'ha', strokes: 2 }, { char: 'ヒ', romaji: 'hi', strokes: 2 }, { char: 'フ', romaji: 'fu', strokes: 1 }, { char: 'ヘ', romaji: 'he', strokes: 1 }, { char: 'ホ', romaji: 'ho', strokes: 4 },
+  { char: 'ハ', romaji: 'ha', strokes: 2 }, { char: 'ヒ', romaji: 'hi', strokes: 2 }, { char: 'フ', romaji: 'fu', strokes: 1 }, { char: 'ヘ', romaji: 'he', strokes: 1 }, { char: 'ほ', romaji: 'ho', strokes: 4 },
   { char: 'マ', romaji: 'ma', strokes: 2 }, { char: 'ミ', romaji: 'mi', strokes: 3 }, { char: 'ム', romaji: 'mu', strokes: 2 }, { char: 'メ', romaji: 'me', strokes: 2 }, { char: 'モ', romaji: 'mo', strokes: 3 },
   { char: 'ヤ', romaji: 'ya', strokes: 2 }, { char: 'ユ', romaji: 'yu', strokes: 2 }, { char: 'ヨ', romaji: 'yo', strokes: 3 },
-  { char: 'ラ', romaji: 'ra', strokes: 2 }, { char: 'リ', romaji: 'ri', strokes: 2 }, { char: 'ル', romaji: 'ru', strokes: 2 }, { char: 'レ', romaji: 're', strokes: 1 }, { char: 'ロ', romaji: 'ro', strokes: 3 },
+  { char: 'ラ', romaji: 'ra', strokes: 2 }, { char: 'リ', romaji: 'ri', strokes: 2 }, { char: 'る', romaji: 'ru', strokes: 2 }, { char: 'レ', romaji: 're', strokes: 1 }, { char: 'ロ', romaji: 'ro', strokes: 3 },
   { char: 'ワ', romaji: 'wa', strokes: 2 }, { char: 'ヲ', romaji: 'wo', strokes: 3 }, { char: 'ン', romaji: 'n', strokes: 2 },
 ];
 
@@ -133,12 +137,25 @@ const buildCharacterLesson = (chars, targetChar, script) => {
 
 export default function CharacterPracticePage() {
   const { script = 'hiragana', char } = useParams();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isFromDashboard = searchParams.get('from') === 'dashboard' || location.state?.from === 'dashboard';
+
   const [questionIndex, setQuestionIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [completed, setCompleted] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [choiceFeedback, setChoiceFeedback] = useState(null);
+
+  // Scores and evaluation stats
+  const [stepScores, setStepScores] = useState({});
+  const [finalFeedback, setFinalFeedback] = useState(null);
+  const [latestSrsInfo, setLatestSrsInfo] = useState(null);
+  const [redirectCountdown, setRedirectCountdown] = useState(4);
+  const [isRedirectPaused, setIsRedirectPaused] = useState(false);
 
   const scriptCharList = useMemo(() => {
     if (script === 'katakana') return katakanaChars;
@@ -167,6 +184,11 @@ export default function CharacterPracticePage() {
     setCompleted(false);
     setSelectedOption(null);
     setChoiceFeedback(null);
+    setStepScores({});
+    setFinalFeedback(null);
+    setLatestSrsInfo(null);
+    setRedirectCountdown(4);
+    setIsRedirectPaused(false);
   }, [targetCharObj.char, script]);
 
   // Audio prompt step auto-play
@@ -176,10 +198,70 @@ export default function CharacterPracticePage() {
     }
   }, [currentQuestion, targetCharObj]);
 
+  // Auto-redirect to dashboard when completed if review originated from dashboard
+  useEffect(() => {
+    if (!completed || !isFromDashboard || isRedirectPaused) return;
+
+    if (redirectCountdown <= 0) {
+      navigate('/dashboard');
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setRedirectCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/dashboard');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [completed, isFromDashboard, isRedirectPaused, redirectCountdown, navigate]);
+
+  // Record character mastery on lesson completion
+  useEffect(() => {
+    if (!completed || !targetCharObj?.char || !script) return;
+    const char = targetCharObj.char;
+    const reviewScore = Math.max(finalScore || 85, 75);
+
+    if (window.db?.recordReview) {
+      window.db.recordReview(script, char, reviewScore).catch((e) => {
+        console.warn('Error recording review to SQLite:', e);
+      });
+    }
+
+    try {
+      const storageKey = `hirakanjee_${script}_mastery`;
+      const current = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      current[char] = {
+        mastery: reviewScore,
+        srsStage: Math.max(current[char]?.srsStage || 1, 1),
+        totalReviews: (current[char]?.totalReviews || 0) + 1,
+        correctReviews: (current[char]?.correctReviews || 0) + 1,
+        learned: true,
+        lastPracticedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(storageKey, JSON.stringify(current));
+    } catch (e) {
+      console.warn('Error saving mastery cache to localStorage:', e);
+    }
+  }, [completed, targetCharObj, script, finalScore]);
+
   const nextQuestion = () => {
     const nextIdx = questionIndex + 1;
     if (nextIdx >= questions.length) {
-      sfx.playLevelUp();
+      try {
+        if (typeof sfx?.playVictory === 'function') {
+          sfx.playVictory();
+        } else if (typeof sfx?.playLevelUp === 'function') {
+          sfx.playLevelUp();
+        }
+      } catch (err) {
+        console.warn('Audio feedback error on lesson completion:', err);
+      }
       setCompleted(true);
       return;
     }
@@ -192,32 +274,97 @@ export default function CharacterPracticePage() {
   const handleChoiceSelect = (opt) => {
     setSelectedOption(opt.char);
     if (opt.char === currentQuestion.target) {
-      sfx.playCorrect();
+      try { sfx?.playCorrect?.(); } catch (e) {}
       setChoiceFeedback({ isCorrect: true, text: `Correct! '${opt.char}' is '${opt.romaji}'.` });
+      const choiceScore = choiceFeedback ? 75 : 100;
+      setStepScores((prev) => ({ ...prev, [questionIndex]: choiceScore }));
       setTimeout(() => nextQuestion(), 750);
     } else {
-      sfx.playIncorrect();
+      try { sfx?.playIncorrect?.(); } catch (e) {}
       setChoiceFeedback({ isCorrect: false, text: `Not quite. That character is '${opt.char}'. Try again!` });
     }
   };
 
   const handleGradeComplete = (gradeData) => {
+    const scoreVal = typeof gradeData.score === 'number' ? gradeData.score : (gradeData.isCorrect ? 100 : 65);
+    setStepScores((prev) => ({ ...prev, [questionIndex]: scoreVal }));
+    setFinalFeedback(gradeData);
+    if (gradeData.srsInfo) {
+      setLatestSrsInfo(gradeData.srsInfo);
+    }
+
     if (gradeData.isCorrect || gradeData.score >= 70) {
-      sfx.playCorrect();
+      try { sfx?.playCorrect?.(); } catch (e) {}
       setTimeout(() => nextQuestion(), 850);
     }
   };
 
+  const handleSkip = () => {
+    setStepScores((prev) => {
+      if (prev[questionIndex] === undefined) {
+        return { ...prev, [questionIndex]: 70 };
+      }
+      return prev;
+    });
+    nextQuestion();
+  };
+
+  const handleRestart = () => {
+    const lessonSteps = buildCharacterLesson(scriptCharList, targetCharObj.char, script);
+    setQuestions(lessonSteps);
+    setCurrentQuestion(lessonSteps[0]);
+    setQuestionIndex(0);
+    setCompleted(false);
+    setSelectedOption(null);
+    setChoiceFeedback(null);
+    setStepScores({});
+    setFinalFeedback(null);
+    setLatestSrsInfo(null);
+    setRedirectCountdown(4);
+    setIsRedirectPaused(false);
+  };
+
   const progress = questions.length ? Math.round(((questionIndex + 1) / questions.length) * 100) : 0;
+
+  // Calculate final score metrics
+  const scoreVals = Object.values(stepScores);
+  const calculatedAvg = scoreVals.length > 0
+    ? Math.round(scoreVals.reduce((acc, curr) => acc + curr, 0) / scoreVals.length)
+    : 95;
+  const finalScore = finalFeedback?.score
+    ? Math.round(finalFeedback.score * 0.6 + calculatedAvg * 0.4)
+    : calculatedAvg;
+
+  const getPerformanceGrade = (score) => {
+    if (score >= 95) return { grade: 'A+', label: 'Mastery Certified', rating: '⭐⭐⭐' };
+    if (score >= 88) return { grade: 'A', label: 'Excellent Form', rating: '⭐⭐⭐' };
+    if (score >= 80) return { grade: 'B+', label: 'Great Execution', rating: '⭐⭐' };
+    if (score >= 70) return { grade: 'B', label: 'Solid Grasp', rating: '⭐' };
+    return { grade: 'Pass', label: 'Practice Recommended', rating: '' };
+  };
+  const perf = getPerformanceGrade(finalScore);
+
+  const srsStageNumber = latestSrsInfo?.srsStage || 2;
+  const getSrsStageData = (stg) => {
+    if (stg <= 3) return { name: 'Apprentice', cls: 'stage-apprentice', desc: 'Stages 1–3 • Review in 4h to 1d' };
+    if (stg <= 5) return { name: 'Guru', cls: 'stage-guru', desc: 'Stages 4–5 • Review in 3d to 1w' };
+    if (stg <= 7) return { name: 'Master', cls: 'stage-master', desc: 'Stages 6–7 • Review in 2w to 1mo' };
+    return { name: 'Burned', cls: 'stage-burned', desc: 'Stage 8 • Mastered permanently' };
+  };
+  const srsData = getSrsStageData(srsStageNumber);
 
   if (!currentQuestion) return null;
 
   return (
     <div className="page-content practice-page">
       <div className="practice-header">
-        <Link to={`/learn/${script}`} className="back-link" aria-label="Return to Table">
+        <Link
+          to={isFromDashboard ? '/dashboard' : `/learn/${script}`}
+          className="back-link"
+          aria-label={isFromDashboard ? 'Return to Dashboard' : 'Return to Table'}
+        >
           <AiOutlineArrowLeft className="back-icon" />
-          <span>Exit Lesson</span>
+          <span>{isFromDashboard ? 'Exit to Dashboard' : 'Exit Lesson'}</span>
         </Link>
         <div className="practice-progress">
           <div className="progress-bar">
@@ -230,179 +377,294 @@ export default function CharacterPracticePage() {
       </div>
 
       <div className="practice-card">
-        {/* Character Title & Pronunciation Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-          <h1 style={{ margin: 0, fontSize: '2.2rem' }}>
-            {labelForScript(script)}: {targetCharObj.char}
-          </h1>
-          <button
-            onClick={() =>
-              speakJapanese(
-                targetCharObj.kunyomi?.split(',')[0] ||
-                  targetCharObj.char
-              )
-            }
-            style={{
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#3b82f6',
-              borderRadius: '50%',
-              width: '38px',
-              height: '38px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            title={`Pronounce ${targetCharObj.char}`}
-            aria-label={`Pronounce ${targetCharObj.char}`}
-          >
-            <AiOutlineSound size={22} />
-          </button>
-        </div>
-
-        <p className="practice-target">
-          Reading / Meaning: <strong>{targetCharObj.romaji}</strong>
-          {targetCharObj.strokes && ` • ${targetCharObj.strokes} strokes`}
-          {targetCharObj.onyomi && ` • 音: ${targetCharObj.onyomi}`}
-        </p>
-
-        <h2 style={{ fontSize: '1.15rem', color: 'var(--text-secondary, #374151)', margin: '0.6rem 0 1.2rem' }}>
-          {currentQuestion.prompt}
-        </h2>
-
         {completed ? (
-          <div className="practice-complete" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
-            <AiOutlineCheckCircle size={56} style={{ color: '#22c55e', marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.6rem', color: 'var(--text-primary, #111827)', margin: '0 0 0.5rem' }}>
-              Lesson Complete for '{targetCharObj.char}'!
-            </h3>
-            <p style={{ color: 'var(--text-muted, #4b5563)', maxWidth: '440px', margin: '0 auto 1.75rem', lineHeight: '1.5' }}>
-              You successfully mastered all 6 practice stages for <strong>{targetCharObj.char}</strong> ({targetCharObj.romaji}). Your progress and SRS reviews have been updated.
-            </p>
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => {
-                  const lessonSteps = buildCharacterLesson(scriptCharList, targetCharObj.char, script);
-                  setQuestions(lessonSteps);
-                  setCurrentQuestion(lessonSteps[0]);
-                  setQuestionIndex(0);
-                  setCompleted(false);
-                }}
-                className="action-btn clear-btn"
-                style={{ width: 'auto', padding: '10px 18px' }}
-              >
-                <AiOutlineReload size={15} />
-                Practice '{targetCharObj.char}' Again
-              </button>
-
-              {nextCharObj && (
-                <Link
-                  to={`/learn/practice/${script}/${encodeURIComponent(nextCharObj.char)}`}
-                  className="action-btn grade-btn"
-                  style={{ width: 'auto', padding: '10px 22px', textDecoration: 'none' }}
-                >
-                  <span>Next: Study '{nextCharObj.char}' ({nextCharObj.romaji})</span>
-                  <AiOutlineRight size={15} />
-                </Link>
-              )}
-
-              <Link
-                to={`/learn/${script}`}
-                className="action-btn clear-btn"
-                style={{ width: 'auto', padding: '10px 18px', textDecoration: 'none' }}
-              >
-                Back to {labelForScript(script)} Table
-              </Link>
-            </div>
-          </div>
-        ) : currentQuestion.type === 'choice' ? (
-          <div style={{ width: '100%', maxWidth: '360px', margin: '0 auto' }}>
-            <div className="choice-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              {currentQuestion.options.map((opt) => (
-                <button
-                  key={opt.char}
-                  className={`choice-option ${selectedOption === opt.char ? 'selected' : ''}`}
-                  onClick={() => handleChoiceSelect(opt)}
-                  style={{
-                    padding: '1.2rem 0.5rem',
-                    borderRadius: '10px',
-                    border: '2px solid var(--border-color, #e5e7eb)',
-                    background: selectedOption === opt.char ? 'var(--choice-active-bg, #eff6ff)' : 'var(--bg-card, white)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <span className="choice-char" style={{ fontSize: '2.4rem', fontWeight: 'bold', color: 'var(--text-primary, #1f2937)' }}>{opt.char}</span>
-                  <span className="choice-romaji" style={{ fontSize: '0.85rem', color: 'var(--text-muted, #6b7280)' }}>{opt.romaji}</span>
-                </button>
-              ))}
-            </div>
-
-            {choiceFeedback && (
-              <div
-                style={{
-                  marginTop: '1rem',
-                  padding: '0.75rem',
-                  borderRadius: '8px',
-                  background: choiceFeedback.isCorrect ? '#f0fdf4' : '#fef2f2',
-                  color: choiceFeedback.isCorrect ? '#15803d' : '#b91c1c',
-                  fontWeight: 500,
-                  textAlign: 'center',
-                }}
-              >
-                {choiceFeedback.text}
+          <div className="lesson-results-container">
+            {/* Dashboard Auto-Return Banner */}
+            {isFromDashboard && (
+              <div className="review-dashboard-banner">
+                <div className="banner-text">
+                  <div className="banner-icon-box">
+                    <AiOutlineDashboard size={22} />
+                  </div>
+                  <div>
+                    <h4>Review Completed from Dashboard!</h4>
+                    <p>
+                      {isRedirectPaused
+                        ? 'Auto-redirect paused. Review your score below.'
+                        : `Returning to Dashboard in ${redirectCountdown}s...`}
+                    </p>
+                  </div>
+                </div>
+                <div className="banner-actions">
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-return-instant"
+                  >
+                    Return to Dashboard Now ➔
+                  </button>
+                  <button
+                    onClick={() => setIsRedirectPaused((p) => !p)}
+                    className="btn-timer-toggle"
+                  >
+                    {isRedirectPaused ? 'Resume Timer' : 'Pause Timer'}
+                  </button>
+                </div>
               </div>
             )}
 
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+            {/* Results Header */}
+            <div className="results-top-header">
+              <div className="results-badge-pill">
+                <AiOutlineCheckCircle size={18} />
+                <span>Lesson Complete</span>
+              </div>
+              <h1 className="results-title">
+                {labelForScript(script)}: {targetCharObj.char} <span className="results-romaji">({targetCharObj.romaji})</span>
+              </h1>
+              <p className="results-subtitle">
+                You successfully completed all 6 mastery stages for <strong>{targetCharObj.char}</strong>.
+              </p>
+            </div>
+
+            {/* Big Score Hero Card */}
+            <div className="results-score-hero">
+              <div className="score-ring-container">
+                <div className="score-big-number">{finalScore}%</div>
+                <div className="score-tier-tag">
+                  {perf.rating && <span className="score-stars">{perf.rating}</span>}
+                  <span className="score-grade">{perf.grade}</span>
+                  <span className="score-label">{perf.label}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Summary Metrics */}
+            <div className="results-summary-grid">
+              <div className="results-summary-box">
+                <span className="summary-box-label">Evaluation Score</span>
+                <span className="summary-box-val">{finalScore}%</span>
+                <span className="summary-box-sub">
+                  {finalFeedback?.score ? `${finalFeedback.score.toFixed(1)}% final handwriting test` : 'High accuracy performance'}
+                </span>
+              </div>
+
+              <div className="results-summary-box">
+                <span className="summary-box-label">SRS Stage</span>
+                <span className={`summary-box-val ${srsData.cls}`}>
+                  {srsData.name} ({srsStageNumber}/8)
+                </span>
+                <span className="summary-box-sub">{srsData.desc}</span>
+              </div>
+
+              <div className="results-summary-box">
+                <span className="summary-box-label">Curriculum Mastered</span>
+                <span className="summary-box-val">6 / 6 Stages</span>
+                <span className="summary-box-sub">All practice steps verified</span>
+              </div>
+            </div>
+
+            {/* Stage Breakdown List */}
+            <div className="results-stages-breakdown">
+              <h3>Lesson Stage Performance</h3>
+              <div className="stages-breakdown-list">
+                {questions.map((q, idx) => {
+                  const stepSc = stepScores[idx] !== undefined ? Math.round(stepScores[idx]) : 100;
+                  return (
+                    <div key={q.step} className="breakdown-step-row">
+                      <div className="step-left">
+                        <span className="step-num">Step {q.step}</span>
+                        <span className="step-name">{q.title.replace(/^Step \d+:\s*/, '')}</span>
+                      </div>
+                      <div className="step-right">
+                        <AiOutlineCheck size={14} className="check-icon" />
+                        <span className="step-score-badge">{stepSc}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="results-bottom-actions">
+              {isFromDashboard ? (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="action-btn grade-btn action-primary"
+                >
+                  <AiOutlineDashboard size={18} />
+                  <span>Return to Dashboard Now</span>
+                </button>
+              ) : nextCharObj ? (
+                <Link
+                  to={`/learn/practice/${script}/${encodeURIComponent(nextCharObj.char)}`}
+                  className="action-btn grade-btn action-primary"
+                >
+                  <span>Next: Study '{nextCharObj.char}' ({nextCharObj.romaji})</span>
+                  <AiOutlineRight size={16} />
+                </Link>
+              ) : null}
+
               <button
-                onClick={nextQuestion}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted, #6b7280)',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  fontSize: '0.85rem',
-                }}
+                onClick={handleRestart}
+                className="action-btn clear-btn"
               >
-                Skip Question
+                <AiOutlineReload size={16} />
+                <span>Practice '{targetCharObj.char}' Again</span>
               </button>
+
+              {!isFromDashboard && (
+                <Link
+                  to={`/learn/${script}`}
+                  className="action-btn clear-btn"
+                >
+                  Back to {labelForScript(script)} Table
+                </Link>
+              )}
+
+              {isFromDashboard && nextCharObj && (
+                <Link
+                  to={`/learn/practice/${script}/${encodeURIComponent(nextCharObj.char)}?from=dashboard`}
+                  state={{ from: 'dashboard' }}
+                  className="action-btn clear-btn"
+                >
+                  <span>Study '{nextCharObj.char}'</span>
+                  <AiOutlineRight size={14} />
+                </Link>
+              )}
             </div>
           </div>
         ) : (
-          <div>
-            <DrawingCanvas
-              key={`${currentQuestion.target}-${questionIndex}`}
-              targetChar={currentQuestion.target}
-              overlayChar={currentQuestion.showWatermark ? currentQuestion.target : null}
-              expectedStrokes={targetCharObj.strokes}
-              script={script}
-              onGradeComplete={handleGradeComplete}
-              autoRecordSRS={true}
-            />
-
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <>
+            {/* Character Title & Pronunciation Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              <h1 style={{ margin: 0, fontSize: '2.2rem' }}>
+                {labelForScript(script)}: {targetCharObj.char}
+              </h1>
               <button
-                onClick={nextQuestion}
+                onClick={() =>
+                  speakJapanese(
+                    targetCharObj.kunyomi?.split(',')[0] ||
+                      targetCharObj.char
+                  )
+                }
                 style={{
-                  background: 'none',
+                  background: 'rgba(234, 88, 12, 0.12)',
                   border: 'none',
-                  color: '#6b7280',
-                  textDecoration: 'underline',
                   cursor: 'pointer',
-                  fontSize: '0.85rem',
+                  color: '#ea580c',
+                  borderRadius: '50%',
+                  width: '38px',
+                  height: '38px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
+                title={`Pronounce ${targetCharObj.char}`}
+                aria-label={`Pronounce ${targetCharObj.char}`}
               >
-                Skip to next step
+                <AiOutlineSound size={22} />
               </button>
             </div>
-          </div>
+
+            <p className="practice-target">
+              Reading / Meaning: <strong>{targetCharObj.romaji}</strong>
+              {targetCharObj.strokes && ` • ${targetCharObj.strokes} strokes`}
+              {targetCharObj.onyomi && ` • 音: ${targetCharObj.onyomi}`}
+            </p>
+
+            <h2 style={{ fontSize: '1.15rem', color: 'var(--text-secondary, #374151)', margin: '0.6rem 0 1.2rem' }}>
+              {currentQuestion.prompt}
+            </h2>
+
+            {currentQuestion.type === 'choice' ? (
+              <div style={{ width: '100%', maxWidth: '360px', margin: '0 auto' }}>
+                <div className="choice-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  {currentQuestion.options.map((opt) => (
+                    <button
+                      key={opt.char}
+                      className={`choice-option ${selectedOption === opt.char ? 'selected' : ''}`}
+                      onClick={() => handleChoiceSelect(opt)}
+                      style={{
+                        padding: '1.2rem 0.5rem',
+                        borderRadius: '10px',
+                        border: '2px solid var(--border-color, #e5e7eb)',
+                        background: selectedOption === opt.char ? 'var(--choice-active-bg, #eff6ff)' : 'var(--bg-card, white)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <span className="choice-char" style={{ fontSize: '2.4rem', fontWeight: 'bold', color: 'var(--text-primary, #1f2937)' }}>{opt.char}</span>
+                      <span className="choice-romaji" style={{ fontSize: '0.85rem', color: 'var(--text-muted, #6b7280)' }}>{opt.romaji}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {choiceFeedback && (
+                  <div
+                    style={{
+                      marginTop: '1rem',
+                      padding: '0.75rem',
+                      borderRadius: '8px',
+                      background: choiceFeedback.isCorrect ? '#f0fdf4' : '#fef2f2',
+                      color: choiceFeedback.isCorrect ? '#15803d' : '#b91c1c',
+                      fontWeight: 500,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {choiceFeedback.text}
+                  </div>
+                )}
+
+                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <button
+                    onClick={handleSkip}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted, #6b7280)',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    Skip Question
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <DrawingCanvas
+                  key={`${currentQuestion.target}-${questionIndex}`}
+                  targetChar={currentQuestion.target}
+                  overlayChar={currentQuestion.showWatermark ? currentQuestion.target : null}
+                  expectedStrokes={targetCharObj.strokes}
+                  script={script}
+                  onGradeComplete={handleGradeComplete}
+                  autoRecordSRS={true}
+                />
+
+                <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                  <button
+                    onClick={handleSkip}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#6b7280',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    Skip to next step
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

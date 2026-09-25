@@ -49,9 +49,9 @@
 }
 
 .tool-btn.active {
-  background: #3b82f6;
+  background: #ea580c;
   color: white;
-  border-color: #3b82f6;
+  border-color: #ea580c;
 }
 
 .tool-btn:disabled {
@@ -202,13 +202,13 @@ body.theme-dark .guide-strokes-dash path {
 }
 
 .stroke-num-circle {
-  fill: #3b82f6;
+  fill: #ea580c;
   stroke: #ffffff;
   stroke-width: 0.8;
 }
 
 body.theme-dark .stroke-num-circle {
-  fill: #60a5fa;
+  fill: #f97316;
   stroke: #1e293b;
 }
 
@@ -249,6 +249,10 @@ body.theme-dark .stroke-num-text {
   background: #f3f4f6;
   color: #4b5563;
   border: 1px solid #d1d5db;
+  box-shadow: 0 3px 0 #cbd5e1;
+  border-radius: 14px;
+  font-weight: 700;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
 }
 
 .clear-btn:hover {
@@ -256,21 +260,37 @@ body.theme-dark .stroke-num-text {
   color: #111827;
 }
 
+.clear-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #cbd5e1;
+}
+
 .grade-btn {
-  background: #3b82f6;
+  background: #ea580c;
   color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  border: none;
+  box-shadow: 0 4px 0 #9a3412;
+  border-radius: 14px;
+  font-weight: 800;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
 }
 
 .grade-btn:hover:not(:disabled) {
-  background: #2563eb;
-  transform: translateY(-1px);
+  background: #f97316;
+  box-shadow: 0 4px 0 #9a3412;
+  transform: none;
+}
+
+.grade-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #9a3412;
 }
 
 .grade-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+  box-shadow: 0 4px 0 #9a3412;
 }
 
 .feedback-card {
@@ -377,10 +397,16 @@ body.theme-dark .stroke-num-text {
   background: #0f172a;
   border-color: #334155;
   color: #f8fafc;
+  box-shadow: 0 3px 0 #1e293b;
 }
 
 .theme-dark .action-btn.clear-btn:hover {
   background: #1e293b;
+}
+
+.theme-dark .action-btn.clear-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #1e293b;
 }
 
 .theme-dark .feedback-card {

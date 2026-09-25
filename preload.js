@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('db', {
   getLessonProgress: () => ipcRenderer.invoke('db:getLessonProgress'),
   saveLessonProgress: (lessonId, completed, quizScore) => ipcRenderer.invoke('db:saveLessonProgress', lessonId, completed, quizScore),
   getScriptMastery: (script) => ipcRenderer.invoke('db:getScriptMastery', script),
+  setCharLearned: (script, char, isLearned) => ipcRenderer.invoke('db:setCharLearned', script, char, isLearned),
   resetAllProgress: () => ipcRenderer.invoke('db:resetAllProgress'),
 });
 

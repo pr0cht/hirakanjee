@@ -7,7 +7,7 @@ import KatakanaPage from './pages/KatakanaPage';
 import KanjiPage from './pages/KanjiPage';
 import CharacterPracticePage from './pages/CharacterPracticePage';
 import N5LessonPage from './pages/N5LessonPage';
-import { n5Curriculum, allN5Lessons } from './data/n5CurriculumData';
+import { n5Curriculum, allN5Lessons } from './data/n5/n5Curriculum';
 import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import {
   AiOutlineFire,
@@ -15,10 +15,22 @@ import {
   AiOutlineBook,
   AiOutlineArrowRight,
   AiOutlineTrophy,
+  AiOutlineSound,
 } from 'react-icons/ai';
+import {
+  n4StudyComponents,
+  n4GrammarLessons,
+  n4VerbLessons,
+  n4AdjectiveLessons,
+  n4KanjiLessons,
+  n4ListeningLessons,
+  n4PracticeLessons,
+} from './data/n4/n4Curriculum';
+import { speakJapanese } from './utils/audio';
 import './App.css';
 
 const accentMap = {
+  orange: '#ea580c',
   blue: '#3b82f6',
   green: '#22c55e',
   purple: '#8b5cf6',
@@ -53,7 +65,7 @@ function HomePage() {
             <AiOutlineArrowRight size={18} />
             <span>Practice Canvas</span>
           </Link>
-          <Link to="/learn" className="btn-primary" style={{ padding: '12px 20px', borderRadius: '10px' }}>
+          <Link to="/learn" className="btn-primary">
             Browse Lessons
           </Link>
         </div>
@@ -179,7 +191,8 @@ function DashboardPage() {
         <div className="dashboard-hero-actions">
           {srsQueue.length > 0 ? (
             <Link
-              to={`/learn/practice/${srsQueue[0].script}/${encodeURIComponent(srsQueue[0].char)}`}
+              to={`/learn/practice/${srsQueue[0].script}/${encodeURIComponent(srsQueue[0].char)}?from=dashboard`}
+              state={{ from: 'dashboard' }}
               className="srs-due-badge"
             >
               <AiOutlineCheckCircle size={18} />
@@ -236,7 +249,8 @@ function DashboardPage() {
                   {item.accuracy}% ({item.total_reviews} reviews)
                 </span>
                 <Link
-                  to={`/learn/practice/${item.script}/${encodeURIComponent(item.char)}`}
+                  to={`/learn/practice/${item.script}/${encodeURIComponent(item.char)}?from=dashboard`}
+                  state={{ from: 'dashboard' }}
                   className="weak-char-link"
                 >
                   Practice
@@ -315,6 +329,72 @@ function LearnPage() {
       ]
     }
   };
+
+  const renderN4Cards = (lessons) => (
+    <div className="n4-grammar-grid">
+      {lessons.map((lesson) => {
+        const prog = lessonProgress[lesson.id];
+        const isCompleted = Boolean(prog?.completed);
+        const quizScore = prog?.quizScore ?? 0;
+        const firstEx = lesson.sections?.[0]?.examples?.[0];
+
+        return (
+          <div
+            key={lesson.id}
+            className={`n4-grammar-card ${isCompleted ? 'is-completed' : ''}`}
+          >
+            <div className="n4-grammar-header">
+              <span className="grammar-badge">{lesson.category}</span>
+              {isCompleted ? (
+                <span className="n5-score-pill completed">
+                  <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                </span>
+              ) : (
+                <span className="grammar-lesson-num">Lesson {lesson.number}</span>
+              )}
+            </div>
+
+            <h3 className="grammar-card-title">{lesson.shortTitle}</h3>
+            <p className="grammar-card-desc">{lesson.subtitle}</p>
+
+            {lesson.formula && (
+              <div className="grammar-formula-box">
+                <span className="formula-tag">Form</span>
+                <code className="formula-code">{lesson.formula}</code>
+              </div>
+            )}
+
+            {firstEx && (
+              <div className="grammar-example-preview">
+                <div className="example-text">
+                  <span className="example-jp">{firstEx.jp}</span>
+                  <span className="example-en">{firstEx.en}</span>
+                </div>
+                <button
+                  type="button"
+                  className="example-audio-btn"
+                  onClick={() => speakJapanese(firstEx.jp)}
+                  title="Pronounce example"
+                  aria-label={`Pronounce ${firstEx.jp}`}
+                >
+                  <AiOutlineSound size={16} />
+                </button>
+              </div>
+            )}
+
+            <div className="n4-card-footer">
+              <Link
+                to={`/learn/n4/${lesson.id}`}
+                className="btn-primary n4-action-btn"
+              >
+                {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+              </Link>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="page-content">
@@ -405,6 +485,25 @@ function LearnPage() {
                         </div>
                         <h3 className="n5-card-title">{lesson.shortTitle}</h3>
                         <p className="n5-card-desc">{lesson.subtitle}</p>
+
+                        {lesson.sections?.[0]?.examples?.[0] && (
+                          <div className="grammar-example-preview">
+                            <div className="example-text">
+                              <span className="example-jp">{lesson.sections[0].examples[0].jp}</span>
+                              <span className="example-en">{lesson.sections[0].examples[0].en}</span>
+                            </div>
+                            <button
+                              type="button"
+                              className="example-audio-btn"
+                              onClick={() => speakJapanese(lesson.sections[0].examples[0].jp)}
+                              title="Pronounce example"
+                              aria-label={`Pronounce ${lesson.sections[0].examples[0].jp}`}
+                            >
+                              <AiOutlineSound size={16} />
+                            </button>
+                          </div>
+                        )}
+
                         <div className="n5-card-footer">
                           <Link
                             to={`/learn/n5/${lesson.id}`}
@@ -458,8 +557,183 @@ function LearnPage() {
             </div>
           </section>
         </div>
+      ) : activeLevel === 'N4' ? (
+        <div className="learn-sections n4-curriculum-container">
+          {/* 1. Core Study Components (What to Study for JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>{n4StudyComponents.title}</h2>
+                <p className="section-header-sub">
+                  {n4StudyComponents.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="n4-study-components-grid">
+              {n4StudyComponents.checklist.map((item) => (
+                <div key={item.id} className="n4-study-card">
+                  <div className="n4-study-badge">{item.badge}</div>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 2. Grammar Guide (JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Grammar Guide (JLPT N4)</h2>
+                <p className="section-header-sub">
+                  Learn the most important JLPT N4 grammar patterns with simple explanations and targeted practice links. Focus on conditionals, giving/receiving, explanations, and passive/causative forms.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4GrammarLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4GrammarLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4GrammarLessons)}
+          </section>
+
+          {/* 3. Verb Forms & Key Differences (JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Verb Forms & Key Differences (JLPT N4)</h2>
+                <p className="section-header-sub">
+                  Review essential N4 verb forms such as potential and volitional, plus compound verbs and transitive vs intransitive pairs. These patterns appear often in reading, listening, and conversation.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4VerbLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4VerbLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4VerbLessons)}
+          </section>
+
+          {/* 4. Adjectives (JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Adjectives (JLPT N4)</h2>
+                <p className="section-header-sub">
+                  Expand your descriptive power with N4-level i-adjectives and na-adjectives. Practice common adjective patterns and review kanji spellings used at this level.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4AdjectiveLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4AdjectiveLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4AdjectiveLessons)}
+          </section>
+
+          {/* 5. Kanji for JLPT N4 */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Kanji for JLPT N4</h2>
+                <p className="section-header-sub">
+                  Build kanji recognition and writing confidence with N4 kanji quizzes, flashcards, and email practice. Study in small sets and review frequently.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4KanjiLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4KanjiLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4KanjiLessons)}
+          </section>
+
+          {/* 6. Listening Practice (JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Listening Practice (JLPT N4)</h2>
+                <p className="section-header-sub">
+                  Improve comprehension with short listening drills designed for the JLPT N4 level. Practice regularly to build speed, accuracy, and real-life understanding.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4ListeningLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4ListeningLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4ListeningLessons)}
+          </section>
+
+          {/* 7. Essential Practice Topics & Nuance Mastery (JLPT N4) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Essential Practice Topics & Nuance Mastery (JLPT N4)</h2>
+                <p className="section-header-sub">
+                  Strengthen high-frequency patterns, connect grammar points naturally, and master vital nuance distinctions. These targeted practice topics bridge foundational grammar into fluent conversational understanding.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n4PracticeLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4PracticeLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN4Cards(n4PracticeLessons)}
+          </section>
+
+          {/* Quick Jump — N4 */}
+          <section className="learn-section">
+            <h2>Quick Topic Jump</h2>
+            <div className="section-grid">
+              <div className="topic-card">
+                <h3>Giving & Receiving</h3>
+                <p>て-form giving/receiving verbs: あげる, もらう, くれる.</p>
+                <Link to="/learn/n4/te-agemasu-moraimasu-kuremasu" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Conditional Forms</h3>
+                <p>Four conditional structures: たら, ば, と, なら.</p>
+                <Link to="/learn/n4/tara" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Passive & Causative</h3>
+                <p>受身・使役 — describe actions done to or caused for others.</p>
+                <Link to="/learn/n4/passive" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Potential Form</h3>
+                <p>Express what you can or cannot do in Japanese.</p>
+                <Link to="/learn/n4/potential-form" className="btn-primary">Start Lesson</Link>
+              </div>
+              <div className="topic-card">
+                <h3>N4 Kanji Quiz</h3>
+                <p>100 essential N4 Kanji reading quiz across 10 structured sets.</p>
+                <Link to="/learn/n4/n4-kanji-quiz-100" className="btn-primary">Start Quiz</Link>
+              </div>
+              <div className="topic-card">
+                <h3>Listening Practice</h3>
+                <p>Graded N4 listening drills with native speakers.</p>
+                <Link to="/learn/n4/n4-listening-module-1" className="btn-primary">Start Listening</Link>
+              </div>
+            </div>
+          </section>
+        </div>
       ) : (
-        /* Placeholder for N4 - N1 */
+        /* Placeholder for N3 - N1 */
         <div className="learn-sections">
           <div className="jlpt-placeholder-hero">
             <div>
@@ -492,14 +766,6 @@ function LearnPage() {
   );
 }
 
-function FoldersPage() {
-  return (
-    <div className="page-content">
-      <h1>Folders & Study Lists</h1>
-      <p>Organize custom character lists for targeted study sessions.</p>
-    </div>
-  );
-}
 
 // Reporting Page
 function ReportingPage() {
@@ -749,7 +1015,7 @@ function App() {
     const initial = {
       darkMode: false,
       appearance: 'classic',
-      accent: 'blue',
+      accent: 'orange',
       defaultPracticeMode: 'hiragana',
       showNotifications: true,
       autoLaunch: false,
@@ -802,7 +1068,7 @@ function App() {
 
   // Globally sync accent color
   useEffect(() => {
-    const color = accentMap[settings.accent] || '#3b82f6';
+    const color = accentMap[settings.accent] || '#ea580c';
     document.documentElement.style.setProperty('--accent-color', color);
     document.documentElement.style.setProperty('--accent-blue', color);
   }, [settings.accent]);
@@ -863,6 +1129,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/learn/n5/:lessonId" element={<N5LessonPage settings={settings} />} />
+            <Route path="/learn/n4/:lessonId" element={<N5LessonPage settings={settings} />} />
             <Route path="/learn/hiragana" element={<HiraganaPage />} />
             <Route path="/learn/katakana" element={<KatakanaPage />} />
             <Route path="/learn/kanji" element={<KanjiPage />} />
@@ -876,8 +1143,8 @@ function App() {
             <Route path="/reporting" element={<ReportingPage />} />
             <Route path="/practice" element={<KanjiDrawingPad defaultScript={settings.defaultPracticeMode} />} />
             <Route path="/learn/practice/:script/:char" element={<CharacterPracticePage />} />
-            <Route path="/folders" element={<FoldersPage />} />
-            <Route path="/folders/sample" element={<FoldersPage />} />
+            <Route path="/folders" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/folders/*" element={<Navigate to="/dashboard" replace />} />
             <Route
               path="/settings"
               element={

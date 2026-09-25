@@ -414,7 +414,43 @@ function getScriptMastery(userId = 1, script = 'kanji') {
       lastPracticedAt: r.last_practiced_at,
     };
   }
+  if (script === 'hiragana') {
+    try {
+      const wmRows = db.prepare('SELECT hiragana, mastery FROM WritingMastery WHERE user_id = ?').all(userId);
+      for (const w of wmRows) {
+        if (!map[w.hiragana]) {
+          map[w.hiragana] = {
+            mastery: w.mastery,
+            srsStage: w.mastery >= 70 ? 2 : 1,
+            totalReviews: 1,
+            correctReviews: w.mastery >= 70 ? 1 : 0,
+            lastPracticedAt: null,
+          };
+        }
+      }
+    } catch (e) {
+      // Ignore legacy table errors
+    }
+  }
+
   return map;
+}
+
+/**
+ * Toggles or sets learned status for a character directly.
+ */
+function setCharLearned(userId = 1, script = 'hiragana', char, isLearned = true) {
+  if (isLearned) {
+    recordReview(userId, script, char, 100);
+  } else {
+    db.prepare('DELETE FROM CharacterMastery WHERE user_id = ? AND script = ? AND char = ?').run(userId, script, char);
+    if (script === 'hiragana') {
+      try {
+        db.prepare('DELETE FROM WritingMastery WHERE user_id = ? AND hiragana = ?').run(userId, char);
+      } catch (e) {}
+    }
+  }
+  return getScriptMastery(userId, script);
 }
 
 /**
@@ -449,5 +485,6 @@ module.exports = {
   getLessonProgress,
   saveLessonProgress,
   getScriptMastery,
+  setCharLearned,
   resetAllProgress,
 };
