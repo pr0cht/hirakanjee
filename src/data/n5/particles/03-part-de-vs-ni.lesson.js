@@ -1,4 +1,4 @@
-// JLPT N4 Lesson Module
+// JLPT N5 Lesson Module
 export const lesson = {
   "id": "part-de-vs-ni",
   "number": 3,

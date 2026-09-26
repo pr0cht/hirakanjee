@@ -1,5 +1,5 @@
 // JLPT N5 Listening Practice & Conversation Mastery Curriculum & Quizzes
-// Based on Meguro Language Center (MLC Japanese) N5 Listening Resources
+// JLPT N5 Listening Comprehension Resources & Quizzes
 // (Level 1, Level 2, ~te kudasai, ~te imasu, ~te mo ii desu ka, and ~te, ~te)
 // Contains 60 comprehensive questions with audio prompts and interactive dialogues.
 

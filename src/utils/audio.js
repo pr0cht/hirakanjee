@@ -29,14 +29,23 @@ class JapaneseAudioPlayer {
     if (!this.isSupported || !text) return;
 
     try {
-      window.speechSynthesis.cancel(); // Stop any currently playing audio
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (!this.voice) {
+        this.initVoice();
+      }
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
       if (this.voice) {
         utterance.voice = this.voice;
       }
-      utterance.rate = options.rate || 0.85; // Slightly slower for language learners
+      utterance.rate = options.rate || 0.95;
       utterance.pitch = options.pitch || 1.0;
 
       window.speechSynthesis.speak(utterance);

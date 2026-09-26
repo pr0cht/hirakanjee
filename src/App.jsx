@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import KanjiDrawingPad from './components/KanjiDrawingPad';
@@ -7,7 +7,8 @@ import KatakanaPage from './pages/KatakanaPage';
 import KanjiPage from './pages/KanjiPage';
 import CharacterPracticePage from './pages/CharacterPracticePage';
 import N5LessonPage from './pages/N5LessonPage';
-import { n5Curriculum, allN5Lessons } from './data/n5/n5Curriculum';
+import ListenPage from './pages/ListenPage';
+import { n5Curriculum, allN5Lessons, n5LevelExamLesson } from './data/n5/n5Curriculum';
 import Placeholders, { PlaceholderLesson } from './pages/Placeholders';
 import {
   AiOutlineFire,
@@ -16,6 +17,8 @@ import {
   AiOutlineArrowRight,
   AiOutlineTrophy,
   AiOutlineSound,
+  AiOutlineLock,
+  AiOutlineThunderbolt,
 } from 'react-icons/ai';
 import {
   n4StudyComponents,
@@ -25,7 +28,20 @@ import {
   n4KanjiLessons,
   n4ListeningLessons,
   n4PracticeLessons,
+  n4LevelExamLesson,
 } from './data/n4/n4Curriculum';
+import {
+  getStoredProgression,
+  isLessonUnlocked,
+  isLessonCompleted,
+  isLearningCompleted,
+  isPracticeCompleted,
+  isLevelUnlocked,
+  syncDbLessonProgress,
+  resetProgression,
+} from './utils/progression';
+import ConfirmModal from './components/ConfirmModal';
+import { ConfirmProvider } from './context/ConfirmContext';
 import { speakJapanese } from './utils/audio';
 import './App.css';
 
@@ -43,9 +59,16 @@ function HomePage() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    if (window.db?.getStats) {
-      window.db.getStats().then(setStats).catch(() => {});
-    }
+    const fetchHomeStats = () => {
+      if (window.db?.getStats) {
+        window.db.getStats().then(setStats).catch(() => {});
+      } else {
+        setStats(null);
+      }
+    };
+    fetchHomeStats();
+    window.addEventListener('hirakanjee_global_reset', fetchHomeStats);
+    return () => window.removeEventListener('hirakanjee_global_reset', fetchHomeStats);
   }, []);
 
   return (
@@ -86,9 +109,83 @@ function HomePage() {
               <Link to="/learn/katakana" className="btn-primary">Study Katakana</Link>
             </div>
             <div className="topic-card">
-              <h3>JLPT N5 Kanji (86)</h3>
-              <p>86 fundamental Kanji characters with Onyomi, Kunyomi, and stroke counters.</p>
+              <h3>Kanji</h3>
+              <p>Master essential N5 and N4 Kanji characters with On/Kun readings, stroke order, and AI grading.</p>
               <Link to="/learn/kanji" className="btn-primary">Study Kanji</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Quick Topic Jump — JLPT N5 */}
+        <section className="learn-section">
+          <h2>Quick Topic Jump (JLPT N5)</h2>
+          <div className="section-grid">
+            <div className="topic-card">
+              <h3>Basic Sentences</h3>
+              <p>Learn to construct simple sentences, topic-comment patterns, and greetings.</p>
+              <Link to="/learn/n5/basic-structure" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Particles (は, が, を, に, で)</h3>
+              <p>Understand key grammatical markers, contrast, locations, and time deadlines.</p>
+              <Link to="/learn/n5/part-wa-ga" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Adjectives (い & な)</h3>
+              <p>Learn 104+ adjectives, degree words, exceptions, and conjugations.</p>
+              <Link to="/learn/n5/adj-list" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Verbs</h3>
+              <p>Master movement, existence, 40 core masu verbs, te-form, and plain forms.</p>
+              <Link to="/learn/n5/verb-movement" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Special Topics</h3>
+              <p>Fractions, quiz symbols, expressing opinions (sou omoimasu), and apologies.</p>
+              <Link to="/learn/n5/special-fractions" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Listening Comprehension</h3>
+              <p>Real-world Japanese audio dialogues, tasks, and Te-form listening patterns.</p>
+              <Link to="/learn/n5/listening-n5-mastery" className="btn-primary">Start Lesson</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Quick Topic Jump — JLPT N4 */}
+        <section className="learn-section">
+          <h2>Quick Topic Jump (JLPT N4)</h2>
+          <div className="section-grid">
+            <div className="topic-card">
+              <h3>Giving & Receiving</h3>
+              <p>て-form giving/receiving verbs: あげる, もらう, くれる.</p>
+              <Link to="/learn/n4/te-agemasu-moraimasu-kuremasu" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Conditional Forms</h3>
+              <p>Four conditional structures: たら, ば, と, なら.</p>
+              <Link to="/learn/n4/tara" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Passive & Causative</h3>
+              <p>受身・使役 — describe actions done to or caused for others.</p>
+              <Link to="/learn/n4/passive" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Potential Form</h3>
+              <p>Express what you can or cannot do in Japanese.</p>
+              <Link to="/learn/n4/potential-form" className="btn-primary">Start Lesson</Link>
+            </div>
+            <div className="topic-card">
+              <h3>N4 Kanji Quiz</h3>
+              <p>100 essential N4 Kanji reading quiz across 10 structured sets.</p>
+              <Link to="/learn/n4/n4-kanji-quiz-100" className="btn-primary">Start Quiz</Link>
+            </div>
+            <div className="topic-card">
+              <h3>Listening Practice</h3>
+              <p>Graded N4 listening drills with native speakers.</p>
+              <Link to="/learn/n4/n4-listening-module-1" className="btn-primary">Start Listening</Link>
             </div>
           </div>
         </section>
@@ -162,13 +259,34 @@ function DashboardPage() {
   const [weakChars, setWeakChars] = useState([]);
   const [srsQueue, setSrsQueue] = useState([]);
 
-  useEffect(() => {
+  const loadDashboardData = () => {
     if (window.db) {
       window.db.getStats().then(setStats).catch(() => {});
       window.db.getStreakHistory().then(setHistory).catch(() => {});
       window.db.getWeakCharacters(8).then(setWeakChars).catch(() => {});
       window.db.getSRSQueue(5).then(setSrsQueue).catch(() => {});
+    } else {
+      setStats({
+        totalTracked: 0,
+        apprentice: 0,
+        guru: 0,
+        master: 0,
+        burned: 0,
+        totalReviews: 0,
+        accuracy: 0,
+        dueReviews: 0,
+        currentStreak: 0,
+      });
+      setHistory([]);
+      setWeakChars([]);
+      setSrsQueue([]);
     }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
+    window.addEventListener('hirakanjee_global_reset', loadDashboardData);
+    return () => window.removeEventListener('hirakanjee_global_reset', loadDashboardData);
   }, []);
 
   return (
@@ -268,11 +386,37 @@ function DashboardPage() {
 function LearnPage() {
   const [lessonProgress, setLessonProgress] = useState({});
   const [activeLevel, setActiveLevel] = useState('N5');
+  const [progressionVer, setProgressionVer] = useState(0);
+
+  const progData = useMemo(() => getStoredProgression(), [progressionVer]);
+
+  const refreshProgress = () => {
+    setProgressionVer((v) => v + 1);
+    if (window.db?.getLessonProgress) {
+      window.db.getLessonProgress().then((prog) => {
+        setLessonProgress(prog || {});
+      }).catch(() => {});
+    } else {
+      setLessonProgress({});
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('progressionUpdated', refreshProgress);
+    window.addEventListener('hirakanjee_global_reset', refreshProgress);
+    return () => {
+      window.removeEventListener('progressionUpdated', refreshProgress);
+      window.removeEventListener('hirakanjee_global_reset', refreshProgress);
+    };
+  }, []);
 
   useEffect(() => {
     if (window.db?.getLessonProgress) {
       window.db.getLessonProgress().then((prog) => {
-        if (prog) setLessonProgress(prog);
+        if (prog) {
+          setLessonProgress(prog);
+          syncDbLessonProgress(prog);
+        }
       }).catch(() => {});
     }
   }, []);
@@ -330,71 +474,97 @@ function LearnPage() {
     }
   };
 
-  const renderN4Cards = (lessons) => (
-    <div className="n4-grammar-grid">
-      {lessons.map((lesson) => {
-        const prog = lessonProgress[lesson.id];
-        const isCompleted = Boolean(prog?.completed);
-        const quizScore = prog?.quizScore ?? 0;
-        const firstEx = lesson.sections?.[0]?.examples?.[0];
+  const renderN4Cards = (lessons) => {
+    const isN4LevelUnlocked = isLevelUnlocked('N4', progData);
 
-        return (
-          <div
-            key={lesson.id}
-            className={`n4-grammar-card ${isCompleted ? 'is-completed' : ''}`}
-          >
-            <div className="n4-grammar-header">
-              <span className="grammar-badge">{lesson.category}</span>
-              {isCompleted ? (
-                <span className="n5-score-pill completed">
-                  <AiOutlineCheckCircle size={13} /> {quizScore}% Score
-                </span>
-              ) : (
-                <span className="grammar-lesson-num">Lesson {lesson.number}</span>
-              )}
-            </div>
+    return (
+      <div className="n4-grammar-grid">
+        {lessons.map((lesson) => {
+          const unlocked = isN4LevelUnlocked && isLessonUnlocked(lesson.id, 'N4', progData);
+          const isCompleted = isLessonCompleted(lesson.id, progData);
+          const prog = lessonProgress[lesson.id];
+          const quizScore = prog?.quizScore ?? progData.lessons?.[lesson.id]?.quizScore ?? 0;
+          const firstEx = lesson.sections?.[0]?.examples?.[0];
 
-            <h3 className="grammar-card-title">{lesson.shortTitle}</h3>
-            <p className="grammar-card-desc">{lesson.subtitle}</p>
-
-            {lesson.formula && (
-              <div className="grammar-formula-box">
-                <span className="formula-tag">Form</span>
-                <code className="formula-code">{lesson.formula}</code>
+          return (
+            <div
+              key={lesson.id}
+              className={`n4-grammar-card ${isCompleted ? 'is-completed' : ''} ${!unlocked ? 'is-locked' : ''}`}
+            >
+              <div className="n4-grammar-header">
+                <span className="grammar-badge">{lesson.category}</span>
+                {isCompleted ? (
+                  <span className="n5-score-pill completed">
+                    <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                  </span>
+                ) : !unlocked ? (
+                  <span className="n5-score-pill locked">
+                    <AiOutlineLock size={12} /> Locked
+                  </span>
+                ) : (
+                  <span className="grammar-lesson-num">Lesson {lesson.number}</span>
+                )}
               </div>
-            )}
 
-            {firstEx && (
-              <div className="grammar-example-preview">
-                <div className="example-text">
-                  <span className="example-jp">{firstEx.jp}</span>
-                  <span className="example-en">{firstEx.en}</span>
+              <h3 className="grammar-card-title">{lesson.shortTitle}</h3>
+              <p className="grammar-card-desc">{lesson.subtitle}</p>
+
+              {lesson.formula && (
+                <div className="grammar-formula-box">
+                  <span className="formula-tag">Form</span>
+                  <code className="formula-code">{lesson.formula}</code>
                 </div>
-                <button
-                  type="button"
-                  className="example-audio-btn"
-                  onClick={() => speakJapanese(firstEx.jp)}
-                  title="Pronounce example"
-                  aria-label={`Pronounce ${firstEx.jp}`}
-                >
-                  <AiOutlineSound size={16} />
-                </button>
-              </div>
-            )}
+              )}
 
-            <div className="n4-card-footer">
-              <Link
-                to={`/learn/n4/${lesson.id}`}
-                className="btn-primary n4-action-btn"
-              >
-                {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
-              </Link>
+              {firstEx && (
+                <div className="grammar-example-preview">
+                  <div className="example-text">
+                    <span className="example-jp">{firstEx.jp}</span>
+                    <span className="example-en">{firstEx.en}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="example-audio-btn"
+                    onClick={() => speakJapanese(firstEx.jp)}
+                    title="Pronounce example"
+                    aria-label={`Pronounce ${firstEx.jp}`}
+                  >
+                    <AiOutlineSound size={16} />
+                  </button>
+                </div>
+              )}
+
+              <div className={`n4-card-footer ${!unlocked ? 'locked-footer' : ''}`}>
+                {unlocked ? (
+                  <Link
+                    to={`/learn/n4/${lesson.id}`}
+                    className="btn-primary n4-action-btn"
+                  >
+                    {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+                  </Link>
+                ) : (
+                  <>
+                    <button type="button" className="btn-secondary n4-action-btn is-locked-btn" disabled>
+                      <AiOutlineLock size={14} /> Locked
+                    </button>
+                    {isN4LevelUnlocked && (
+                      <Link
+                        to={`/learn/n4/${lesson.id}?mode=skip`}
+                        className="lesson-skip-btn"
+                        title="Skip this lesson by passing an assessment quiz"
+                      >
+                        Skip <AiOutlineArrowRight size={12} />
+                      </Link>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="page-content">
@@ -416,8 +586,8 @@ function LearnPage() {
             <Link to="/learn/katakana" className="btn-primary">Start Learning</Link>
           </div>
           <div className="topic-card">
-            <h3>JLPT N5 Kanji</h3>
-            <p>Master all basic kanji essential for the N5 level with On/Kun readings.</p>
+            <h3>Kanji</h3>
+            <p>Master essential N5 and N4 kanji characters categorized by level and area with On/Kun readings and handwriting practice.</p>
             <Link to="/learn/kanji" className="btn-primary">Start Learning</Link>
           </div>
         </div>
@@ -426,17 +596,29 @@ function LearnPage() {
       {/* 2. JLPT Level Tabs Navigation */}
       <div className="jlpt-tabs-container">
         <div className="jlpt-tabs-bar">
-          {jlptLevels.map((lvl) => (
-            <button
-              key={lvl.id}
-              type="button"
-              className={`jlpt-tab-btn ${activeLevel === lvl.id ? 'active' : ''}`}
-              onClick={() => setActiveLevel(lvl.id)}
-            >
-              <span>{lvl.label}</span>
-              <span className="jlpt-tab-pill">{lvl.desc}</span>
-            </button>
-          ))}
+          {jlptLevels.map((lvl) => {
+            const isLvlUnlocked = isLevelUnlocked(lvl.id, progData);
+            return (
+              <button
+                key={lvl.id}
+                type="button"
+                className={`jlpt-tab-btn ${activeLevel === lvl.id ? 'active' : ''} ${!isLvlUnlocked ? 'tab-locked' : ''}`}
+                onClick={() => setActiveLevel(lvl.id)}
+              >
+                <span>{lvl.label}</span>
+                <span className="jlpt-tab-pill">
+                  {!isLvlUnlocked ? (
+                    <>
+                      <AiOutlineLock size={11} style={{ marginRight: '3px' }} />
+                      Locked
+                    </>
+                  ) : (
+                    lvl.desc
+                  )}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -445,7 +627,7 @@ function LearnPage() {
         <div className="learn-sections">
           {/* Render MLC Japanese N5 Curriculum Sections (1-8) */}
           {n5Curriculum.map((section) => {
-            const sectionCompletedCount = section.lessons.filter((l) => lessonProgress[l.id]?.completed).length;
+            const sectionCompletedCount = section.lessons.filter((l) => isLessonCompleted(l.id, progData)).length;
 
             return (
               <section key={section.id} className="learn-section">
@@ -464,20 +646,25 @@ function LearnPage() {
 
                 <div className="n5-core-grid">
                   {section.lessons.map((lesson) => {
+                    const unlocked = isLessonUnlocked(lesson.id, 'N5', progData);
+                    const isCompleted = isLessonCompleted(lesson.id, progData);
                     const prog = lessonProgress[lesson.id];
-                    const isCompleted = Boolean(prog?.completed);
-                    const quizScore = prog?.quizScore ?? 0;
+                    const quizScore = prog?.quizScore ?? progData.lessons?.[lesson.id]?.quizScore ?? 0;
 
                     return (
                       <div
                         key={lesson.id}
-                        className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''}`}
+                        className={`n5-lesson-card ${isCompleted ? 'is-completed' : ''} ${!unlocked ? 'is-locked' : ''}`}
                       >
                         <div className="n5-card-header">
                           <span className="n5-lesson-num">Lesson {lesson.number}</span>
                           {isCompleted ? (
                             <span className="n5-score-pill completed">
                               <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                            </span>
+                          ) : !unlocked ? (
+                            <span className="n5-score-pill locked">
+                              <AiOutlineLock size={12} /> Locked
                             </span>
                           ) : (
                             <span className="n5-score-pill pending">Ready</span>
@@ -504,13 +691,28 @@ function LearnPage() {
                           </div>
                         )}
 
-                        <div className="n5-card-footer">
-                          <Link
-                            to={`/learn/n5/${lesson.id}`}
-                            className="btn-primary n5-action-btn"
-                          >
-                            {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
-                          </Link>
+                        <div className={`n5-card-footer ${!unlocked ? 'locked-footer' : ''}`}>
+                          {unlocked ? (
+                            <Link
+                              to={`/learn/n5/${lesson.id}`}
+                              className="btn-primary n5-action-btn"
+                            >
+                              {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+                            </Link>
+                          ) : (
+                            <>
+                              <button type="button" className="btn-secondary n5-action-btn is-locked-btn" disabled>
+                                <AiOutlineLock size={14} /> Locked
+                              </button>
+                              <Link
+                                to={`/learn/n5/${lesson.id}?mode=skip`}
+                                className="lesson-skip-btn"
+                                title="Skip this lesson by passing an assessment quiz"
+                              >
+                                Skip <AiOutlineArrowRight size={12} />
+                              </Link>
+                            </>
+                          )}
                         </div>
                       </div>
                     );
@@ -520,45 +722,78 @@ function LearnPage() {
             );
           })}
 
-          {/* Section: Quick Jump by Topic */}
-          <section className="learn-section">
-            <h2>Quick Topic Jump</h2>
-            <div className="section-grid">
-              <div className="topic-card">
-                <h3>Basic Sentences</h3>
-                <p>Learn to construct simple sentences, topic-comment patterns, and greetings.</p>
-                <Link to="/learn/n5/basic-structure" className="btn-primary">Start Lesson</Link>
+          {/* Capstone Level Exam Section: JLPT N5 */}
+          <section className="learn-section level-exam-section">
+            <div className="level-exam-card">
+              <div className="level-exam-header">
+                <div className="level-exam-badge">
+                  <AiOutlineTrophy size={18} />
+                  <span>JLPT N5 Capstone Certification</span>
+                </div>
+                {progData.exams?.['N5']?.passed ? (
+                  <span className="exam-status-pill passed">
+                    <AiOutlineCheckCircle size={14} /> Passed ({progData.exams['N5'].score || 100}%) • N4 Unlocked
+                  </span>
+                ) : (
+                  <span className="exam-status-pill pending">
+                    Prerequisite for JLPT N4
+                  </span>
+                )}
               </div>
-              <div className="topic-card">
-                <h3>Particles (は, が, を, に, で)</h3>
-                <p>Understand key grammatical markers, contrast, locations, and time deadlines.</p>
-                <Link to="/learn/n5/part-wa-ga" className="btn-primary">Start Lesson</Link>
+
+              <div className="level-exam-body">
+                <h2>{n5LevelExamLesson.title}</h2>
+                <p className="level-exam-sub">{n5LevelExamLesson.subtitle}</p>
+
+                <div className="level-exam-stats-row">
+                  <div className="exam-stat">
+                    <span className="stat-label">Exam Format</span>
+                    <span className="stat-val">25 Questions</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Coverage</span>
+                    <span className="stat-val">Grammar, Verbs, Particles, Audio</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Passing Mark</span>
+                    <span className="stat-val">80% or Higher</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Progression Key</span>
+                    <span className="stat-val">Unlocks JLPT N4 Curriculum</span>
+                  </div>
+                </div>
               </div>
-              <div className="topic-card">
-                <h3>Adjectives (い & な)</h3>
-                <p>Learn 104+ adjectives, degree words, exceptions, and conjugations.</p>
-                <Link to="/learn/n5/adj-i-and-na-104" className="btn-primary">Start Lesson</Link>
-              </div>
-              <div className="topic-card">
-                <h3>Verbs</h3>
-                <p>Master movement, existence, 40 core masu verbs, te-form, and plain forms.</p>
-                <Link to="/learn/n5/verb-movement" className="btn-primary">Start Lesson</Link>
-              </div>
-              <div className="topic-card">
-                <h3>Special Topics</h3>
-                <p>Fractions, quiz symbols, expressing opinions (sou omoimasu), and apologies.</p>
-                <Link to="/learn/n5/special-fractions" className="btn-primary">Start Lesson</Link>
-              </div>
-              <div className="topic-card">
-                <h3>Listening Comprehension</h3>
-                <p>Real-world Japanese audio dialogues, tasks, and Te-form listening patterns.</p>
-                <Link to="/learn/n5/listening-n5-mastery" className="btn-primary">Start Lesson</Link>
+
+              <div className="level-exam-footer">
+                <Link to="/learn/n5/n5-level-exam" className="btn-primary level-exam-cta">
+                  {progData.exams?.['N5']?.passed ? 'Retake JLPT N5 Exam' : 'Take JLPT N5 Exam'} <AiOutlineArrowRight size={16} />
+                </Link>
               </div>
             </div>
           </section>
         </div>
       ) : activeLevel === 'N4' ? (
         <div className="learn-sections n4-curriculum-container">
+          {!isLevelUnlocked('N4', progData) && (
+            <div className="level-locked-banner">
+              <div className="level-locked-content">
+                <AiOutlineLock size={28} className="level-locked-icon" />
+                <div>
+                  <h3>JLPT N4 Curriculum is Currently Locked</h3>
+                  <p>Complete and pass the JLPT N5 Comprehensive Level Exam (80%+ score) to unlock the JLPT N4 curriculum.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setActiveLevel('N5')}
+              >
+                Go to N5 Exam <AiOutlineArrowRight size={14} />
+              </button>
+            </div>
+          )}
+
           {/* 1. Core Study Components (What to Study for JLPT N4) */}
           <section className="learn-section">
             <div className="section-header-row">
@@ -593,7 +828,7 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4GrammarLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4GrammarLessons.length} Completed
+                  {n4GrammarLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4GrammarLessons.length} Completed
                 </span>
               </div>
             </div>
@@ -612,7 +847,7 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4VerbLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4VerbLessons.length} Completed
+                  {n4VerbLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4VerbLessons.length} Completed
                 </span>
               </div>
             </div>
@@ -631,7 +866,7 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4AdjectiveLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4AdjectiveLessons.length} Completed
+                  {n4AdjectiveLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4AdjectiveLessons.length} Completed
                 </span>
               </div>
             </div>
@@ -650,7 +885,7 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4KanjiLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4KanjiLessons.length} Completed
+                  {n4KanjiLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4KanjiLessons.length} Completed
                 </span>
               </div>
             </div>
@@ -669,7 +904,7 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4ListeningLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4ListeningLessons.length} Completed
+                  {n4ListeningLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4ListeningLessons.length} Completed
                 </span>
               </div>
             </div>
@@ -688,53 +923,95 @@ function LearnPage() {
               <div className="curriculum-progress-badge">
                 <AiOutlineTrophy size={16} />
                 <span>
-                  {n4PracticeLessons.filter((l) => lessonProgress[l.id]?.completed).length} / {n4PracticeLessons.length} Completed
+                  {n4PracticeLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n4PracticeLessons.length} Completed
                 </span>
               </div>
             </div>
             {renderN4Cards(n4PracticeLessons)}
           </section>
 
-          {/* Quick Jump — N4 */}
-          <section className="learn-section">
-            <h2>Quick Topic Jump</h2>
-            <div className="section-grid">
-              <div className="topic-card">
-                <h3>Giving & Receiving</h3>
-                <p>て-form giving/receiving verbs: あげる, もらう, くれる.</p>
-                <Link to="/learn/n4/te-agemasu-moraimasu-kuremasu" className="btn-primary">Start Lesson</Link>
+          {/* Capstone Level Exam Section: JLPT N4 */}
+          <section className="learn-section level-exam-section">
+            <div className="level-exam-card">
+              <div className="level-exam-header">
+                <div className="level-exam-badge">
+                  <AiOutlineTrophy size={18} />
+                  <span>JLPT N4 Capstone Certification</span>
+                </div>
+                {progData.exams?.['N4']?.passed ? (
+                  <span className="exam-status-pill passed">
+                    <AiOutlineCheckCircle size={14} /> Passed ({progData.exams['N4'].score || 100}%) • N3 Unlocked
+                  </span>
+                ) : (
+                  <span className="exam-status-pill pending">
+                    Prerequisite for JLPT N3
+                  </span>
+                )}
               </div>
-              <div className="topic-card">
-                <h3>Conditional Forms</h3>
-                <p>Four conditional structures: たら, ば, と, なら.</p>
-                <Link to="/learn/n4/tara" className="btn-primary">Start Lesson</Link>
+
+              <div className="level-exam-body">
+                <h2>{n4LevelExamLesson.title}</h2>
+                <p className="level-exam-sub">{n4LevelExamLesson.subtitle}</p>
+
+                <div className="level-exam-stats-row">
+                  <div className="exam-stat">
+                    <span className="stat-label">Exam Format</span>
+                    <span className="stat-val">25 Questions</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Coverage</span>
+                    <span className="stat-val">Conditionals, Passive, Keigo, Kanji</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Passing Mark</span>
+                    <span className="stat-val">80% or Higher</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Progression Key</span>
+                    <span className="stat-val">Unlocks JLPT N3 Curriculum</span>
+                  </div>
+                </div>
               </div>
-              <div className="topic-card">
-                <h3>Passive & Causative</h3>
-                <p>受身・使役 — describe actions done to or caused for others.</p>
-                <Link to="/learn/n4/passive" className="btn-primary">Start Lesson</Link>
-              </div>
-              <div className="topic-card">
-                <h3>Potential Form</h3>
-                <p>Express what you can or cannot do in Japanese.</p>
-                <Link to="/learn/n4/potential-form" className="btn-primary">Start Lesson</Link>
-              </div>
-              <div className="topic-card">
-                <h3>N4 Kanji Quiz</h3>
-                <p>100 essential N4 Kanji reading quiz across 10 structured sets.</p>
-                <Link to="/learn/n4/n4-kanji-quiz-100" className="btn-primary">Start Quiz</Link>
-              </div>
-              <div className="topic-card">
-                <h3>Listening Practice</h3>
-                <p>Graded N4 listening drills with native speakers.</p>
-                <Link to="/learn/n4/n4-listening-module-1" className="btn-primary">Start Listening</Link>
+
+              <div className="level-exam-footer">
+                {isLevelUnlocked('N4', progData) ? (
+                  <Link to="/learn/n4/n4-level-exam" className="btn-primary level-exam-cta">
+                    {progData.exams?.['N4']?.passed ? 'Retake JLPT N4 Exam' : 'Take JLPT N4 Exam'} <AiOutlineArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <button type="button" className="btn-secondary level-exam-cta is-locked-btn" disabled>
+                    <AiOutlineLock size={16} /> Prerequisite: Pass N5 Exam First
+                  </button>
+                )}
               </div>
             </div>
           </section>
+
         </div>
       ) : (
         /* Placeholder for N3 - N1 */
         <div className="learn-sections">
+          {!isLevelUnlocked(activeLevel, progData) && (
+            <div className="level-locked-banner">
+              <div className="level-locked-content">
+                <AiOutlineLock size={28} className="level-locked-icon" />
+                <div>
+                  <h3>JLPT {activeLevel} Curriculum is Locked</h3>
+                  <p>
+                    Pass the JLPT {activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2'} Comprehensive Level Exam (80%+ score) to unlock JLPT {activeLevel}.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setActiveLevel(activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2')}
+              >
+                Go to {activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2'} Curriculum <AiOutlineArrowRight size={14} />
+              </button>
+            </div>
+          )}
+
           <div className="jlpt-placeholder-hero">
             <div>
               <div className="jlpt-placeholder-title">{placeholderData[activeLevel].title}</div>
@@ -760,6 +1037,49 @@ function LearnPage() {
               ))}
             </div>
           </section>
+
+          {/* Capstone Level Exam Section for N3 - N1 */}
+          <section className="learn-section level-exam-section">
+            <div className="level-exam-card">
+              <div className="level-exam-header">
+                <div className="level-exam-badge">
+                  <AiOutlineTrophy size={18} />
+                  <span>JLPT {activeLevel} Capstone Certification</span>
+                </div>
+                <span className="exam-status-pill pending">
+                  {activeLevel === 'N1' ? 'Master Certification' : `Prerequisite for JLPT ${activeLevel === 'N3' ? 'N2' : 'N1'}`}
+                </span>
+              </div>
+
+              <div className="level-exam-body">
+                <h2>JLPT {activeLevel} Comprehensive Level Certification Exam</h2>
+                <p className="level-exam-sub">
+                  Comprehensive 25-question capstone exam covering all grammar nuances, kanji reading, and listening comprehension for JLPT {activeLevel}.
+                </p>
+
+                <div className="level-exam-stats-row">
+                  <div className="exam-stat">
+                    <span className="stat-label">Exam Format</span>
+                    <span className="stat-val">25 Questions</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Passing Mark</span>
+                    <span className="stat-val">80% or Higher</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Certification</span>
+                    <span className="stat-val">{activeLevel === 'N1' ? 'Master Certification' : `Unlocks JLPT ${activeLevel === 'N3' ? 'N2' : 'N1'}`}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="level-exam-footer">
+                <button type="button" className="btn-secondary level-exam-cta is-locked-btn" disabled>
+                  <AiOutlineLock size={16} /> Available with Full {activeLevel} Curriculum
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
       )}
     </div>
@@ -772,9 +1092,16 @@ function ReportingPage() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    if (window.db?.getStats) {
-      window.db.getStats().then(setStats).catch(() => {});
-    }
+    const fetchReportingStats = () => {
+      if (window.db?.getStats) {
+        window.db.getStats().then(setStats).catch(() => {});
+      } else {
+        setStats(null);
+      }
+    };
+    fetchReportingStats();
+    window.addEventListener('hirakanjee_global_reset', fetchReportingStats);
+    return () => window.removeEventListener('hirakanjee_global_reset', fetchReportingStats);
   }, []);
 
   return (
@@ -860,34 +1187,6 @@ function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
             </button>
           </div>
         </div>
-
-        <div className="setting-row">
-          <label className="setting-label">Appearance Style</label>
-          <select
-            value={appearance}
-            onChange={(e) => onUpdateSetting('appearance', e.target.value)}
-            className="setting-select"
-          >
-            <option value="classic">Classic</option>
-            <option value="compact">Compact</option>
-            <option value="spacious">Spacious</option>
-          </select>
-        </div>
-
-        <div className="setting-row">
-          <label className="setting-label">Accent Color</label>
-          <div className="accent-grid">
-            {Object.entries(accentMap).map(([key, color]) => (
-              <button
-                key={key}
-                className={`accent-swatch ${accent === key ? 'selected' : ''}`}
-                style={{ background: color }}
-                onClick={() => onUpdateSetting('accent', key)}
-                aria-label={`Accent ${key}`}
-              />
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="settings-card">
@@ -965,37 +1264,13 @@ function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
           </div>
 
           <div className="setting-control">
-            {!showConfirmReset ? (
-              <button
-                type="button"
-                className="btn-danger"
-                onClick={() => setShowConfirmReset(true)}
-              >
-                Reset Progress
-              </button>
-            ) : (
-              <div className="reset-confirm-box">
-                <span className="reset-confirm-warning">Are you sure? This cannot be undone.</span>
-                <div className="reset-confirm-actions">
-                  <button
-                    type="button"
-                    className="btn-danger-confirm"
-                    onClick={handleConfirmReset}
-                    disabled={isResetting}
-                  >
-                    {isResetting ? 'Resetting...' : 'Yes, Reset All'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary-sm"
-                    onClick={() => setShowConfirmReset(false)}
-                    disabled={isResetting}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
+            <button
+              type="button"
+              className="btn-danger"
+              onClick={() => setShowConfirmReset(true)}
+            >
+              Reset Progress
+            </button>
           </div>
         </div>
 
@@ -1004,6 +1279,18 @@ function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
             ✓ All learning progress has been successfully reset.
           </div>
         )}
+
+        <ConfirmModal
+          isOpen={showConfirmReset}
+          title="Reset All Learning Progress?"
+          message={`This will permanently clear all your JLPT N5 & N4 lesson completions, quiz scores, character SRS mastery, and practice streaks.\n\nYour visual preferences (dark mode, theme accents, and romaji toggles) will be preserved.\n\nAre you sure you want to proceed? This cannot be undone.`}
+          confirmText="Yes, Reset All Progress"
+          cancelText="Cancel"
+          variant="danger"
+          isProcessing={isResetting}
+          onConfirm={handleConfirmReset}
+          onCancel={() => !isResetting && setShowConfirmReset(false)}
+        />
       </section>
     </div>
   );
@@ -1093,26 +1380,51 @@ function App() {
       if (window.db?.resetAllProgress) {
         await window.db.resetAllProgress();
       }
-      // Remove cached progress in localStorage
-      const keys = [
+
+      // Reset progression engine state (locks all lessons except 1 & listening, locks N4, locks Kanji)
+      resetProgression();
+
+      // Clear all character mastery & progress caches
+      const preserveSettings = [
+        'hirakanjee_darkMode',
+        'hirakanjee_appearance',
+        'hirakanjee_accent',
+        'hirakanjee_defaultPracticeMode',
+        'hirakanjee_showNotifications',
+        'hirakanjee_autoLaunch',
+        'hirakanjee_showRomaji',
+      ];
+
+      const keysToRemove = [
+        'hirakanjee_progression_v2',
         'hirakanjee_kanji_mastery',
+        'hirakanjee_hiragana_mastery',
+        'hirakanjee_katakana_mastery',
         'hirakanjee_lesson_progress',
         'hirakanjee_practice_logs',
         'hirakanjee_stats',
       ];
-      keys.forEach((k) => {
+      keysToRemove.forEach((k) => {
         try {
           localStorage.removeItem(k);
         } catch (e) {}
       });
 
-      // Refresh lesson progress in active state
-      if (window.db?.getLessonProgress) {
-        const prog = await window.db.getLessonProgress();
-        setLessonProgress(prog || {});
-      } else {
-        setLessonProgress({});
-      }
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('hirakanjee_') && !preserveSettings.includes(k)) {
+            localStorage.removeItem(k);
+          }
+        }
+      } catch (e) {}
+
+      // Re-save clean empty progression structure
+      resetProgression();
+
+      // Notify all components across the app to reload
+      window.dispatchEvent(new CustomEvent('hirakanjee_global_reset'));
+
       return true;
     } catch (err) {
       console.error('Failed to reset progress:', err);
@@ -1122,42 +1434,45 @@ function App() {
 
   return (
     <Router>
-      <div className="app-container">
-        <Sidebar />
-        <main className="app-main">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/learn" element={<LearnPage />} />
-            <Route path="/learn/n5/:lessonId" element={<N5LessonPage settings={settings} />} />
-            <Route path="/learn/n4/:lessonId" element={<N5LessonPage settings={settings} />} />
-            <Route path="/learn/hiragana" element={<HiraganaPage />} />
-            <Route path="/learn/katakana" element={<KatakanaPage />} />
-            <Route path="/learn/kanji" element={<KanjiPage />} />
-            <Route path="/learn/basic-sentences" element={<Navigate to="/learn/n5/basic-structure" replace />} />
-            <Route path="/learn/adjectives" element={<Navigate to="/learn/n5/adj-i-and-na-104" replace />} />
-            <Route path="/learn/verbs" element={<Navigate to="/learn/n5/verb-movement" replace />} />
-            <Route path="/learn/particles" element={<Navigate to="/learn/n5/part-wa-ga" replace />} />
-            <Route path="/learn/numbers-time" element={<Navigate to="/learn/n5/time-calendar" replace />} />
-            <Route path="/learn/daily-life" element={<Navigate to="/learn/n5/vocab-802-core" replace />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/reporting" element={<ReportingPage />} />
-            <Route path="/practice" element={<KanjiDrawingPad defaultScript={settings.defaultPracticeMode} />} />
-            <Route path="/learn/practice/:script/:char" element={<CharacterPracticePage />} />
-            <Route path="/folders" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/folders/*" element={<Navigate to="/dashboard" replace />} />
-            <Route
-              path="/settings"
-              element={
-                <SettingsPage
-                  settings={settings}
-                  onUpdateSetting={handleUpdateSetting}
-                  onResetProgress={handleResetProgress}
-                />
-              }
-            />
-          </Routes>
-        </main>
-      </div>
+      <ConfirmProvider>
+        <div className="app-container">
+          <Sidebar />
+          <main className="app-main">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/learn" element={<LearnPage />} />
+              <Route path="/learn/n5/:lessonId" element={<N5LessonPage settings={settings} />} />
+              <Route path="/learn/n4/:lessonId" element={<N5LessonPage settings={settings} />} />
+              <Route path="/learn/hiragana" element={<HiraganaPage />} />
+              <Route path="/learn/katakana" element={<KatakanaPage />} />
+              <Route path="/learn/kanji" element={<KanjiPage />} />
+              <Route path="/learn/basic-sentences" element={<Navigate to="/learn/n5/basic-structure" replace />} />
+              <Route path="/learn/adjectives" element={<Navigate to="/learn/n5/adj-i-and-na-104" replace />} />
+              <Route path="/learn/verbs" element={<Navigate to="/learn/n5/verb-movement" replace />} />
+              <Route path="/learn/particles" element={<Navigate to="/learn/n5/part-wa-ga" replace />} />
+              <Route path="/learn/numbers-time" element={<Navigate to="/learn/n5/time-calendar" replace />} />
+              <Route path="/learn/daily-life" element={<Navigate to="/learn/n5/vocab-802-core" replace />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/reporting" element={<ReportingPage />} />
+              <Route path="/practice" element={<KanjiDrawingPad defaultScript={settings.defaultPracticeMode} />} />
+              <Route path="/listen" element={<ListenPage />} />
+              <Route path="/learn/practice/:script/:char" element={<CharacterPracticePage />} />
+              <Route path="/folders" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/folders/*" element={<Navigate to="/dashboard" replace />} />
+              <Route
+                path="/settings"
+                element={
+                  <SettingsPage
+                    settings={settings}
+                    onUpdateSetting={handleUpdateSetting}
+                    onResetProgress={handleResetProgress}
+                  />
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </ConfirmProvider>
     </Router>
   );
 }

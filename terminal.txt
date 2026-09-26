@@ -1,8 +1,0 @@
-npm run dev
-
-npm run build
-npm run start
-
-importing project into forge: (https://www.electronjs.org/docs/latest/tutorial/tutorial-packaging)
-
-/////

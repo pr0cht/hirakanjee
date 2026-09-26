@@ -8,6 +8,7 @@ import {
 } from 'react-icons/ai';
 import { BsEraser, BsPencil, BsGrid3X3 } from 'react-icons/bs';
 import { speakJapanese } from '../utils/audio';
+import { sfx } from '../utils/sfx';
 import { hiraganaStrokeData } from '../data/hiraganaStrokeData';
 import './DrawingCanvas.css';
 
@@ -218,8 +219,17 @@ export default function DrawingCanvas({
 
       if (onGradeComplete) {
         onGradeComplete(fbData);
+      } else {
+        if (isCorrect || score >= 70) {
+          sfx.playCorrect();
+        } else {
+          sfx.playIncorrect();
+        }
       }
     } catch (err) {
+      if (!onGradeComplete) {
+        sfx.playIncorrect();
+      }
       setFeedback({ error: err.message || 'AI recognition encountered an issue.' });
     } finally {
       setIsGrading(false);

@@ -10,11 +10,14 @@ import {
   AiOutlineTrophy,
   AiOutlineClockCircle,
   AiOutlineCheck,
+  AiOutlineLock,
 } from 'react-icons/ai';
 import DrawingCanvas from '../components/DrawingCanvas';
-import { kanjiN5Data } from '../data/kanjiN5Data';
+import { kanjiAllData } from '../data/kanjiAllData';
 import { speakJapanese } from '../utils/audio';
 import { sfx } from '../utils/sfx';
+import { isKanjiUnlocked } from '../utils/progression';
+import ConfirmModal from '../components/ConfirmModal';
 
 const hiraganaChars = [
   { char: 'あ', romaji: 'a', strokes: 3 }, { char: 'い', romaji: 'i', strokes: 2 }, { char: 'う', romaji: 'u', strokes: 2 }, { char: 'え', romaji: 'e', strokes: 2 }, { char: 'お', romaji: 'o', strokes: 3 },
@@ -42,13 +45,14 @@ const katakanaChars = [
   { char: 'ワ', romaji: 'wa', strokes: 2 }, { char: 'ヲ', romaji: 'wo', strokes: 3 }, { char: 'ン', romaji: 'n', strokes: 2 },
 ];
 
-const kanjiChars = kanjiN5Data.map((k) => ({
+const kanjiChars = kanjiAllData.map((k) => ({
   char: k.char,
   romaji: k.meaning,
   strokes: k.strokes,
   meaning: k.meaning,
   onyomi: k.onyomi,
   kunyomi: k.kunyomi,
+  level: k.level || 'N5',
 }));
 
 const shuffle = (arr) => {
@@ -156,6 +160,20 @@ export default function CharacterPracticePage() {
   const [latestSrsInfo, setLatestSrsInfo] = useState(null);
   const [redirectCountdown, setRedirectCountdown] = useState(4);
   const [isRedirectPaused, setIsRedirectPaused] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  const handleExitClick = (e) => {
+    if (questionIndex > 0 && !completed) {
+      e.preventDefault();
+      setShowExitConfirm(true);
+      return;
+    }
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirm(false);
+    navigate(isFromDashboard ? '/dashboard' : `/learn/${script}`);
+  };
 
   const scriptCharList = useMemo(() => {
     if (script === 'katakana') return katakanaChars;
@@ -220,6 +238,15 @@ export default function CharacterPracticePage() {
 
     return () => clearInterval(timer);
   }, [completed, isFromDashboard, isRedirectPaused, redirectCountdown, navigate]);
+
+  // Calculate final score metrics
+  const scoreVals = Object.values(stepScores);
+  const calculatedAvg = scoreVals.length > 0
+    ? Math.round(scoreVals.reduce((acc, curr) => acc + curr, 0) / scoreVals.length)
+    : 95;
+  const finalScore = finalFeedback?.score
+    ? Math.round(finalFeedback.score * 0.6 + calculatedAvg * 0.4)
+    : calculatedAvg;
 
   // Record character mastery on lesson completion
   useEffect(() => {
@@ -296,6 +323,8 @@ export default function CharacterPracticePage() {
     if (gradeData.isCorrect || gradeData.score >= 70) {
       try { sfx?.playCorrect?.(); } catch (e) {}
       setTimeout(() => nextQuestion(), 850);
+    } else {
+      try { sfx?.playIncorrect?.(); } catch (e) {}
     }
   };
 
@@ -326,15 +355,6 @@ export default function CharacterPracticePage() {
 
   const progress = questions.length ? Math.round(((questionIndex + 1) / questions.length) * 100) : 0;
 
-  // Calculate final score metrics
-  const scoreVals = Object.values(stepScores);
-  const calculatedAvg = scoreVals.length > 0
-    ? Math.round(scoreVals.reduce((acc, curr) => acc + curr, 0) / scoreVals.length)
-    : 95;
-  const finalScore = finalFeedback?.score
-    ? Math.round(finalFeedback.score * 0.6 + calculatedAvg * 0.4)
-    : calculatedAvg;
-
   const getPerformanceGrade = (score) => {
     if (score >= 95) return { grade: 'A+', label: 'Mastery Certified', rating: '⭐⭐⭐' };
     if (score >= 88) return { grade: 'A', label: 'Excellent Form', rating: '⭐⭐⭐' };
@@ -353,6 +373,44 @@ export default function CharacterPracticePage() {
   };
   const srsData = getSrsStageData(srsStageNumber);
 
+  const isCharLocked = script === 'kanji' && !isKanjiUnlocked(targetCharObj?.level || 'N5');
+
+  if (isCharLocked) {
+    return (
+      <div className="page-content practice-page">
+        <div className="practice-header">
+          <Link
+            to={isFromDashboard ? '/dashboard' : `/learn/${script}`}
+            className="back-link"
+          >
+            <AiOutlineArrowLeft className="back-icon" />
+            <span>{isFromDashboard ? 'Exit to Dashboard' : 'Back to Kanji'}</span>
+          </Link>
+        </div>
+
+        <div className="practice-card" style={{ textAlign: 'center', padding: '60px 24px' }}>
+          <div style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+            <AiOutlineLock size={56} />
+          </div>
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '12px' }}>
+            Kanji '{targetCharObj?.char}' is Locked ({targetCharObj?.level || 'N5'})
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 28px', lineHeight: '1.6' }}>
+            This {targetCharObj?.level || 'N5'} Kanji character becomes available when you unlock the {targetCharObj?.level || 'N5'} Kanji lesson in your curriculum.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <Link to="/learn/kanji" className="btn-primary" style={{ textDecoration: 'none', padding: '10px 22px', borderRadius: '8px' }}>
+              Return to Kanji List
+            </Link>
+            <Link to="/learn" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 22px', borderRadius: '8px' }}>
+              View Curriculum
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!currentQuestion) return null;
 
   return (
@@ -361,6 +419,7 @@ export default function CharacterPracticePage() {
         <Link
           to={isFromDashboard ? '/dashboard' : `/learn/${script}`}
           className="back-link"
+          onClick={handleExitClick}
           aria-label={isFromDashboard ? 'Return to Dashboard' : 'Return to Table'}
         >
           <AiOutlineArrowLeft className="back-icon" />
@@ -667,6 +726,18 @@ export default function CharacterPracticePage() {
           </>
         )}
       </div>
+
+      {/* Exit Practice Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showExitConfirm}
+        title="Exit Character Practice?"
+        message={`You are on step ${questionIndex + 1} of ${questions.length}. Your progress for this practice session will be lost.`}
+        confirmText="Exit Practice"
+        cancelText="Keep Practicing"
+        variant="warning"
+        onConfirm={handleConfirmExit}
+        onCancel={() => setShowExitConfirm(false)}
+      />
     </div>
   );
 }

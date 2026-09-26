@@ -415,20 +415,89 @@ body.theme-dark .lesson-status-pill.completed {
   color: var(--text-secondary);
 }
 
-.lesson-cta-btn {
-  display: inline-flex;
+.lesson-cta-actions {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 22px;
-  border-radius: 10px;
-  font-size: 0.96rem;
-  font-weight: 700;
-  white-space: nowrap;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lesson-cta-btn.secondary {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 3px 0 var(--border-color);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+}
+
+.lesson-cta-btn.secondary:hover {
+  background: var(--choice-active-bg);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.lesson-cta-btn.secondary:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--border-color);
 }
 
 /* ========================================================= */
 /* INTERACTIVE PRACTICE RUNNER                               */
 /* ========================================================= */
+
+.quiz-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.quiz-mode-pill.learning {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #059669;
+}
+
+body.theme-dark .quiz-mode-pill.learning {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.quiz-mode-pill.practice {
+  background: rgba(234, 88, 12, 0.12);
+  border: 1px solid rgba(234, 88, 12, 0.35);
+  color: #ea580c;
+}
+
+body.theme-dark .quiz-mode-pill.practice {
+  color: #fb923c;
+}
+
+.learning-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent-blue);
+  letter-spacing: 0.04em;
+}
+
+body.theme-dark .learning-stage-pill {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(96, 165, 250, 0.35);
+  color: #93c5fd;
+}
 
 .practice-session-container {
   max-width: 780px;
@@ -1315,6 +1384,21 @@ body.theme-dark .feedback-title.incorrect {
   flex-wrap: wrap;
 }
 
+.victory-actions.learning-victory-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.victory-actions.learning-victory-actions button {
+  width: 100%;
+  justify-content: center;
+}
+
 .practice-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -2133,6 +2217,71 @@ body.theme-dark .feedback-title.incorrect {
   border-color: var(--accent-blue);
   color: var(--accent-blue);
   transform: scale(1.08);
+}
+
+/* ========================================================= */
+/* LOCKED LESSON CONTAINER & SKIP ACTION                    */
+/* ========================================================= */
+
+.lesson-locked-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  min-height: 60vh;
+}
+
+.lesson-locked-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 48px 36px;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+}
+
+.locked-shield-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(234, 88, 12, 0.1);
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px auto;
+  border: 1px solid rgba(234, 88, 12, 0.25);
+}
+
+.lesson-locked-card h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.lesson-locked-sub {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.lesson-locked-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.lesson-locked-actions button {
+  width: 100%;
+  justify-content: center;
 }
 
 

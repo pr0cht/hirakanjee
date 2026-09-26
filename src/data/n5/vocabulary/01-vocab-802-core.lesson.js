@@ -1,4 +1,4 @@
-// JLPT N4 Lesson Module
+// JLPT N5 Lesson Module
 export const lesson = {
   "id": "vocab-802-core",
   "number": 1,

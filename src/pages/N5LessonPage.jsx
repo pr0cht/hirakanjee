@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AiOutlineArrowLeft,
   AiOutlineArrowRight,
@@ -14,6 +14,8 @@ import {
   AiOutlineFilter,
   AiOutlinePlayCircle,
   AiOutlineCustomerService,
+  AiOutlineLock,
+  AiOutlineThunderbolt,
 } from 'react-icons/ai';
 import {
   allN5Lessons,
@@ -21,16 +23,45 @@ import {
   getRandomKanjiQuiz,
   getRandomListeningQuiz,
   listeningTracks,
+  generateN5LevelExamQuestions,
 } from '../data/n5/n5Curriculum';
 import { allN4Lessons, n4Curriculum } from '../data/n4/n4Curriculum';
+import { generateN4LevelExamQuestions } from '../data/n4/n4LevelExam';
 import { kanjiN5Data } from '../data/kanjiN5Data';
+import { getLearningQuizForLesson } from '../data/n5/learningQuizEngine';
+import {
+  getStoredProgression,
+  isLessonUnlocked,
+  isLessonCompleted,
+  isLearningCompleted,
+  isPracticeCompleted,
+  recordQuizCompletion,
+  markLessonSkipped,
+  markLevelExamPassed,
+} from '../utils/progression';
 import { speakJapanese } from '../utils/audio';
 import { sfx } from '../utils/sfx';
+import ConfirmModal from '../components/ConfirmModal';
 import './N5LessonPage.css';
 
 export default function N5LessonPage({ settings = {} }) {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get('mode');
+
+  // Exit practice session confirmation modal
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  // Progression reactive state
+  const [progressionVer, setProgressionVer] = useState(0);
+  const progData = useMemo(() => getStoredProgression(), [progressionVer]);
+
+  useEffect(() => {
+    const handleProgUpdate = () => setProgressionVer((v) => v + 1);
+    window.addEventListener('progressionUpdated', handleProgUpdate);
+    return () => window.removeEventListener('progressionUpdated', handleProgUpdate);
+  }, []);
 
   // Combine N5 and N4 lessons for universal lesson routing
   const combinedLessons = useMemo(() => [...allN5Lessons, ...allN4Lessons], []);
@@ -40,6 +71,8 @@ export default function N5LessonPage({ settings = {} }) {
   const currentLesson = lessonIndex !== -1 ? combinedLessons[lessonIndex] : combinedLessons[0];
   const isN4 = allN4Lessons.some((l) => l.id === currentLesson?.id);
   const levelPrefix = isN4 ? 'n4' : 'n5';
+
+  const isUnlocked = isLessonUnlocked(currentLesson?.id, isN4 ? 'N4' : 'N5', progData);
 
   const prevLesson = lessonIndex > 0 ? combinedLessons[lessonIndex - 1] : null;
   const nextLesson = lessonIndex < combinedLessons.length - 1 ? combinedLessons[lessonIndex + 1] : null;
@@ -71,7 +104,8 @@ export default function N5LessonPage({ settings = {} }) {
   const [kanjiMasteryMap, setKanjiMasteryMap] = useState({});
 
   // Practice session questions & state
-  const [activeQuizQuestions, setActiveQuizQuestions] = useState(currentLesson?.quiz || []);
+  const [activeQuizQuestions, setActiveQuizQuestions] = useState([]);
+  const [quizMode, setQuizMode] = useState('learning'); // 'learning' | 'practice' | 'skip'
   const [isPracticing, setIsPracticing] = useState(false);
   const [activeQueue, setActiveQueue] = useState([]); // array of question indices [0, 1, 2, ...]
   const [queueIdx, setQueueIdx] = useState(0);
@@ -152,7 +186,7 @@ export default function N5LessonPage({ settings = {} }) {
     try {
       if (window.db?.getScriptMastery) {
         const dbData = await window.db.getScriptMastery('kanji');
-        if (dbData && Object.keys(dbData).length > 0) {
+        if (dbData && typeof dbData === 'object') {
           setKanjiMasteryMap(dbData);
           try {
             localStorage.setItem('hirakanjee_kanji_mastery', JSON.stringify(dbData));
@@ -212,14 +246,61 @@ export default function N5LessonPage({ settings = {} }) {
         .catch(() => { });
     }
     fetchKanjiStats();
+
+    const handleGlobalReset = () => {
+      fetchKanjiStats();
+      if (window.db?.getLessonProgress) {
+        window.db.getLessonProgress().then((prog) => setDbProgress(prog || {})).catch(() => {});
+      } else {
+        setDbProgress({});
+      }
+    };
+    window.addEventListener('hirakanjee_global_reset', handleGlobalReset);
+    return () => window.removeEventListener('hirakanjee_global_reset', handleGlobalReset);
   }, [currentLesson?.id]);
 
-  // Reset when lessonId changes
+  // Start Skip Exam Session (Placement / Test-Out Quiz)
+  const handleStartSkipExam = () => {
+    let questionsToUse = [];
+    if (currentLesson?.quiz && currentLesson.quiz.length > 0) {
+      questionsToUse = [...currentLesson.quiz].sort(() => Math.random() - 0.5).slice(0, 8);
+    } else {
+      questionsToUse = getLearningQuizForLesson(currentLesson, 8);
+    }
+    setActiveQuizQuestions(questionsToUse);
+    setQuizMode('skip');
+    const queue = questionsToUse.map((_, i) => i);
+    setActiveQueue(queue);
+    setQueueIdx(0);
+    setMistakeQueue([]);
+    setFirstPassMistakes([]);
+    setIsReviewPhase(false);
+    setIsFinished(false);
+    setSelectedOption(null);
+    setSelectedChips([]);
+    setCheckStatus('idle');
+    setIsPracticing(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset when lessonId or modeParam changes
   useEffect(() => {
-    if (currentLesson?.id === 'kanji-n5-mastery') {
+    if (modeParam === 'skip') {
+      handleStartSkipExam();
+      return;
+    }
+
+    setQuizMode(isN4 ? 'practice' : 'learning');
+    if (currentLesson?.id === 'n5-level-exam') {
+      setActiveQuizQuestions(generateN5LevelExamQuestions(25));
+    } else if (currentLesson?.id === 'n4-level-exam') {
+      setActiveQuizQuestions(generateN4LevelExamQuestions(25));
+    } else if (currentLesson?.id === 'kanji-n5-mastery') {
       setActiveQuizQuestions(getRandomKanjiQuiz(10));
     } else if (currentLesson?.id === 'listening-n5-mastery') {
       setActiveQuizQuestions(getRandomListeningQuiz(10));
+    } else if (!isN4) {
+      setActiveQuizQuestions(getLearningQuizForLesson(currentLesson, 15));
     } else {
       setActiveQuizQuestions(currentLesson?.quiz || []);
     }
@@ -234,10 +315,16 @@ export default function N5LessonPage({ settings = {} }) {
     setSelectedChips([]);
     setCheckStatus('idle');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [lessonId]);
+  }, [lessonId, modeParam]);
 
-  const initialQuestions =
-    activeQuizQuestions.length > 0 ? activeQuizQuestions : currentLesson?.quiz || [];
+  const initialQuestions = useMemo(() => {
+    if (activeQuizQuestions && activeQuizQuestions.length > 0) return activeQuizQuestions;
+    if (quizMode === 'learning' && !isN4) {
+      return getLearningQuizForLesson(currentLesson, 15);
+    }
+    return currentLesson?.quiz || [];
+  }, [activeQuizQuestions, quizMode, isN4, currentLesson]);
+
   const currentQuestionIdx = activeQueue[queueIdx] !== undefined ? activeQueue[queueIdx] : 0;
   const currentQuestion = initialQuestions[currentQuestionIdx] || initialQuestions[0];
 
@@ -253,16 +340,48 @@ export default function N5LessonPage({ settings = {} }) {
     }
   }, [isPracticing, currentQuestionIdx, checkStatus]);
 
-  // Start Practice Session
-  const handleStartPractice = () => {
-    let questionsToUse = activeQuizQuestions;
+  // Start Learning Quiz Session (Guided Lesson Learning)
+  const handleStartLearning = () => {
+    let questionsToUse = [];
     if (currentLesson.id === 'kanji-n5-mastery') {
       questionsToUse = getRandomKanjiQuiz(10);
-      setActiveQuizQuestions(questionsToUse);
     } else if (currentLesson.id === 'listening-n5-mastery') {
       questionsToUse = getRandomListeningQuiz(10);
-      setActiveQuizQuestions(questionsToUse);
+    } else {
+      questionsToUse = getLearningQuizForLesson(currentLesson, 15);
     }
+    setActiveQuizQuestions(questionsToUse);
+    setQuizMode('learning');
+    const queue = questionsToUse.map((_, i) => i);
+    setActiveQueue(queue);
+    setQueueIdx(0);
+    setMistakeQueue([]);
+    setFirstPassMistakes([]);
+    setIsReviewPhase(false);
+    setIsFinished(false);
+    setSelectedOption(null);
+    setSelectedChips([]);
+    setCheckStatus('idle');
+    setIsPracticing(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Start Practice Session (Mastery Challenge)
+  const handleStartPractice = () => {
+    let questionsToUse = [];
+    if (currentLesson?.id === 'n5-level-exam') {
+      questionsToUse = generateN5LevelExamQuestions(25);
+    } else if (currentLesson?.id === 'n4-level-exam') {
+      questionsToUse = generateN4LevelExamQuestions(25);
+    } else if (currentLesson.id === 'kanji-n5-mastery') {
+      questionsToUse = getRandomKanjiQuiz(10);
+    } else if (currentLesson.id === 'listening-n5-mastery') {
+      questionsToUse = getRandomListeningQuiz(10);
+    } else {
+      questionsToUse = currentLesson?.quiz || [];
+    }
+    setActiveQuizQuestions(questionsToUse);
+    setQuizMode('practice');
     const queue = questionsToUse.map((_, i) => i);
     setActiveQueue(queue);
     setQueueIdx(0);
@@ -279,11 +398,14 @@ export default function N5LessonPage({ settings = {} }) {
 
   const handleExitPractice = () => {
     if (checkStatus !== 'idle' || queueIdx > 0 || isReviewPhase) {
-      const confirmExit = window.confirm(
-        'Exit practice session? Your progress for this attempt will be lost.'
-      );
-      if (!confirmExit) return;
+      setShowExitConfirm(true);
+      return;
     }
+    setIsPracticing(false);
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitConfirm(false);
     setIsPracticing(false);
   };
 
@@ -291,22 +413,18 @@ export default function N5LessonPage({ settings = {} }) {
   const handleAddChip = (chipIndex) => {
     if (checkStatus !== 'idle') return;
     if (selectedChips.includes(chipIndex)) return;
-    sfx.playTileClick();
     const chipText = currentQuestion.chips[chipIndex];
     if (chipText) {
       speakJapanese(chipText);
     }
+    sfx.playTileClick();
     setSelectedChips((prev) => [...prev, chipIndex]);
   };
 
-  // Word Bank: Tap placed chip to return to tray
+  // Word Bank: Tap placed chip to return to tray (no audio speech, only tile feedback)
   const handleRemoveChip = (chipIndex) => {
     if (checkStatus !== 'idle') return;
     sfx.playTileClick();
-    const chipText = currentQuestion.chips[chipIndex];
-    if (chipText) {
-      speakJapanese(chipText);
-    }
     setSelectedChips((prev) => prev.filter((i) => i !== chipIndex));
   };
 
@@ -378,6 +496,19 @@ export default function N5LessonPage({ settings = {} }) {
         const initialCount = initialQuestions.length || 10;
         const initialCorrect = initialCount - firstPassMistakes.length;
         const totalScore = Math.max(0, Math.round((initialCorrect / initialCount) * 100));
+
+        // Save progression states
+        if (quizMode === 'skip') {
+          if (totalScore >= 80) {
+            markLessonSkipped(currentLesson.id, totalScore);
+          }
+        } else if (currentLesson?.isExam) {
+          if (totalScore >= 80) {
+            markLevelExamPassed(isN4 ? 'N4' : 'N5', totalScore);
+          }
+        } else {
+          recordQuizCompletion(currentLesson.id, quizMode, totalScore, isN4);
+        }
 
         // Save progress to SQLite
         if (window.db?.saveLessonProgress) {
@@ -509,13 +640,29 @@ export default function N5LessonPage({ settings = {} }) {
         <div className="practice-session-container">
           <div className="practice-victory-card">
             <div className="practice-trophy-icon">
-              <AiOutlineTrophy size={48} />
+              {isExamPassed ? <AiOutlineTrophy size={52} /> : isSkipMode && isSkipPassed ? <AiOutlineThunderbolt size={50} /> : <AiOutlineTrophy size={48} />}
             </div>
-            <h2>Practice Complete!</h2>
+            <h2>
+              {isSkipMode
+                ? isSkipPassed ? '⚡ Lesson Skipped & Unlocked!' : 'Skip Test Incomplete'
+                : isExam
+                  ? isExamPassed ? `🏆 JLPT ${isN4 ? 'N4' : 'N5'} Certification Passed!` : `Exam Score: ${initialAccuracyPercent}%`
+                  : quizMode === 'learning' ? 'Learning Quiz Complete!' : 'Practice Complete!'}
+            </h2>
             <p className="practice-victory-sub">
-              {currentLesson.id === 'kanji-n5-mastery'
-                ? 'Randomized N5 Kanji reading quiz completed and character statistics updated!'
-                : 'All questions and review items have been completed and mastered.'}
+              {isSkipMode
+                ? isSkipPassed
+                  ? `Outstanding! You scored ${initialAccuracyPercent}% and demonstrated mastery of ${currentLesson.shortTitle || currentLesson.title}. Progression has been unlocked!`
+                  : `You scored ${initialAccuracyPercent}%. An accuracy of 80% or higher is required to skip this lesson. Please study the lesson guide or try again.`
+                : isExam
+                  ? isExamPassed
+                    ? `Congratulations! You scored ${initialAccuracyPercent}% on the Comprehensive Level Exam. JLPT ${isN4 ? 'N3' : 'N4'} is now officially unlocked on your dashboard!`
+                    : `You scored ${initialAccuracyPercent}%. A passing grade of 80% (20/25) is required to unlock JLPT ${isN4 ? 'N3' : 'N4'}. Review the curriculum topics and retake the exam when ready.`
+                  : quizMode === 'learning'
+                    ? `You've walked through the formulas, pronunciation, meanings, and sentence patterns for ${currentLesson.shortTitle || currentLesson.title}!`
+                    : currentLesson.id === 'kanji-n5-mastery'
+                      ? 'Randomized N5 Kanji reading quiz completed and character statistics updated!'
+                      : 'All questions and review items have been completed and mastered.'}
             </p>
 
             <div className="victory-stats-grid">
@@ -524,7 +671,7 @@ export default function N5LessonPage({ settings = {} }) {
                 <span className="v-stat-val">{initialAccuracyPercent}%</span>
               </div>
               <div className="v-stat-card">
-                <span className="v-stat-label">Questions Mastered</span>
+                <span className="v-stat-label">Questions Completed</span>
                 <span className="v-stat-val">
                   {initialTotal} / {initialTotal}
                 </span>
@@ -539,25 +686,92 @@ export default function N5LessonPage({ settings = {} }) {
               </div>
             </div>
 
-            <div className="victory-actions">
-              <button className="practice-btn-secondary" onClick={handleStartPractice}>
-                <AiOutlineReload size={16} /> Practice Again
-              </button>
-              <button className="practice-btn-secondary" onClick={() => setIsPracticing(false)}>
-                <AiOutlineBook size={16} /> Review Guide & Checklist
-              </button>
-              {nextLesson && (
-                <button
-                  className="practice-btn-primary"
-                  onClick={() => {
-                    const nextIsN4 = allN4Lessons.some((l) => l.id === nextLesson.id);
-                    navigate(`/learn/${nextIsN4 ? 'n4' : 'n5'}/${nextLesson.id}`);
-                  }}
-                >
-                  Next Lesson <AiOutlineArrowRight size={16} />
+            {isSkipMode ? (
+              <div className="victory-actions learning-victory-actions">
+                {isSkipPassed && nextLesson && (
+                  <button
+                    className="practice-btn-primary"
+                    onClick={() => {
+                      const nextIsN4 = allN4Lessons.some((l) => l.id === nextLesson.id);
+                      navigate(`/learn/${nextIsN4 ? 'n4' : 'n5'}/${nextLesson.id}`);
+                    }}
+                  >
+                    <AiOutlineArrowRight size={16} /> Next Lesson
+                  </button>
+                )}
+                {isSkipPassed ? (
+                  <button className="practice-btn-secondary" onClick={() => setIsPracticing(false)}>
+                    <AiOutlineBook size={16} /> Review Lesson Guide
+                  </button>
+                ) : (
+                  <button className="practice-btn-primary" onClick={handleStartSkipExam}>
+                    <AiOutlineReload size={16} /> Try Skip Test Again
+                  </button>
+                )}
+                <button className="practice-btn-secondary" onClick={() => navigate('/learn')}>
+                  <AiOutlineArrowLeft size={16} /> Return to Lessons
                 </button>
-              )}
-            </div>
+              </div>
+            ) : isExam ? (
+              <div className="victory-actions learning-victory-actions">
+                {isExamPassed ? (
+                  <button
+                    className="practice-btn-primary"
+                    onClick={() => navigate('/learn')}
+                  >
+                    <AiOutlineTrophy size={16} /> Go to JLPT {isN4 ? 'N3' : 'N4'}
+                  </button>
+                ) : (
+                  <button className="practice-btn-primary" onClick={handleStartPractice}>
+                    <AiOutlineReload size={16} /> Retake Exam
+                  </button>
+                )}
+                <button className="practice-btn-secondary" onClick={() => navigate('/learn')}>
+                  <AiOutlineArrowLeft size={16} /> Return to Lessons
+                </button>
+              </div>
+            ) : (
+              <div className={`victory-actions ${quizMode === 'learning' ? 'learning-victory-actions' : ''}`}>
+                {quizMode === 'learning' ? (
+                  <>
+                    <button className="practice-btn-primary" onClick={handleStartPractice}>
+                      <AiOutlineArrowRight size={16} /> Start Practice Quiz
+                    </button>
+                    <button className="practice-btn-secondary" onClick={handleStartLearning}>
+                      <AiOutlineReload size={16} /> Learn Again
+                    </button>
+                    <button className="practice-btn-secondary" onClick={() => setIsPracticing(false)}>
+                      <AiOutlineArrowLeft size={16} /> Return
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="practice-btn-secondary" onClick={handleStartPractice}>
+                      <AiOutlineReload size={16} /> Practice Again
+                    </button>
+                    {!isN4 && (
+                      <button className="practice-btn-secondary" onClick={handleStartLearning}>
+                        <AiOutlineBook size={16} /> Take Learning Quiz
+                      </button>
+                    )}
+                    <button className="practice-btn-secondary" onClick={() => setIsPracticing(false)}>
+                      <AiOutlineBook size={16} /> Review Guide & Checklist
+                    </button>
+                    {nextLesson && (
+                      <button
+                        className="practice-btn-primary"
+                        onClick={() => {
+                          const nextIsN4 = allN4Lessons.some((l) => l.id === nextLesson.id);
+                          navigate(`/learn/${nextIsN4 ? 'n4' : 'n5'}/${nextLesson.id}`);
+                        }}
+                      >
+                        Next Lesson <AiOutlineArrowRight size={16} />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -570,10 +784,14 @@ export default function N5LessonPage({ settings = {} }) {
           <button
             className="practice-exit-btn"
             onClick={handleExitPractice}
-            title="Exit practice session"
+            title={quizMode === 'learning' ? 'Exit learning quiz' : 'Exit practice session'}
           >
             <AiOutlineClose size={20} />
           </button>
+
+          <span className={`quiz-mode-pill ${quizMode}`}>
+            {quizMode === 'learning' ? '📖 Guided Learning Quiz' : '🎯 Practice Session'}
+          </span>
 
           <div className="practice-progress-track">
             <div
@@ -586,10 +804,10 @@ export default function N5LessonPage({ settings = {} }) {
             <button
               className="practice-notes-btn"
               onClick={() => setShowNotesModal(true)}
-              title="Peek at Lesson Notes"
+              title="Peek at Lesson Notes & Formulas"
             >
               <AiOutlineBook size={16} />
-              <span>Notes</span>
+              <span>Formulas & Notes</span>
             </button>
 
             {isReviewPhase ? (
@@ -612,14 +830,19 @@ export default function N5LessonPage({ settings = {} }) {
         {/* Question Body */}
         <div className="practice-question-container">
           <div className="practice-q-type-badge">
-            <span className="q-type-name">
-              {currentQuestion.type === 'word-bank' && 'SENTENCE BUILDER'}
-              {currentQuestion.type === 'fill-blank' && 'FILL IN THE BLANK'}
-              {currentQuestion.type === 'audio-listening' && 'LISTENING COMPREHENSION'}
-              {currentQuestion.type === 'error-hunt' && 'SPOT THE GRAMMAR ERROR'}
-              {currentQuestion.type === 'multiple-choice' &&
-                (currentQuestion.kanjiChar ? `KANJI READING (${currentQuestion.kanjiChar})` : 'MULTIPLE CHOICE')}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              {currentQuestion.categoryLabel && (
+                <span className="learning-stage-pill">{currentQuestion.categoryLabel}</span>
+              )}
+              <span className="q-type-name">
+                {currentQuestion.type === 'word-bank' && 'SENTENCE BUILDER'}
+                {currentQuestion.type === 'fill-blank' && 'FILL IN THE BLANK'}
+                {currentQuestion.type === 'audio-listening' && 'LISTENING COMPREHENSION'}
+                {currentQuestion.type === 'error-hunt' && 'SPOT THE GRAMMAR ERROR'}
+                {currentQuestion.type === 'multiple-choice' &&
+                  (currentQuestion.kanjiChar ? `KANJI READING (${currentQuestion.kanjiChar})` : 'MULTIPLE CHOICE')}
+              </span>
+            </div>
           </div>
 
           <div className="practice-prompt-row">
@@ -838,10 +1061,18 @@ export default function N5LessonPage({ settings = {} }) {
           {/* 4. ERROR HUNT & MULTIPLE CHOICE / KANJI READING */}
           {(currentQuestion.type === 'error-hunt' || currentQuestion.type === 'multiple-choice') && (
             <div className="choice-challenge-layout">
-              {shouldShowRomaji && currentQuestion.romaji && (
-                <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
-                  {currentQuestion.romaji}
-                </div>
+              {shouldShowRomaji &&
+                !currentQuestion.kanjiChar &&
+                currentQuestion.category !== 'formula' &&
+                currentQuestion.category !== 'meaning' &&
+                !currentQuestion.categoryLabel?.toLowerCase().includes('formula') &&
+                !currentQuestion.categoryLabel?.toLowerCase().includes('structure') &&
+                !currentQuestion.categoryLabel?.toLowerCase().includes('meaning') &&
+                !currentQuestion.categoryLabel?.toLowerCase().includes('tense') &&
+                currentQuestion.romaji && (
+                  <div className="romaji-subtext" style={{ marginBottom: '16px' }}>
+                    {currentQuestion.romaji}
+                  </div>
               )}
 
               <div className="exercise-options-grid">
@@ -995,6 +1226,54 @@ export default function N5LessonPage({ settings = {} }) {
             </div>
           </div>
         )}
+
+        {/* Practice Session Exit Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showExitConfirm}
+          title={`Exit ${quizMode === 'learning' ? 'Learning Quiz' : quizMode === 'skip' ? 'Skip Exam' : currentLesson?.isExam ? 'Certification Exam' : 'Practice Session'}?`}
+          message="Your progress for this attempt will be lost. Are you sure you want to return to the curriculum?"
+          confirmText="Exit Session"
+          cancelText="Keep Practicing"
+          variant="warning"
+          onConfirm={handleConfirmExit}
+          onCancel={() => setShowExitConfirm(false)}
+        />
+      </div>
+    );
+  }
+
+  // =========================================================
+  // VIEW: LOCKED LESSON SCREEN (GATED PROGRESSION)
+  // =========================================================
+  if (!isUnlocked && !isPracticing && modeParam !== 'skip') {
+    return (
+      <div className="n5-lesson-page">
+        <div className="lesson-nav-bar">
+          <Link to="/learn" className="lesson-nav-back">
+            <AiOutlineArrowLeft size={16} />
+            <span>Back to Curriculum</span>
+          </Link>
+        </div>
+
+        <div className="lesson-locked-container">
+          <div className="lesson-locked-card">
+            <div className="locked-shield-icon">
+              <AiOutlineLock size={52} />
+            </div>
+            <h2>{currentLesson?.title || 'Lesson'} is Locked</h2>
+            <p className="lesson-locked-sub">
+              This lesson is currently locked in progression. Complete both the Learning Quiz and Practice Quiz for {prevLesson ? `"${prevLesson.shortTitle || prevLesson.title}"` : 'the previous lesson'}, or take the Skip Exam to test out of this lesson right now.
+            </p>
+            <div className="lesson-locked-actions">
+              <button className="practice-btn-primary" onClick={handleStartSkipExam}>
+                <AiOutlineThunderbolt size={16} /> Take Skip Exam (Test Out)
+              </button>
+              <button className="practice-btn-secondary" onClick={() => navigate('/learn')}>
+                <AiOutlineArrowLeft size={16} /> Return to Curriculum
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -1051,13 +1330,15 @@ export default function N5LessonPage({ settings = {} }) {
       <div className="lesson-header-card">
         <div className="lesson-header-top">
           <span className="lesson-badge-number">
-            {isN4
-              ? `${currentSection?.title || 'JLPT N4'} #${currentLesson?.number}`
-              : currentLesson?.id === 'kanji-n5-mastery'
-                ? 'JLPT N5 Kanji'
-                : currentLesson?.id === 'listening-n5-mastery'
-                  ? 'JLPT N5 Listening'
-                  : `${(currentSection?.title || 'JLPT N5').replace(/^\d+\.\s*/, '')} #${currentLesson?.number}`}
+            {currentLesson?.isExam
+              ? `JLPT ${isN4 ? 'N4' : 'N5'} CAPSTONE EXAM`
+              : isN4
+                ? `${currentSection?.title || 'JLPT N4'} #${currentLesson?.number}`
+                : currentLesson?.id === 'kanji-n5-mastery'
+                  ? 'JLPT N5 Kanji'
+                  : currentLesson?.id === 'listening-n5-mastery'
+                    ? 'JLPT N5 Listening'
+                    : `${(currentSection?.title || 'JLPT N5').replace(/^\d+\.\s*/, '')} #${currentLesson?.number}`}
           </span>
           {lessonRecord?.completed && (
             <span className="lesson-status-pill completed">
@@ -1072,34 +1353,45 @@ export default function N5LessonPage({ settings = {} }) {
           <p>{currentLesson.description || currentLesson.summary}</p>
         </div>
 
-        {/* Hero Practice Launch Banner */}
+        {/* Hero Practice / Learning Launch Banner */}
         <div className="hero-practice-banner">
           <div className="hero-practice-info">
             <h3>
-              {currentLesson.id === 'kanji-n5-mastery'
-                ? 'Randomized Kanji Reading Practice'
-                : currentLesson.id === 'listening-n5-mastery'
-                  ? 'Randomized JLPT N5 Listening Test'
-                  : isN4
-                    ? `${currentLesson.shortTitle} Practice`
-                    : 'Interactive Practice Session'}
+              {currentLesson.isExam
+                ? `JLPT ${isN4 ? 'N4' : 'N5'} Comprehensive Certification Exam`
+                : currentLesson.id === 'kanji-n5-mastery'
+                  ? 'Randomized Kanji Reading Practice'
+                  : currentLesson.id === 'listening-n5-mastery'
+                    ? 'Randomized JLPT N5 Listening Test'
+                    : isN4
+                      ? `${currentLesson.shortTitle} Practice`
+                      : `${currentLesson.shortTitle || currentLesson.title} • Learning Quiz`}
             </h3>
             <p>
-              {currentLesson.id === 'kanji-n5-mastery'
-                ? '10 Randomized Questions across all kanji quiz banks • Updates character mastery & checklist'
-                : currentLesson.id === 'listening-n5-mastery'
-                  ? '10 Randomized Questions across Level 1, Level 2, and 4 Core Te-form Audio Patterns'
-                  : isN4
-                    ? `${currentLesson?.quiz?.length || 3} Targeted Questions • Word Bank & Contextual Drills`
-                    : '10 Challenging Questions • Sentence Builder, Audio Listening, Error Spotting'}
+              {currentLesson.isExam
+                ? `25 Comprehensive Questions across all ${isN4 ? 'N4' : 'N5'} topics • Passing score 80%+ unlocks JLPT ${isN4 ? 'N3' : 'N4'}`
+                : currentLesson.id === 'kanji-n5-mastery'
+                  ? '10 Randomized Questions across all kanji quiz banks • Updates character mastery & checklist'
+                  : currentLesson.id === 'listening-n5-mastery'
+                    ? '10 Randomized Questions across Level 1, Level 2, and 4 Core Te-form Audio Patterns'
+                    : isN4
+                      ? `${currentLesson?.quiz?.length || 3} Targeted Questions • Word Bank & Contextual Drills`
+                      : '15 Guided Learning Questions • Structure formulas, pronunciation, meaning, and sentence patterns'}
             </p>
           </div>
-          <button className="hero-start-practice-btn" onClick={handleStartPractice}>
-            {currentLesson.id === 'kanji-n5-mastery'
-              ? 'Start Random Quiz'
-              : currentLesson.id === 'listening-n5-mastery'
-                ? 'Start Listening Quiz'
-                : 'Start Practice'}{' '}
+          <button
+            className="hero-start-practice-btn hero-start-learning-btn"
+            onClick={isN4 || currentLesson?.isExam ? handleStartPractice : handleStartLearning}
+          >
+            {currentLesson.isExam
+              ? 'Start Comprehensive Exam'
+              : currentLesson.id === 'kanji-n5-mastery'
+                ? 'Start Random Quiz'
+                : currentLesson.id === 'listening-n5-mastery'
+                  ? 'Start Listening Quiz'
+                  : isN4
+                    ? 'Start Practice'
+                    : 'Start Learning'}{' '}
             <AiOutlineArrowRight size={18} />
           </button>
         </div>
@@ -1512,7 +1804,7 @@ export default function N5LessonPage({ settings = {} }) {
                 ? 'Start a 10-question randomized reading quiz sampled across MLC Parts 1–10!'
                 : currentLesson.id === 'listening-n5-mastery'
                   ? 'Start a 10-question randomized listening test across Level 1, Level 2, and Te-form patterns!'
-                  : 'Take the 10-question interactive practice session to earn your mastery badge!'}
+                  : 'Take the interactive practice session to test what you have learned and earn your mastery badge!'}
             </p>
           </div>
           <button className="btn-primary lesson-cta-btn" onClick={handleStartPractice}>

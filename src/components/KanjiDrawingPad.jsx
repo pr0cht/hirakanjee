@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AiOutlineReload, AiOutlineSound, AiOutlineCheckCircle } from 'react-icons/ai';
 import DrawingCanvas from './DrawingCanvas';
-import { kanjiN5Data } from '../data/kanjiN5Data';
+import { kanjiAllData } from '../data/kanjiAllData';
 import { speakJapanese } from '../utils/audio';
 import { sfx } from '../utils/sfx';
 
@@ -54,7 +54,7 @@ const hiraganaList = [
   { char: 'ん', romaji: 'n', strokes: 1, script: 'hiragana' },
 ];
 
-const kanjiList = kanjiN5Data.map((k) => ({
+const kanjiList = kanjiAllData.map((k) => ({
   char: k.char,
   romaji: k.meaning,
   strokes: k.strokes,
@@ -108,6 +108,8 @@ export default function KanjiDrawingPad({ defaultScript = 'hiragana' }) {
           pickNextCharacter();
         }, 1400);
       }
+    } else {
+      sfx.playIncorrect();
     }
   };
 

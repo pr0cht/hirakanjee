@@ -459,11 +459,15 @@ function setCharLearned(userId = 1, script = 'hiragana', char, isLearned = true)
  */
 function resetAllProgress(userId = 1) {
   const deleteMastery = db.prepare('DELETE FROM CharacterMastery WHERE user_id = ?');
+  const deleteWriting = db.prepare('DELETE FROM WritingMastery WHERE user_id = ?');
   const deleteLogs = db.prepare('DELETE FROM PracticeLogs WHERE user_id = ?');
   const deleteLessons = db.prepare('DELETE FROM LessonProgress WHERE user_id = ?');
 
   const txn = db.transaction(() => {
     deleteMastery.run(userId);
+    try {
+      deleteWriting.run(userId);
+    } catch (e) {}
     deleteLogs.run(userId);
     deleteLessons.run(userId);
   });

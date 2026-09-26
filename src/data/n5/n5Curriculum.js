@@ -43,6 +43,7 @@ import { lesson as s6 } from './special/06-special-sorry-late.lesson.js';
 import { kanjiQuizBank } from './kanji/kanjiQuizBank.js';
 import { kanjiN5MasteryLesson, getRandomKanjiQuiz } from './kanji/kanjiMasteryLesson.js';
 import { listeningN5MasteryLesson, getRandomListeningQuiz, listeningTracks } from './listening/listeningData.js';
+import { n5LevelExamLesson, generateN5LevelExamQuestions } from './n5LevelExam.js';
 
 export const n5CoreLessons = [
   c1,
@@ -112,6 +113,7 @@ export const allN5Lessons = [
   kanjiN5MasteryLesson,
   ...n5SpecialLessons,
   listeningN5MasteryLesson,
+  n5LevelExamLesson,
 ];
 
 export const n5Curriculum = [
@@ -192,6 +194,8 @@ export {
   listeningN5MasteryLesson,
   getRandomListeningQuiz,
   listeningTracks,
+  n5LevelExamLesson,
+  generateN5LevelExamQuestions,
 };
 
 export default n5Curriculum;

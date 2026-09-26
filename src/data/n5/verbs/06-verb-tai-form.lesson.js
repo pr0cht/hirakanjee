@@ -1,4 +1,4 @@
-// JLPT N4 Lesson Module
+// JLPT N5 Lesson Module
 export const lesson = {
   "id": "verb-tai-form",
   "number": 6,

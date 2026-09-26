@@ -56,7 +56,7 @@ export default function ScriptGrid({ sections, scriptName = 'hiragana' }) {
     try {
       if (window.db?.getScriptMastery) {
         const dbData = await window.db.getScriptMastery(scriptName);
-        if (dbData && typeof dbData === 'object' && Object.keys(dbData).length > 0) {
+        if (dbData && typeof dbData === 'object') {
           setMasteryMap(dbData);
           try {
             localStorage.setItem(`hirakanjee_${scriptName}_mastery`, JSON.stringify(dbData));
@@ -83,9 +83,11 @@ export default function ScriptGrid({ sections, scriptName = 'hiragana' }) {
 
     window.addEventListener('focus', handleSync);
     window.addEventListener('storage', handleSync);
+    window.addEventListener('hirakanjee_global_reset', handleSync);
     return () => {
       window.removeEventListener('focus', handleSync);
       window.removeEventListener('storage', handleSync);
+      window.removeEventListener('hirakanjee_global_reset', handleSync);
     };
   }, [fetchMastery]);
 

@@ -145,6 +145,8 @@ export const n4PracticeLessons = [
   p14,
 ];
 
+import { n4LevelExamLesson } from './n4LevelExam.js';
+
 export const allN4Lessons = [
   ...n4GrammarLessons,
   ...n4VerbLessons,
@@ -152,6 +154,7 @@ export const allN4Lessons = [
   ...n4KanjiLessons,
   ...n4ListeningLessons,
   ...n4PracticeLessons,
+  n4LevelExamLesson,
 ];
 
 export const n4Curriculum = [
@@ -213,4 +216,5 @@ export function getN4LessonById(lessonId) {
   return allN4Lessons.find((l) => l.id === lessonId) || null;
 }
 
+export { n4LevelExamLesson };
 export default n4Curriculum;

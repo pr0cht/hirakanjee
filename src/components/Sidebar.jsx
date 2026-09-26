@@ -11,6 +11,7 @@ import {
   AiOutlineEdit,
   AiOutlineDown,
   AiOutlineSearch,
+  AiOutlineSound,
 } from 'react-icons/ai';
 import './Sidebar.css';
 
@@ -28,8 +29,9 @@ const Sidebar = () => {
   const navItems = [
     { label: 'Home', href: '/', icon: AiOutlineHome },
     { label: 'Dashboard', href: '/dashboard', icon: AiOutlineDashboard },
-    { label: 'Practice', href: '/practice', icon: AiOutlineEdit },
     { label: 'Learn', href: '/learn', icon: AiOutlineBook },
+    { label: 'Practice', href: '/practice', icon: AiOutlineEdit },
+    { label: 'Listen', href: '/listen', icon: AiOutlineSound },
     { divider: true },
     { label: 'Settings', href: '/settings', icon: AiOutlineSetting },
   ];
