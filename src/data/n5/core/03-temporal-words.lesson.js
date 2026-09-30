@@ -19,31 +19,31 @@ export const lesson = {
         ],
         "rows": [
           [
-            "Day Before Yesterday (-2)",
+            "Day Before Yesterday",
             "おととい",
             "ototoi",
             "The day before yesterday"
           ],
           [
-            "Yesterday (-1)",
+            "Yesterday",
             "きのう",
             "kinou",
             "Yesterday"
           ],
           [
-            "Today (0)",
+            "Today",
             "きょう",
             "kyou",
             "Today"
           ],
           [
-            "Tomorrow (+1)",
+            "Tomorrow",
             "あした",
             "ashita",
             "Tomorrow"
           ],
           [
-            "Day After Tomorrow (+2)",
+            "Day After Tomorrow",
             "あさって",
             "asatte",
             "The day after tomorrow"

@@ -125,8 +125,7 @@ export const lesson1LearningBank = [
     question: "Although spelled with the hiragana character 'は' (ha), how is it pronounced when used as the topic marker?",
     options: ["wa", "ha", "ba", "ya"],
     correctAnswer: 0,
-    explanation: "When acting as the grammatical topic marker, the character 'は' is historically and always pronounced 'wa'.",
-    romaji: 'ha -> pronounced wa'
+    explanation: "When acting as the grammatical topic marker, the character 'は' is historically and always pronounced 'wa'."
   },
   {
     id: 'l1-learn-p2',
@@ -137,8 +136,7 @@ export const lesson1LearningBank = [
     question: "Which hiragana character MUST be used to write the topic marker pronounced 'wa'?",
     options: ["は", "わ", "を", "へ"],
     correctAnswer: 0,
-    explanation: "The topic particle is always written with the hiragana 'は' (ha), NEVER with 'わ' (wa).",
-    romaji: 'Spelled: は (not わ)'
+    explanation: "The topic particle is always written with the hiragana 'は' (ha), NEVER with 'わ' (wa)."
   },
   {
     id: 'l1-learn-p3',
@@ -154,8 +152,7 @@ export const lesson1LearningBank = [
       "It is pronounced identically to 'dasu'"
     ],
     correctAnswer: 0,
-    explanation: "In modern standard Tokyo Japanese, the vowel 'u' in です (desu) and ます (masu) is devoiced, sounding like 'dess' in fluent speech.",
-    romaji: 'desu -> pronounced [dess]'
+    explanation: "In modern standard Tokyo Japanese, the vowel 'u' in です (desu) and ます (masu) is devoiced, sounding like 'dess' in fluent speech."
   },
   {
     id: 'l1-learn-p4',
@@ -171,8 +168,7 @@ export const lesson1LearningBank = [
       "Written でちた, pronounced 'dechita'"
     ],
     correctAnswer: 0,
-    explanation: "でした is spelled で (de) + し (shi) + た (ta), pronounced 'deshita' (often with a devoiced 'i', sounding like 'deshta').",
-    romaji: 'deshita'
+    explanation: "でした is spelled で (de) + し (shi) + た (ta), pronounced 'deshita' (often with a devoiced 'i', sounding like 'deshta')."
   },
   {
     id: 'l1-learn-p5',
@@ -188,8 +184,7 @@ export const lesson1LearningBank = [
       "Sudden stress on the first syllable only"
     ],
     correctAnswer: 0,
-    explanation: "Questions ending in 'か' (ka) feature a rising pitch intonation, signaling to the listener that an answer is expected.",
-    romaji: 'Rising intonation with ka'
+    explanation: "Questions ending in 'か' (ka) feature a rising pitch intonation, signaling to the listener that an answer is expected."
   },
 
   // --- Category 3: Meanings & Tense Inflections ---
@@ -200,7 +195,8 @@ export const lesson1LearningBank = [
     type: 'multiple-choice',
     prompt: "Which form of the copula expresses the present affirmative ('is / am / are')?",
     question: "Which form of the copula expresses the present affirmative ('is / am / are')?",
-    options: ["です (desu)", "でした (deshita)", "じゃありません (ja arimasen)", "じゃありませんでした (ja arimasen deshita)"],
+    options: ["です", "でした", "じゃありません", "じゃありませんでした"],
+    romajiOptions: ["desu", "deshita", "ja arimasen", "ja arimasen deshita"],
     correctAnswer: 0,
     explanation: "です (desu) is the polite present affirmative copula meaning 'is / am / are'."
   },
@@ -211,7 +207,8 @@ export const lesson1LearningBank = [
     type: 'multiple-choice',
     prompt: "Which form expresses the present negative ('is not / am not / are not') in polite speech?",
     question: "Which form expresses the present negative ('is not / am not / are not') in polite speech?",
-    options: ["じゃありません (ja arimasen)", "でした (deshita)", "です (desu)", "じゃありませんでした (ja arimasen deshita)"],
+    options: ["じゃありません", "でした", "です", "じゃありませんでした"],
+    romajiOptions: ["ja arimasen", "deshita", "desu", "ja arimasen deshita"],
     correctAnswer: 0,
     explanation: "じゃありません (ja arimasen) or ではありません (dewa arimasen) expresses the present negative ('is not / am not / are not')."
   },
@@ -222,7 +219,8 @@ export const lesson1LearningBank = [
     type: 'multiple-choice',
     prompt: "Which form expresses the past affirmative ('was / were')?",
     question: "Which form expresses the past affirmative ('was / were')?",
-    options: ["でした (deshita)", "です (desu)", "じゃありません (ja arimasen)", "じゃありませんでした (ja arimasen deshita)"],
+    options: ["でした", "です", "じゃありません", "じゃありませんでした"],
+    romajiOptions: ["deshita", "desu", "ja arimasen", "ja arimasen deshita"],
     correctAnswer: 0,
     explanation: "でした (deshita) expresses the past affirmative state ('was / were')."
   },
@@ -233,7 +231,8 @@ export const lesson1LearningBank = [
     type: 'multiple-choice',
     prompt: "Which form expresses the past negative ('was not / were not')?",
     question: "Which form expresses the past negative ('was not / were not')?",
-    options: ["じゃありませんでした (ja arimasen deshita)", "じゃありません (ja arimasen)", "でした (deshita)", "ではありません (dewa arimasen)"],
+    options: ["じゃありませんでした", "じゃありません", "でした", "ではありません"],
+    romajiOptions: ["ja arimasen deshita", "ja arimasen", "deshita", "dewa arimasen"],
     correctAnswer: 0,
     explanation: "じゃありませんでした (ja arimasen deshita) is formed by attaching でした to じゃありません, meaning 'was not / were not'."
   },
@@ -261,10 +260,16 @@ export const lesson1LearningBank = [
     prompt: "How do you answer affirmatively ('Yes, I am') to the question: 'あなた は がくせい です か？'?",
     question: "How do you answer affirmatively ('Yes, I am') to the question: 'あなた は がくせい です か？'?",
     options: [
-      "はい、がくせい です。(Hai, gakusei desu.)",
-      "いいえ、がくせい じゃありません。(Iie, gakusei ja arimasen.)",
-      "はい、がくせい でした。(Hai, gakusei deshita.)",
-      "いいえ、がくせい です。(Iie, gakusei desu.)"
+      "はい、がくせい です。",
+      "いいえ、がくせい じゃありません。",
+      "はい、がくせい でした。",
+      "いいえ、がくせい です。"
+    ],
+    romajiOptions: [
+      "Hai, gakusei desu.",
+      "Iie, gakusei ja arimasen.",
+      "Hai, gakusei deshita.",
+      "Iie, gakusei desu."
     ],
     correctAnswer: 0,
     explanation: "To answer affirmatively: use 'はい' (yes) followed by the noun and affirmative copula 'です'."
@@ -277,10 +282,16 @@ export const lesson1LearningBank = [
     prompt: "How do you answer negatively ('No, I am not') to the question: 'あなた は せんせい です か？'?",
     question: "How do you answer negatively ('No, I am not') to the question: 'あなた は せんせい です か？'?",
     options: [
-      "いいえ、せんせい じゃありません。(Iie, sensei ja arimasen.)",
-      "はい、せんせい です。(Hai, sensei desu.)",
-      "いいえ、せんせい でした。(Iie, sensei deshita.)",
-      "はい、せんせい じゃありません。(Hai, sensei ja arimasen.)"
+      "いいえ、せんせい じゃありません。",
+      "はい、せんせい です。",
+      "いいえ、せんせい でした。",
+      "はい、せんせい じゃありません。"
+    ],
+    romajiOptions: [
+      "Iie, sensei ja arimasen.",
+      "Hai, sensei desu.",
+      "Iie, sensei deshita.",
+      "Hai, sensei ja arimasen."
     ],
     correctAnswer: 0,
     explanation: "To answer negatively: use 'いいえ' (no) followed by the noun and negative copula 'じゃありません'."
@@ -758,33 +769,62 @@ export function generateLearningQuizFromLesson(lesson) {
       const rows = table.rows;
       const headers = (table.headers || []).map((h) => h.toLowerCase());
 
-      // Determine column indices
-      let jpCol = headers.findIndex(
-        (h) => h.includes('japanese') || h.includes('form') || h.includes('word') || h.includes('pronoun') || h.includes('verb') || h.includes('particle')
-      );
-      let enCol = headers.findIndex(
-        (h) => h.includes('meaning') || h.includes('usage') || h.includes('english') || h.includes('role') || h.includes('explanation')
-      );
-      let romCol = headers.findIndex((h) => h.includes('romaji') || h.includes('pronunciation'));
+      // Determine column indices by inspecting content to ensure Japanese is detected reliably
+      let jpCol = -1;
+      let enCol = -1;
+      let romCol = -1;
 
-      if (jpCol === -1) jpCol = 0;
-      if (enCol === -1) enCol = rows[0]?.length > 2 ? rows[0].length - 1 : 1;
+      const numCols = headers.length || rows[0]?.length || 0;
+      for (let c = 0; c < numCols; c++) {
+        const h = (headers[c] || '').toLowerCase();
+        if (h.includes('romaji') || h.includes('reading') || h.includes('pronunciation')) {
+          romCol = c;
+          continue;
+        }
+        const sampleCells = rows.slice(0, 5).map((r) => r[c] || '');
+        const hasJp = sampleCells.some((cell) => typeof cell === 'string' && /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/.test(cell));
+        const hasEn = sampleCells.some((cell) => typeof cell === 'string' && /[a-zA-Z]/.test(cell) && !/[\u3040-\u30ff\u4e00-\u9fff]/.test(cell));
+
+        if (hasJp && jpCol === -1) {
+          jpCol = c;
+        } else if (hasEn && enCol === -1) {
+          enCol = c;
+        }
+      }
+
+      // Prefer explicit English / Meaning column header if present
+      const explicitEnIdx = headers.findIndex((h, idx) => idx !== jpCol && (h.includes('meaning') || h.includes('english') || h.includes('translation') || h.includes('explanation') || h.includes('role')));
+      if (explicitEnIdx !== -1) {
+        enCol = explicitEnIdx;
+      } else if (enCol === -1) {
+        enCol = headers.findIndex((h, idx) => idx !== jpCol && (h.includes('usage') || h.includes('pronoun')));
+        if (enCol === -1) enCol = rows[0]?.length > 2 ? rows[0].length - 1 : (jpCol === 0 ? 1 : 0);
+      }
+      if (jpCol === -1) {
+        jpCol = headers.findIndex((h) => h.includes('japanese') || h.includes('nihongo') || h.includes('form') || h.includes('word') || h.includes('verb') || h.includes('particle'));
+        if (jpCol === -1) jpCol = 0;
+      }
       if (romCol === -1) romCol = headers.findIndex((h) => h.includes('rom'));
+
+      const cleanCellText = (str) => {
+        if (typeof str !== 'string') return str;
+        return str.replace(/\s*\([+-]?\d+\)/g, '').trim();
+      };
 
       rows.forEach((row, rIdx) => {
         const rawJp = row[jpCol];
         const rawEn = row[enCol];
         const rawRom = romCol !== -1 ? row[romCol] : null;
 
-        // Clean out parenthetical notes if needed
-        const jpText = typeof rawJp === 'string' ? rawJp.trim() : null;
-        const enText = typeof rawEn === 'string' ? rawEn.trim() : null;
-        const romText = typeof rawRom === 'string' ? rawRom.trim() : null;
+        // Clean out parenthetical notes and numbering (+1, +2, etc.)
+        const jpText = typeof rawJp === 'string' ? cleanCellText(rawJp) : null;
+        const enText = typeof rawEn === 'string' ? cleanCellText(rawEn) : null;
+        const romText = typeof rawRom === 'string' ? cleanCellText(rawRom) : null;
 
         if (jpText && enText && jpText !== enText) {
           // Generate JP -> EN Meaning Question
           const otherRows = rows.filter((_, idx) => idx !== rIdx && _[enCol]);
-          const distractors = shuffle(otherRows).slice(0, 3).map((r) => r[enCol]);
+          const distractors = shuffle(otherRows).slice(0, 3).map((r) => cleanCellText(r[enCol]));
 
           if (distractors.length >= 2) {
             const options = [enText, ...distractors];
@@ -802,7 +842,7 @@ export function generateLearningQuizFromLesson(lesson) {
           }
 
           // Generate EN -> JP Expression Question
-          const jpDistractors = shuffle(otherRows).slice(0, 3).map((r) => r[jpCol]);
+          const jpDistractors = shuffle(otherRows).slice(0, 3).map((r) => cleanCellText(r[jpCol]));
           if (jpDistractors.length >= 2) {
             const options = [jpText, ...jpDistractors];
             generatedQuestions.push({
@@ -818,9 +858,9 @@ export function generateLearningQuizFromLesson(lesson) {
             });
           }
 
-          // Generate Pronunciation Question if romaji available
+          // Generate Pronunciation Question if romaji available (do NOT attach romaji to question itself to avoid leaking answer)
           if (romText && romCol !== -1) {
-            const romDistractors = shuffle(otherRows).slice(0, 3).map((r) => r[romCol]).filter(Boolean);
+            const romDistractors = shuffle(otherRows).slice(0, 3).map((r) => cleanCellText(r[romCol])).filter(Boolean);
             if (romDistractors.length >= 2) {
               generatedQuestions.push({
                 id: `${lesson.id}-auto-t-rom-${tIdx}-${rIdx}`,
@@ -831,8 +871,7 @@ export function generateLearningQuizFromLesson(lesson) {
                 question: `What is the correct pronunciation / romaji for '${jpText}'?`,
                 options: [romText, ...romDistractors],
                 correctAnswer: 0,
-                explanation: `'${jpText}' is pronounced '${romText}'.`,
-                romaji: romText
+                explanation: `'${jpText}' is pronounced '${romText}'.`
               });
             }
           }
@@ -863,7 +902,7 @@ export function generateLearningQuizFromLesson(lesson) {
       });
     }
 
-    // Reverse Translation (EN -> JP)
+    // Reverse Translation (EN -> JP) - omit romaji so it does not give away the Japanese sentence
     const distractorJps = shuffle(otherExamples).slice(0, 3).map((e) => e.jp);
     if (distractorJps.length >= 2) {
       generatedQuestions.push({
@@ -876,7 +915,6 @@ export function generateLearningQuizFromLesson(lesson) {
         options: [ex.jp, ...distractorJps],
         correctAnswer: 0,
         explanation: `'${ex.en}' is '${ex.jp}'.`,
-        romaji: ex.romaji || '',
         audioText: ex.jp
       });
     }
@@ -916,6 +954,14 @@ export function generateLearningQuizFromLesson(lesson) {
       const commonParticles = ['は', 'が', 'を', 'に', 'で', 'へ', 'と', 'の'];
       const blankDistractors = shuffle(commonParticles.filter((p) => p !== targetParticle)).slice(0, 3);
 
+      const particleToRomaji = {
+        'は': 'wa', 'が': 'ga', 'を': 'o', 'に': 'ni', 'で': 'de',
+        'へ': 'e', 'と': 'to', 'の': 'no', 'から': 'kara', 'まで': 'made',
+        'か': 'ka', 'です': 'desu', 'でした': 'deshita', 'じゃありません': 'ja arimasen'
+      };
+      const romParticle = particleToRomaji[targetParticle] || targetParticle;
+      const maskedRomaji = ex.romaji ? ex.romaji.replace(new RegExp(`\\b${romParticle}\\b`, 'i'), '[ ? ]') : '';
+
       generatedQuestions.push({
         id: `${lesson.id}-auto-ex-fb-${eIdx}`,
         category: 'fill-blank',
@@ -927,7 +973,7 @@ export function generateLearningQuizFromLesson(lesson) {
         options: [targetParticle, ...blankDistractors],
         correctAnswer: 0,
         explanation: `'${targetParticle}' correctly completes '${ex.jp}' (${ex.en}).`,
-        romaji: ex.romaji ? ex.romaji.replace(new RegExp(`\\b${targetParticle}\\b`, 'i'), '[ ? ]') : ''
+        romaji: maskedRomaji
       });
     }
   });
@@ -957,19 +1003,19 @@ export function generateLearningQuizFromLesson(lesson) {
 // MAIN EXPORT: GET A FRESH, BALANCED 15-QUESTION LEARNING QUIZ SESSION
 // Ensures questions are repeatable but randomized with fresh variety every time.
 // =========================================================================
-export function getLearningQuizForLesson(lesson, questionCount = 15) {
+export function getLearningQuizForLesson(lesson, questionCount = null) {
   if (!lesson) return [];
 
   // 1. Get complete question bank for lesson
   const pool = generateLearningQuizFromLesson(lesson);
   if (!pool || pool.length === 0) return lesson.quiz || [];
 
-  // If pool has fewer than requested, return all of them shuffled
-  if (pool.length <= questionCount) {
+  // If questionCount is not specified, return ALL available questions randomized!
+  if (!questionCount || pool.length <= questionCount) {
     return prepareQuestionInstances(shuffle(pool));
   }
 
-  // 2. Group pool by pedagogical categories
+  // 2. Group pool by pedagogical categories if capped quota is requested (e.g. skip test)
   const categories = {
     formula: [],
     'writing-pronunciation': [],
@@ -1027,19 +1073,36 @@ function prepareQuestionInstances(questions) {
 
     if (copy.type === 'multiple-choice' || copy.type === 'fill-blank' || copy.type === 'audio-listening') {
       if (Array.isArray(copy.options) && copy.correctAnswer !== undefined) {
-        const correctText = copy.options[copy.correctAnswer];
-        const correctRomaji = copy.romajiOptions ? copy.romajiOptions[copy.correctAnswer] : null;
+        // Automatically extract inline parenthesized romaji if present in options
+        const normalizedOptions = [];
+        const normalizedRomaji = Array.isArray(copy.romajiOptions) ? [...copy.romajiOptions] : [];
+
+        copy.options.forEach((opt, optIdx) => {
+          if (typeof opt === 'string') {
+            const parenMatch = opt.match(/^(.*?)\s*[\(（]([a-zA-Z\s,.'~?!\-–—/]+)[\)）]$/);
+            if (parenMatch) {
+              normalizedOptions.push(parenMatch[1].trim());
+              if (!normalizedRomaji[optIdx]) {
+                normalizedRomaji[optIdx] = parenMatch[2].trim();
+              }
+            } else {
+              normalizedOptions.push(opt);
+            }
+          } else {
+            normalizedOptions.push(opt);
+          }
+        });
 
         // Pair options with their romaji if available
-        const paired = copy.options.map((opt, optIdx) => ({
+        const paired = normalizedOptions.map((opt, optIdx) => ({
           text: opt,
-          romaji: copy.romajiOptions ? copy.romajiOptions[optIdx] : null,
+          romaji: normalizedRomaji[optIdx] || null,
           isCorrect: optIdx === copy.correctAnswer
         }));
 
         const shuffledPaired = shuffle(paired);
         copy.options = shuffledPaired.map((p) => p.text);
-        if (copy.romajiOptions) {
+        if (normalizedRomaji.length > 0) {
           copy.romajiOptions = shuffledPaired.map((p) => p.romaji || p.text);
         }
         copy.correctAnswer = shuffledPaired.findIndex((p) => p.isCorrect);

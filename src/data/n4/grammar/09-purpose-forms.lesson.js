@@ -146,6 +146,38 @@ export const lesson = {
       ],
       "correctAnswer": 0,
       "explanation": "Negative verb + ように expresses avoiding an undesirable state."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with the purpose connector (deliberate volitional goal):",
+      "sentence": "家を買う___、貯金しています。",
+      "blankWord": "ために",
+      "options": [
+        "ために",
+        "ように",
+        "のに",
+        "から"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Volitional actions under the speaker's direct control use [Dictionary Form + ために].",
+      "romaji": "Ie o kau ___, chokin shite imasu."
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"I take notes so that I don't forget.\"",
+      "chips": [
+        "忘れない",
+        "ように",
+        "メモを",
+        "取ります"
+      ],
+      "correctOrder": [
+        "忘れない",
+        "ように",
+        "メモを",
+        "取ります"
+      ],
+      "explanation": "Structure: [Negative verb + ように] [Action taken to prevent it]."
     }
   ]
 };

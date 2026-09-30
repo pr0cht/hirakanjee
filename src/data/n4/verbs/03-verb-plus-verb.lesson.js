@@ -162,9 +162,9 @@ export const lesson = {
         "はじめました。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "あめが",
+        "ふり",
+        "はじめました。"
       ],
       "explanation": "雨が (rain) + 降り (stem of 降る) + 始めました (began)."
     }

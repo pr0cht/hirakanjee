@@ -135,6 +135,142 @@ export const lesson = {
       ]
     }
   ],
+  "quizChains": [
+    {
+      "id": "japanese-pronouns-chain-1",
+      "chainTitle": "Core Pronouns",
+      "chainIcon": "👤",
+      "description": "Master わたし, あなた, かれ, かのじょ, and plural たち",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "multiple-choice",
+          "prompt": "Which pronoun means 'we / us'?",
+          "question": "Which pronoun means 'we / us' in standard Japanese?",
+          "options": ["わたしたち", "かれら", "あなたたち", "あのひとたち"],
+          "correctAnswer": 0,
+          "explanation": "わたし + たち (plural suffix) creates わたしたち (we/us)."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the pronoun for 'he': ",
+          "sentence": "___は田中さんの友達です。",
+          "blankWord": "かれ",
+          "options": ["かれ", "かのじょ", "だれ", "どれ"],
+          "correctAnswer": 0,
+          "explanation": "かれ (彼) means 'he / him'."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the pronoun for 'she': ",
+          "sentence": "___は日本語の先生です。",
+          "blankWord": "かのじょ",
+          "options": ["かのじょ", "かれ", "これ", "だれ"],
+          "correctAnswer": 0,
+          "explanation": "かのじょ (彼女) means 'she / her'."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "What suffix makes a pronoun or person plural?",
+          "question": "What suffix makes a pronoun plural (e.g. we, you all)?",
+          "options": ["～たち", "～さん", "～がた", "～じん"],
+          "correctAnswer": 0,
+          "explanation": "～たち (such as わたしたち, あなたたち) marks plurality."
+        }
+      ]
+    },
+    {
+      "id": "japanese-pronouns-chain-2",
+      "chainTitle": "Polite Address & Omission",
+      "chainIcon": "🤝",
+      "description": "Learn respectful forms and when to omit obvious pronouns",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "multiple-choice",
+          "prompt": "Why is 'あなた' avoided when speaking to a teacher or boss?",
+          "question": "Why is 'あなた' avoided when speaking to a teacher or boss?",
+          "options": [
+            "It sounds overly direct and distant; name + さん or title is polite",
+            "It is only used for children",
+            "It is an obsolete archaic word",
+            "It can only be used with family"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Addressing superiors with their name + さん or title (先生, 社長) is standard etiquette."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "How does natural Japanese handle subjects obvious from context?",
+          "question": "How does natural spoken Japanese handle obvious pronouns?",
+          "options": [
+            "They are naturally omitted rather than repeated",
+            "They must always be repeated in every sentence",
+            "They must be replaced with English",
+            "They are moved to the end of the sentence"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Pronoun omission is a core hallmark of natural Japanese flow."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Polite way to ask \"Who is that person?\": ",
+          "sentence": "あの方は___ですか。",
+          "blankWord": "どなた",
+          "options": ["どなた", "だれ", "どれ", "どこ"],
+          "correctAnswer": 0,
+          "explanation": "どなた is the respectful honorific equivalent of だれ (who)."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "Which is more polite than あのひと (that person)?",
+          "question": "Which is more polite than あのひと (that person)?",
+          "options": ["あのかた", "あいつ", "かれ", "それ"],
+          "correctAnswer": 0,
+          "explanation": "あのかた (あの方) is the respectful equivalent of あのひと."
+        }
+      ]
+    },
+    {
+      "id": "japanese-pronouns-chain-3",
+      "chainTitle": "Build Pronoun Sentences",
+      "chainIcon": "🧩",
+      "description": "Construct complete sentences with pronouns and polite nouns",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "word-bank",
+          "prompt": "Build: \"We are Japanese.\"",
+          "chips": ["わたしたち", "は", "にほんじん", "です"],
+          "correctOrder": ["わたしたち", "は", "にほんじん", "です"],
+          "explanation": "Structure: [わたしたち は] [にほんじん] [です]."
+        },
+        {
+          "type": "word-bank",
+          "prompt": "Build: \"Who is that person (polite)?\"",
+          "chips": ["あのかた", "は", "どなた", "ですか"],
+          "correctOrder": ["あのかた", "は", "どなた", "ですか"],
+          "explanation": "Structure: [あのかた は] [どなた] [ですか]."
+        },
+        {
+          "type": "word-bank",
+          "prompt": "Build: \"He is a friend.\"",
+          "chips": ["かれ", "は", "ともだち", "です"],
+          "correctOrder": ["かれ", "は", "ともだち", "です"],
+          "explanation": "Structure: [かれ は] [ともだち] [です]."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the blank (\"Speaking of us, we are students\"): ",
+          "sentence": "わたしたち___がくせいです。",
+          "blankWord": "は",
+          "options": ["は", "が", "を", "に"],
+          "correctAnswer": 0,
+          "explanation": "わたしたちは sets the plural topic."
+        }
+      ]
+    }
+  ],
   "quiz": [
     {
       "id": "l2-q1",

@@ -99,41 +99,31 @@ export const lesson = {
       ]
     },
     {
-      "type": "multiple-choice",
-      "prompt": "What particle marks the location where a lost item was accidentally left?",
-      "question": "「でんしゃの なか＿＿＿ わすれて しまいました」に入る助詞は？",
+      "type": "audio-listening",
+      "prompt": "Listen to the doctor's instructions and choose how to take the medicine:",
+      "audioText": "食後にこの薬を二錠飲んでください。",
       "options": [
-        "に",
-        "を",
-        "へ",
-        "から"
+        "Take two tablets after meals",
+        "Take one tablet before meals",
+        "Take two tablets before sleeping",
+        "Take three tablets after meals"
       ],
       "correctAnswer": 0,
-      "explanation": "Locations where an object remains after being forgotten take the particle に.",
-      "romaji": "\"Densha no naka ___ wasurete shimaimashita\" ni hairu joshi wa?",
-      "romajiOptions": [
-        "ni",
-        "o",
-        "e",
-        "kara"
-      ]
+      "explanation": "食後 (after meals) + 二錠 (two pills/tablets) + 飲んでください (please drink/take)."
     },
     {
-      "type": "word-bank",
-      "prompt": "Build the sentence: \"I accidentally left my black bag behind.\"",
-      "chips": [
-        "くろい",
-        "かばんを",
-        "わすれて",
-        "しまいました。"
+      "type": "fill-blank",
+      "prompt": "Complete the sentence expressing accidental loss (\"ended up leaving behind\"): ",
+      "sentence": "電車の中に黒いかばんを忘れ_____。",
+      "blankWord": "てしまいました",
+      "options": [
+        "てしまいました",
+        "ておきました",
+        "てみました",
+        "てあげました"
       ],
-      "correctOrder": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "explanation": "黒い (black) かばんを (bag) 忘れて (leave behind) しまいました (regrettably/accidentally)."
+      "correctAnswer": 0,
+      "explanation": "～てしまう expresses regretful, accidental, or irreversible completion of an action."
     }
   ]
 };

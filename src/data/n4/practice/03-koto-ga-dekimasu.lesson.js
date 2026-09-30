@@ -98,10 +98,10 @@ export const lesson = {
         "できます"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3
+        "日本語を",
+        "上手に",
+        "話すことが",
+        "できます"
       ],
       "explanation": "日本語を (Japanese) + 上手に (skillfully) + 話すことが (to speak) + できます (can)."
     }

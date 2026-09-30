@@ -135,11 +135,11 @@ export const lesson = {
         "います。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3,
-        4
+        "まいあさ",
+        "でんしゃで",
+        "つうきん",
+        "して",
+        "います。"
       ],
       "explanation": "毎朝 (every morning) + 電車で (by train) + 通勤 (commute) + しています (am doing)."
     }

@@ -57,52 +57,28 @@ export const N5_PREREQUISITE_IDS = [
 ];
 
 export const N4_PREREQUISITE_IDS = [
-  // 1. Grammar Guide (17)
-  'te-form-kara',
-  'te-form-mo-ii-desu',
-  'nakereba-narimasen',
-  'sou-desu-looks-like',
-  'tara-conditional',
-  'ba-conditional',
-  'to-conditional',
-  'nara-conditional',
-  'te-agemasu-moraimasu-kuremasu',
-  'sou-desu-hearsay',
-  'you-desu-seems-like',
-  'rashii-apparently',
-  'tame-ni-purpose-reason',
-  'you-ni-in-order-to',
-  'passive-ukemi',
-  'causative-shieki',
-  'causative-passive',
-  // 2. Verbs (5)
-  'potential-form',
-  'volitional-form',
-  'imperative-prohibitive',
-  'compound-verbs',
-  'transitive-intransitive-pairs',
-  // 3. Adjectives (1)
-  'n4-adjectives-review',
-  // 4. Kanji (4)
-  'n4-kanji-quiz-100',
-  'n4-kanji-mobile',
-  'n4-kanji-34day-email',
-  'n4-kanji-videos',
-  // 5. Essential Practice & Nuance (14)
-  'n4-practice-particles-wa-ga',
-  'n4-practice-particles-ni-de',
-  'n4-practice-particles-to-ya-ka',
-  'n4-practice-giving-receiving-nuances',
-  'n4-practice-conditionals-comparison',
-  'n4-practice-passive-adversity',
-  'n4-practice-causative-permission',
-  'n4-practice-appearance-comparison',
-  'n4-practice-compound-verbs-mastery',
-  'n4-practice-transitive-intransitive-drills',
-  'n4-practice-reading-short-passages',
-  'n4-practice-polite-vs-casual-speech',
-  'n4-practice-essential-connectors',
-  'n4-practice-common-mistakes-remedy',
+  // Grammar (17)
+  'te-agemasu-moraimasu-kuremasu', 'n-desu', 'node-nde', 'noni', 'mou-mada',
+  'have-to-obligation', 'hazu', 'appearance-forms', 'purpose-forms',
+  'tara-conditional', 'ba-conditional', 'to-conditional', 'nara-conditional',
+  'passive-ukemi', 'causative-shieki', 'keigo-polite', 'koso-particle',
+  // Verbs (5)
+  'potential-form', 'volitional-form', 'verb-plus-verb',
+  'transitive-intransitive', 'verbs-346-plain-forms',
+  // Adjectives (1)
+  'adjectives-n4-120',
+  // Kanji (4)
+  'n4-kanji-quiz-100', 'n4-kanji-quiz-150-mobile',
+  'n4-kanji-quiz-34-days-email', 'n4-kanji-videos-flashcards-youtube',
+  // Listening (5)
+  'n4-listening-01-10', 'n4-listening-11-20', 'n4-listening-21-30',
+  'n4-listening-31-40', 'n4-listening-41-50',
+  // Practice (14)
+  'n4-indefinite-pronouns', 'n4-node-cause', 'n4-koto-ga-dekimasu',
+  'n4-volitional-applications', 'n4-dake-shika-mo', 'n4-noni-contrast',
+  'n4-mae-ni-sequence', 'n4-adjective-connective', 'n4-modifying-noun',
+  'n4-ni-shimasu-decisions', 'n4-ka-dou-ka-uncertainty',
+  'n4-to-omoimasu-opinions', 'n4-tara-when-sequence', 'n4-tara-if-conditional',
 ];
 
 export const N5_LISTENING_IDS = ['listening-n5-mastery'];
@@ -114,12 +90,48 @@ export const N4_LISTENING_IDS = [
   'n4-listening-41-50',
 ];
 
+export const N3_PREREQUISITE_IDS = [
+  // 1. Essential Grammar (16)
+  'n3-grammar-time-opportunity',
+  'n3-grammar-cause-consequence',
+  'n3-grammar-substitution-contrast',
+  'n3-grammar-tendencies-impressions',
+  'n3-grammar-limitation-emphasis',
+  'n3-grammar-nominalization-rules',
+  'n3-grammar-degree-extent',
+  'n3-grammar-topic-reference',
+  'n3-grammar-wake-family',
+  'n3-grammar-obligation-imperative',
+  'n3-grammar-expectation-belief',
+  'n3-grammar-passive-causative',
+  'n3-grammar-moment-and-state',
+  'n3-grammar-change-and-habit',
+  'n3-grammar-scope-and-inclusion',
+  'n3-grammar-concession-and-despite',
+  // 2. Kanji & YouTube Video Drills (5)
+  'n3-kanji-quiz-vol1-youtube',
+  'n3-kanji-quiz-vol2-youtube',
+  'n3-kanji-quiz-vol3-youtube',
+  'n3-kanji-quiz-vol4-youtube',
+  'n3-kanji-150-speed-challenge-youtube',
+  // 3. Grammar Skill Building Series (4)
+  'n3-grammar-drills-set-a',
+  'n3-grammar-drills-set-b',
+  'n3-grammar-drills-set-c',
+  'n3-grammar-drills-set-d',
+  // 4. Study Plan & Roadmap (1)
+  'n3-study-plan-timeline',
+];
+
 const STORAGE_KEY = 'hirakanjee_progression_v2';
 
 /**
  * Loads progression data from localStorage.
  */
 export function getStoredProgression() {
+  if (typeof localStorage === 'undefined') {
+    return { lessons: {}, exams: {} };
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -138,9 +150,12 @@ export function getStoredProgression() {
  * Saves progression data to localStorage and fires a local event.
  */
 export function saveProgression(data) {
+  if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    window.dispatchEvent(new CustomEvent('progressionUpdated', { detail: data }));
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('progressionUpdated', { detail: data }));
+    }
   } catch (e) {
     console.warn('Failed to persist progression:', e);
   }
@@ -205,6 +220,16 @@ export function isPracticeCompleted(lessonId, progData = null) {
   return Boolean(data.lessons?.[lessonId]?.practiceCompleted || data.lessons?.[lessonId]?.skipped);
 }
 
+function isTestingUnlockAllActive() {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    const val = localStorage.getItem('hirakanjee_unlockAllLessons');
+    return val === 'true' || JSON.parse(val) === true;
+  } catch (e) {
+    return false;
+  }
+}
+
 /**
  * Checks if a JLPT level is unlocked.
  * N5 is always unlocked.
@@ -212,6 +237,7 @@ export function isPracticeCompleted(lessonId, progData = null) {
  * N3 requires passing the N4 Comprehensive Level Exam.
  */
 export function isLevelUnlocked(level, progData = null) {
+  if (isTestingUnlockAllActive()) return true;
   if (level === 'N5') return true;
   const data = progData || getStoredProgression();
   if (level === 'N4') {
@@ -245,6 +271,8 @@ export function isLevelUnlocked(level, progData = null) {
  *    - Also unlocked if this lesson itself was already skipped or completed.
  */
 export function isLessonUnlocked(lessonId, level = 'N5', progData = null) {
+  if (isTestingUnlockAllActive()) return true;
+
   // 1. Listening lessons are always unlocked by default
   if (N5_LISTENING_IDS.includes(lessonId)) return true;
   if (N4_LISTENING_IDS.includes(lessonId)) {
@@ -256,6 +284,9 @@ export function isLessonUnlocked(lessonId, level = 'N5', progData = null) {
   if (lessonId === 'n4-level-exam') {
     return isLevelUnlocked('N4', progData);
   }
+  if (lessonId === 'n3-level-exam') {
+    return isLevelUnlocked('N3', progData);
+  }
 
   const data = progData || getStoredProgression();
 
@@ -263,7 +294,16 @@ export function isLessonUnlocked(lessonId, level = 'N5', progData = null) {
   if (isLessonCompleted(lessonId, data)) return true;
 
   // Determine which level prerequisite chain applies
-  const isN4 = level === 'N4' || N4_PREREQUISITE_IDS.includes(lessonId);
+  const isN3 = level === 'N3' || N3_PREREQUISITE_IDS.includes(lessonId) || lessonId.startsWith('n3-');
+  const isN4 = level === 'N4' || N4_PREREQUISITE_IDS.includes(lessonId) || lessonId.startsWith('n4-');
+
+  if (isN3) {
+    if (!isLevelUnlocked('N3', data)) return false;
+    const idx = N3_PREREQUISITE_IDS.indexOf(lessonId);
+    if (idx <= 0) return true; // First N3 lesson unlocked once N3 is unlocked
+    const prevId = N3_PREREQUISITE_IDS[idx - 1];
+    return isLessonCompleted(prevId, data);
+  }
 
   if (isN4) {
     if (!isLevelUnlocked('N4', data)) return false;
@@ -286,6 +326,8 @@ export function isLessonUnlocked(lessonId, level = 'N5', progData = null) {
  * N4 Kanji unlock when the N4 Kanji lesson ('n4-kanji-quiz-100') is unlocked.
  */
 export function isKanjiUnlocked(kanjiLevel = 'N5', progData = null) {
+  if (isTestingUnlockAllActive()) return true;
+
   const data = progData || getStoredProgression();
   if (kanjiLevel === 'N5') {
     return isLessonUnlocked('kanji-n5-mastery', 'N5', data);
@@ -300,7 +342,7 @@ export function isKanjiUnlocked(kanjiLevel = 'N5', progData = null) {
  * Records completion of either 'learning' or 'practice' quiz for a lesson.
  * Unlocks the next lesson in order once both are completed (or for practice-only lessons).
  */
-export function recordQuizCompletion(lessonId, quizMode, score = 100, isN4 = false) {
+export function recordQuizCompletion(lessonId, quizMode, score = 100, isUpperLevel = false) {
   const data = getStoredProgression();
   const current = data.lessons[lessonId] || {
     learningCompleted: false,
@@ -320,24 +362,14 @@ export function recordQuizCompletion(lessonId, quizMode, score = 100, isN4 = fal
   current.quizScore = Math.max(current.quizScore || 0, score);
   current.lastStudiedAt = new Date().toISOString();
 
-  // For N5 lessons: require both learning and practice (unless it's kanji/listening which only has practice)
-  const isSingleQuizLesson =
-    isN4 ||
-    lessonId === 'kanji-n5-mastery' ||
-    lessonId === 'listening-n5-mastery' ||
-    lessonId.startsWith('n4-');
-
-  if (isSingleQuizLesson) {
-    current.completed = Boolean(current.practiceCompleted || current.learningCompleted);
-  } else {
-    current.completed = Boolean(current.learningCompleted && current.practiceCompleted);
-  }
+  // A lesson is only unlocked to the next lesson once the Practice Quiz is completed!
+  current.completed = Boolean(current.practiceCompleted);
 
   data.lessons[lessonId] = current;
   saveProgression(data);
 
   // Sync to window.db SQLite if available
-  if (window.db?.saveLessonProgress && current.completed) {
+  if (typeof window !== 'undefined' && window.db?.saveLessonProgress && current.completed) {
     window.db
       .saveLessonProgress(lessonId, true, current.quizScore)
       .catch((err) => console.warn('SQLite progress save error:', err));
@@ -362,7 +394,7 @@ export function markLessonSkipped(lessonId, score = 100) {
   data.lessons[lessonId] = entry;
   saveProgression(data);
 
-  if (window.db?.saveLessonProgress) {
+  if (typeof window !== 'undefined' && window.db?.saveLessonProgress) {
     window.db
       .saveLessonProgress(lessonId, true, entry.quizScore)
       .catch((err) => console.warn('SQLite progress save error:', err));
@@ -398,12 +430,52 @@ export function resetProgression() {
     lessons: {},
     exams: {},
   };
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-  } catch (e) {
-    console.warn('Failed to reset progression storage:', e);
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+    } catch (e) {
+      console.warn('Failed to reset progression storage:', e);
+    }
   }
-  window.dispatchEvent(new CustomEvent('progressionUpdated', { detail: initial }));
+  if (typeof window !== 'undefined' && window.dispatchEvent) {
+    window.dispatchEvent(new CustomEvent('progressionUpdated', { detail: initial }));
+  }
   return initial;
 }
+
+/**
+ * Records completion of an individual quiz chain within a lesson.
+ * Updates lesson completion and mastery score accordingly.
+ */
+export function recordChainCompletion(lessonId, chainId, score, passMark = 70) {
+  const data = getStoredProgression();
+  if (!data.lessons) data.lessons = {};
+  if (!data.lessons[lessonId]) data.lessons[lessonId] = {};
+  if (!data.lessons[lessonId].chains) data.lessons[lessonId].chains = {};
+  const prev = data.lessons[lessonId].chains[chainId] || { attempts: 0 };
+  data.lessons[lessonId].chains[chainId] = {
+    completed: score >= passMark,
+    score,
+    attempts: (prev.attempts || 0) + 1,
+    completedAt: new Date().toISOString()
+  };
+  const chains = data.lessons[lessonId].chains;
+  const completedScores = Object.values(chains).filter(c => c.completed).map(c => c.score);
+  data.lessons[lessonId].masteryScore = completedScores.length
+    ? Math.round(completedScores.reduce((a, b) => a + b, 0) / completedScores.length) : null;
+  data.lessons[lessonId].firstChainCompleted = Object.values(chains).some(c => c.completed);
+  data.lessons[lessonId].completed = Object.values(chains).length > 0
+    && Object.values(chains).every(c => c.completed);
+  saveProgression(data);
+  return data;
+}
+
+/**
+ * Retrieves the quiz chains progress dictionary for a given lesson.
+ */
+export function getLessonChainProgress(lessonId, progData) {
+  const data = progData || getStoredProgression();
+  return data.lessons?.[lessonId]?.chains || {};
+}
+
 

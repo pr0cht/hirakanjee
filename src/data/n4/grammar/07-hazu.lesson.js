@@ -46,6 +46,75 @@ export const lesson = {
         "iru noni desu",
         "iru bakari desu"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank (logical expectation based on schedule):",
+      "sentence": "電車は5時に来る___です。",
+      "blankWord": "はず",
+      "options": [
+        "はず",
+        "わけ",
+        "こと",
+        "もの"
+      ],
+      "correctAnswer": 0,
+      "explanation": "電車は5時に来るはずです: 'The train is supposed/expected to arrive at 5.'",
+      "romaji": "Densha wa go-ji ni kuru ___ desu."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Which expression is based on logical deduction from concrete facts rather than a guess?",
+      "question": "Which expression is based on logical deduction from facts rather than a simple guess?",
+      "options": [
+        "でしょう",
+        "はず",
+        "かもしれない",
+        "らしい"
+      ],
+      "correctAnswer": 1,
+      "explanation": "～はず conveys expectation based on objective reasons, schedules, or known premises.",
+      "romaji": "Which expression is based on logical deduction from facts?",
+      "romajiOptions": [
+        "deshou",
+        "hazu",
+        "kamoshirenai",
+        "rashii"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"That movie should be interesting.\"",
+      "chips": [
+        "あの映画",
+        "は",
+        "面白い",
+        "はず",
+        "です"
+      ],
+      "correctOrder": [
+        "あの映画",
+        "は",
+        "面白い",
+        "はず",
+        "です"
+      ],
+      "explanation": "Structure: [Topic は] [i-adjective] [はず] [です]."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank (he should have known, yet...):",
+      "sentence": "彼は知っている___なのに、教えてくれなかった。",
+      "blankWord": "はず",
+      "options": [
+        "はず",
+        "とき",
+        "こと",
+        "つもり"
+      ],
+      "correctAnswer": 0,
+      "explanation": "知っているはずなのに: 'Even though he should have known, he didn't tell me.'",
+      "romaji": "Kare wa shitte iru ___ na noni, oshiete kurenakatta."
     }
   ]
 };

@@ -309,9 +309,9 @@ export const lesson = {
         "にぎやかです。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "とうきょうは",
+        "べんりで",
+        "にぎやかです。"
       ],
       "explanation": "便利 (べんり: na-adj te-form べんりで) + にぎやかです (is lively)."
     }

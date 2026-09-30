@@ -104,39 +104,31 @@ export const lesson = {
       ]
     },
     {
-      "type": "multiple-choice",
-      "prompt": "What does the phrase \"今度、飲みにいかない？\" express in casual conversation?",
-      "question": "「こんど、のみに いかない？」は どういう いみですか。",
+      "type": "audio-listening",
+      "prompt": "Listen and choose the correct advice:",
+      "audioText": "道が混んでいるし、駐車場が少ないし、電車で行ったほうがいいですよ。",
       "options": [
-        "さそっている (inviting someone)",
-        "ことわっている (refusing)",
-        "ちゅういしている (warning)",
-        "ほめている (praising)"
+        "Go by train",
+        "Go by bus",
+        "Go by car",
+        "Go on foot"
       ],
       "correctAnswer": 0,
-      "explanation": "Verb stem + にいかない？ is an informal invitation to go do an action together.",
-      "romaji": "\"Kondo, nomi ni ikanai?\" wa dou iu imi desu ka.",
-      "romajiOptions": [
-        "sasotte iru (inviting someone)",
-        "kotowatte iru (refusing)",
-        "chuui shite iru (warning)",
-        "homete iru (praising)"
-      ]
+      "explanation": "電車で行ったほうがいいですよ means 'You should go by train' (~たほうがいい for advice)."
     },
     {
-      "type": "word-bank",
-      "prompt": "Build the sentence: \"You had better go by train.\"",
-      "chips": [
-        "でんしゃで",
-        "いったほうが",
-        "いいですよ。"
+      "type": "fill-blank",
+      "prompt": "Complete the advice sentence:",
+      "sentence": "電車で行っ_____いいですよ。",
+      "blankWord": "たほうが",
+      "options": [
+        "たほうが",
+        "てもいい",
+        "なければ",
+        "ないほうが"
       ],
-      "correctOrder": [
-        0,
-        1,
-        2
-      ],
-      "explanation": "電車で (by train) + 行ったほうが (better to go) + いいですよ."
+      "correctAnswer": 0,
+      "explanation": "～たほうがいい expresses that doing something is the better choice/advice."
     }
   ]
 };

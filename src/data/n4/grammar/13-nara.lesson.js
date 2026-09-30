@@ -46,6 +46,78 @@ export const lesson = {
         "to",
         "ba"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank (contextual request before departure):",
+      "sentence": "日本に行く___、お土産を買ってきて。",
+      "blankWord": "なら",
+      "options": [
+        "なら",
+        "たら",
+        "と",
+        "ば"
+      ],
+      "correctAnswer": 0,
+      "explanation": "日本に行くなら、お土産を買ってきて: 'If you are going to Japan, bring back a souvenir.' (~なら applies prior to the trip).",
+      "romaji": "Nihon ni iku ___, omiyage o katte kite."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "When is ～なら uniquely preferred over other conditionals?",
+      "question": "When is ～なら uniquely used compared to ～たら or ～ば?",
+      "options": [
+        "When the condition is always an invariable law of nature",
+        "When the speaker is responding directly to information just provided by the interlocutor",
+        "When the event in the main clause occurs chronologically after condition completion only",
+        "When expressing an unexpected surprise in the past"
+      ],
+      "correctAnswer": 1,
+      "explanation": "～なら takes the topic or circumstance raised by the conversational partner ('If that's what you mean/plan...') to give advice or evaluation.",
+      "romaji": "When is ~nara uniquely used?",
+      "romajiOptions": [
+        "When the condition is always an invariable law of nature",
+        "When the speaker is responding directly to information just provided by the interlocutor",
+        "When the event in the main clause occurs chronologically after condition completion only",
+        "When expressing an unexpected surprise in the past"
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Choose the natural response offering advice:",
+      "question": "「来週パリに行くんですが…」「___、エッフェル塔に行くべきです」",
+      "options": [
+        "パリに行くなら",
+        "行ったら",
+        "行けば",
+        "行くと"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Responding to someone's plans with recommendations takes [Destination + 行くなら].",
+      "romaji": "\"Raishuu Pari ni iku n desu ga...\" \"___, Efferu-tou ni iku beki desu.\"",
+      "romajiOptions": [
+        "Pari ni iku nara",
+        "Ittara",
+        "Ikeba",
+        "Iku to"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"If you are going to Paris, you should go to the Eiffel Tower.\"",
+      "chips": [
+        "パリに",
+        "行くなら",
+        "エッフェル塔に",
+        "行くべきです"
+      ],
+      "correctOrder": [
+        "パリに",
+        "行くなら",
+        "エッフェル塔に",
+        "行くべきです"
+      ],
+      "explanation": "Structure: [Topic/Context なら] [Recommendation]."
     }
   ]
 };

@@ -178,6 +178,17 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Hide sidebar during full-screen interactive quizzes */
+body.in-quiz-mode .sidebar {
+  display: none !important;
+}
+
+body.in-quiz-mode .app-main {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  flex: 1 1 100% !important;
+}
+
 .page-content {
   padding: 40px;
   max-width: 1400px;

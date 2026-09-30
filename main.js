@@ -19,34 +19,52 @@ const {
   resetAllProgress,
 } = require('./src/database');
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+let mainWindow = null;
+
 const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+  mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 720,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       devTools: true,
     },
   });
 
-  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:') || url.startsWith('http:')) {
+      require('electron').shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
 
   if (process.env.NODE_ENV === 'development') {
-    win.loadURL('http://localhost:5173');
-    win.webContents.openDevTools();
+    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools();
   } else {
     const prodIndex = path.join(__dirname, 'dist-renderer', 'index.html');
     if (fs.existsSync(prodIndex)) {
-      win.loadFile(prodIndex);
+      mainWindow.loadFile(prodIndex);
     } else {
-      win.loadFile(path.join(__dirname, 'index.html'));
+      mainWindow.loadFile(path.join(__dirname, 'index.html'));
     }
   }
 };
 
-app.whenReady().then(() => {
-  initializeDatabase();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+
+  app.whenReady().then(() => {
+    initializeDatabase();
 
   // IPC handlers for database
   ipcMain.handle('db:getMastery', (event, hiragana) => {
@@ -183,6 +201,7 @@ app.whenReady().then(() => {
   })
 })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+  });
+}

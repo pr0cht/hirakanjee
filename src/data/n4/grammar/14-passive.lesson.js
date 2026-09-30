@@ -46,6 +46,78 @@ export const lesson = {
         "shikasemashita",
         "shikarasemashita"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with passive \"was written\":",
+      "sentence": "この本は有名な作家に___。",
+      "blankWord": "よって書かれました",
+      "options": [
+        "よって書かれました",
+        "よって書きました",
+        "書いてありました",
+        "書かせました"
+      ],
+      "correctAnswer": 0,
+      "explanation": "によって書かれました expresses 'was written by (a famous author)'.",
+      "romaji": "Kono hon wa yuumei na sakka ni___."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Analyze the passive nuance in: 先生に叱られました。",
+      "question": "先生に叱られました。What nuance does this passive structure carry?",
+      "options": [
+        "Direct neutral passive",
+        "Adversarial / suffering passive (speaker is negatively affected)",
+        "Agent-less spontaneous passive",
+        "Honorific respect passive"
+      ],
+      "correctAnswer": 1,
+      "explanation": "叱られる carries the nuance of annoyance/discomfort (adversarial passive/迷惑受身).",
+      "romaji": "Sensei ni shikararemashita. What nuance does this carry?",
+      "romajiOptions": [
+        "Direct neutral passive",
+        "Adversarial / suffering passive (speaker is negatively affected)",
+        "Agent-less spontaneous passive",
+        "Honorific respect passive"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the suffering passive sentence: \"(My) fish was eaten by the cat.\"",
+      "chips": [
+        "ねこに",
+        "魚を",
+        "食べ",
+        "られました"
+      ],
+      "correctOrder": [
+        "ねこに",
+        "魚を",
+        "食べ",
+        "られました"
+      ],
+      "explanation": "Structure: [Agent に] [Victimized object を] [Verb passive]. The speaker is inconvenienced by the cat's action."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Who is negatively affected in: 雨に降られて、かばんが濡れた？",
+      "question": "「雨に降られて、かばんが濡れた。」 Who experiences the inconvenience (suffering passive)?",
+      "options": [
+        "The rain",
+        "The speaker",
+        "The bag",
+        "Nobody"
+      ],
+      "correctAnswer": 1,
+      "explanation": "雨に降られる is the quintessential suffering passive (迷惑受身) where the speaker suffers the adversity of rain falling on them.",
+      "romaji": "Ame ni furarete, kaban ga nureta. Who experiences the inconvenience?",
+      "romajiOptions": [
+        "The rain",
+        "The speaker",
+        "The bag",
+        "Nobody"
+      ]
     }
   ]
 };

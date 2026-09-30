@@ -46,6 +46,94 @@ export const lesson = {
         "tabesasemasu",
         "mairimasu"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with the respectful (Sonkeigo) form of 言いました:",
+      "sentence": "先生は何を___か？",
+      "blankWord": "おっしゃいました",
+      "options": [
+        "おっしゃいました",
+        "申しました",
+        "言われました",
+        "話されました"
+      ],
+      "correctAnswer": 0,
+      "explanation": "おっしゃいました is the special Sonkeigo form of 言いました (used for a superior's words).",
+      "romaji": "Sensei wa nani o ___ ka?"
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Which is the humble (Kenjougo) form of 食べる / 飲む?",
+      "question": "Which is the humble (Kenjougo) form of 食べる / 飲む?",
+      "options": [
+        "めしあがります",
+        "いただきます",
+        "おっしゃいます",
+        "くださいます"
+      ],
+      "correctAnswer": 1,
+      "explanation": "いただきます is humble (Kenjougo) for eating/drinking, whereas めしあがります is honorific (Sonkeigo).",
+      "romaji": "Which is the humble form of taberu / nomu?",
+      "romajiOptions": [
+        "Meshiagarimasu",
+        "Itadakimasu",
+        "Osshaimasu",
+        "Kudasaimasu"
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Which is the special honorific (Sonkeigo) form of する?",
+      "question": "Which is the special honorific (Sonkeigo) form of する?",
+      "options": [
+        "いたします",
+        "なさいます",
+        "申します",
+        "参ります"
+      ],
+      "correctAnswer": 1,
+      "explanation": "なさる (なさいます) is the Sonkeigo form of する. いたします is the humble (Kenjougo) form.",
+      "romaji": "Which is the special honorific (Sonkeigo) form of suru?",
+      "romajiOptions": [
+        "Itashimasu",
+        "Nasaimasu",
+        "Moushimasu",
+        "Mairimasu"
+      ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Complete the honorific verb (いらっしゃる):",
+      "sentence": "先生がいらっ___ます。",
+      "blankWord": "しゃい",
+      "options": [
+        "しゃい",
+        "さい",
+        "まい",
+        "たし"
+      ],
+      "correctAnswer": 0,
+      "explanation": "いらっしゃいます is the Sonkeigo form for いる, くる, and いく.",
+      "romaji": "Sensei ga iras___masu."
+    },
+    {
+      "type": "error-hunt",
+      "prompt": "Which sentence misuses Keigo by using Sonkeigo on oneself?",
+      "options": [
+        "先生はいらっしゃいます",
+        "私はいらっしゃいます",
+        "社長がおっしゃいました",
+        "お客様がいらっしゃいました"
+      ],
+      "correctAnswer": 1,
+      "explanation": "「私はいらっしゃいます」 is incorrect. A speaker cannot apply honorific respectful verbs (Sonkeigo) to themselves; humble verbs (Kenjougo: 私はおります) must be used.",
+      "romajiOptions": [
+        "Sensei wa irasshaimasu",
+        "Watashi wa irasshaimasu",
+        "Shachou ga osshaimashita",
+        "Okyaku-sama ga irasshaimashita"
+      ]
     }
   ]
 };

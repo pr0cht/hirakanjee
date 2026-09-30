@@ -133,9 +133,9 @@ export const lesson = {
         "はつおんします。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "おんせいを",
+        "きいて",
+        "はつおんします。"
       ],
       "explanation": "音声を (audio) 聞いて (listen to) 発音します (pronounce)."
     }

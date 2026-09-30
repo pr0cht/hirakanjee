@@ -63,13 +63,66 @@ export const lesson = {
         "もらいました"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3,
-        4
+        "わたしは",
+        "ともだちに",
+        "にほんごを",
+        "おしえて",
+        "もらいました"
       ],
       "explanation": "Structure: [Subject] は [Person] に [Object] を [V-te] もらいました."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Doing a favor for another: \"I lent my umbrella to Tanaka-san.\"",
+      "question": "私は田中さんに傘を貸して___。",
+      "options": [
+        "あげました",
+        "くれました",
+        "もらいました",
+        "やりました"
+      ],
+      "correctAnswer": 0,
+      "explanation": "When the speaker does a favor for someone else, use [Person に V-てあげました].",
+      "romaji": "Watashi wa Tanaka-san ni kasa o kashite ___.",
+      "romajiOptions": [
+        "agemashita",
+        "kuremashita",
+        "moraimashita",
+        "yarimashita"
+      ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank (\"Mother knit a sweater for me\"): ",
+      "sentence": "母が私にセーターを編んで___。",
+      "blankWord": "くれました",
+      "options": [
+        "くれました",
+        "あげました",
+        "もらいました",
+        "やりました"
+      ],
+      "correctAnswer": 0,
+      "explanation": "When an in-group person / family member does something for me, use ～てくれました.",
+      "romaji": "Haha ga watashi ni seetaa o ande ___."
+    },
+    {
+      "type": "error-hunt",
+      "prompt": "Which sentence misuses giving and receiving verbs?",
+      "options": [
+        "友達が私にプレゼントをくれました",
+        "私は妹に宿題を教えてあげました",
+        "田中さんが私に教えてもらいました",
+        "私は友達に写真を撮ってもらいました"
+      ],
+      "correctAnswer": 2,
+      "explanation": "「田中さんが私に教えてもらいました」 has mismatched particles and viewpoint. To express Tanaka teaching me, say 「田中さんが私に教えてくれました」 or 「私は田中さんに教えてもらいました」.",
+      "romajiOptions": [
+        "Tomodachi ga watashi ni purezento o kuremashita",
+        "Watashi wa imouto ni shukudai o oshiete agemashita",
+        "Tanaka-san ga watashi ni oshiete moraimashita",
+        "Watashi wa tomodachi ni shashin o totte moraimashita"
+      ]
     }
   ]
 };

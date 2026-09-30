@@ -46,6 +46,78 @@ export const lesson = {
         "setsumei shimashou",
         "setsumei shite kudasai"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with causative \"made (them) write\":",
+      "sentence": "先生は生徒に作文を___。",
+      "blankWord": "書かせました",
+      "options": [
+        "書かせました",
+        "書かれました",
+        "書きました",
+        "書いてもらいました"
+      ],
+      "correctAnswer": 0,
+      "explanation": "書く → 書かせる → 書かせました (the teacher made the students write an essay).",
+      "romaji": "Sensei wa seito ni sakubun o ___."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Analyze the core nuance of: 子供に野菜を食べさせる",
+      "question": "What nuance does 「子供に野菜を食べさせる」 carry?",
+      "options": [
+        "Polite inquiry",
+        "Permission or compulsion (making or letting them eat)",
+        "Receiving a favor",
+        "Refusing an offer"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The causative form (～せる/～させる) expresses either making someone do something (compulsion) or letting/permitting them to do it (permission).",
+      "romaji": "Kodomo ni yasai o tabesaseru. What nuance does this carry?",
+      "romajiOptions": [
+        "Polite inquiry",
+        "Permission or compulsion (making or letting them eat)",
+        "Receiving a favor",
+        "Refusing an offer"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"The mother made her child clean the room.\"",
+      "chips": [
+        "お母さんは",
+        "子供に",
+        "部屋を",
+        "掃除させました"
+      ],
+      "correctOrder": [
+        "お母さんは",
+        "子供に",
+        "部屋を",
+        "掃除させました"
+      ],
+      "explanation": "Structure: [Causer は] [Causee に] [Object を] [V-causative]."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "How does causative-passive (させられる) differ from causative (させる)?",
+      "question": "How does causative-passive (させられる) differ from causative (させる)?",
+      "options": [
+        "The subject is the one who forces someone else in causative-passive",
+        "The subject is the one who is forced/compelled to do the action",
+        "Causative-passive is only used for inanimate objects",
+        "There is no difference in meaning"
+      ],
+      "correctAnswer": 1,
+      "explanation": "In causative-passive (～させられる), the grammatical subject is the person made or forced to do something against their will.",
+      "romaji": "How does causative-passive differ from causative?",
+      "romajiOptions": [
+        "The subject is the one who forces someone else in causative-passive",
+        "The subject is the one who is forced/compelled to do the action",
+        "Causative-passive is only used for inanimate objects",
+        "There is no difference in meaning"
+      ]
     }
   ]
 };

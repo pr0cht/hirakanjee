@@ -99,41 +99,31 @@ export const lesson = {
       ]
     },
     {
-      "type": "multiple-choice",
-      "prompt": "What nuance does the helper verb \"〜てしまう\" convey in conversation?",
-      "question": "「〜てしまう」が あらわす ニュアンスは どれですか。",
+      "type": "audio-listening",
+      "prompt": "Listen to the polite workplace request and choose what the speaker is asking for:",
+      "audioText": "すみません、この文法を教えていただけませんか。",
       "options": [
-        "こうかい や うっかり (regret or accidental mistake)",
-        "よてい (future plan)",
-        "きぼう (hope / wish)",
-        "きょか (permission)"
+        "To explain this grammar point",
+        "To lend a textbook",
+        "To check a translation",
+        "To take an exam"
       ],
       "correctAnswer": 0,
-      "explanation": "〜てしまう expresses an accidental action or feeling of regret.",
-      "romaji": "\"~te shimau\" ga arawasu nyuansu wa dore desu ka.",
-      "romajiOptions": [
-        "koukai ya ukkari (regret or accidental mistake)",
-        "yotei (future plan)",
-        "kibou (hope / wish)",
-        "kyoka (permission)"
-      ]
+      "explanation": "教えていただけませんか is a very polite request asking someone to please teach/explain."
     },
     {
-      "type": "word-bank",
-      "prompt": "Build the sentence: \"Could you please teach me this grammar?\"",
-      "chips": [
-        "この",
-        "ぶんぽうを",
-        "おしえて",
-        "いただけませんか。"
+      "type": "fill-blank",
+      "prompt": "Complete the polite request (\"could you please teach me\"): ",
+      "sentence": "この文法を教え_____ませんか。",
+      "blankWord": "ていただけ",
+      "options": [
+        "ていただけ",
+        "てあげ",
+        "てもらえ",
+        "てくださら"
       ],
-      "correctOrder": [
-        0,
-        1,
-        2,
-        3
-      ],
-      "explanation": "この (this) 文法を (grammar) 教えて (teach) いただけませんか (could you please)."
+      "correctAnswer": 0,
+      "explanation": "～ていただけませんか is the standard N4 polite request formula."
     }
   ]
 };

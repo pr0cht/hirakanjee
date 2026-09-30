@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import KanjiDrawingPad from './components/KanjiDrawingPad';
 import HiraganaPage from './pages/HiraganaPage';
@@ -19,6 +19,7 @@ import {
   AiOutlineSound,
   AiOutlineLock,
   AiOutlineThunderbolt,
+  AiOutlinePlayCircle,
 } from 'react-icons/ai';
 import {
   n4StudyComponents,
@@ -30,6 +31,16 @@ import {
   n4PracticeLessons,
   n4LevelExamLesson,
 } from './data/n4/n4Curriculum';
+import {
+  n3StudyComponents,
+  n3GrammarLessons,
+  n3KanjiVideoLessons,
+  n3DrillLessons,
+  n3StrategyLessons,
+  allN3Lessons,
+  n3Curriculum,
+  n3LevelExamLesson,
+} from './data/n3/n3Curriculum';
 import {
   getStoredProgression,
   isLessonUnlocked,
@@ -566,6 +577,106 @@ function LearnPage() {
     );
   };
 
+  const renderN3Cards = (lessons) => {
+    const isN3LevelUnlocked = isLevelUnlocked('N3', progData);
+
+    return (
+      <div className="n4-grammar-grid">
+        {lessons.map((lesson) => {
+          const unlocked = isN3LevelUnlocked && isLessonUnlocked(lesson.id, 'N3', progData);
+          const isCompleted = isLessonCompleted(lesson.id, progData);
+          const prog = lessonProgress[lesson.id];
+          const quizScore = prog?.quizScore ?? progData.lessons?.[lesson.id]?.quizScore ?? 0;
+          const firstEx = lesson.sections?.[0]?.examples?.[0];
+
+          return (
+            <div
+              key={lesson.id}
+              className={`n4-grammar-card ${isCompleted ? 'is-completed' : ''} ${!unlocked ? 'is-locked' : ''}`}
+            >
+              <div className="n4-grammar-header">
+                <span className="grammar-badge">{lesson.category}</span>
+                {isCompleted ? (
+                  <span className="n5-score-pill completed">
+                    <AiOutlineCheckCircle size={13} /> {quizScore}% Score
+                  </span>
+                ) : !unlocked ? (
+                  <span className="n5-score-pill locked">
+                    <AiOutlineLock size={12} /> Locked
+                  </span>
+                ) : (
+                  <span className="grammar-lesson-num">Lesson {lesson.number}</span>
+                )}
+              </div>
+
+              <h3 className="grammar-card-title">{lesson.shortTitle}</h3>
+              <p className="grammar-card-desc">{lesson.subtitle}</p>
+
+              {lesson.formula && (
+                <div className="grammar-formula-box">
+                  <span className="formula-tag">Form</span>
+                  <code className="formula-code">{lesson.formula}</code>
+                </div>
+              )}
+
+              {lesson.youtubeId && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '6px', fontSize: '0.78rem', color: '#ef4444', fontWeight: 600, margin: '6px 0' }}>
+                  <AiOutlinePlayCircle size={14} />
+                  <span>YouTube Drill</span>
+                  {lesson.duration && <span style={{ color: 'var(--text-muted, #888)', fontWeight: 400 }}>• {lesson.duration}</span>}
+                </div>
+              )}
+
+              {firstEx && (
+                <div className="grammar-example-preview">
+                  <div className="example-text">
+                    <span className="example-jp">{firstEx.jp}</span>
+                    <span className="example-en">{firstEx.en}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="example-audio-btn"
+                    onClick={() => speakJapanese(firstEx.jp)}
+                    title="Pronounce example"
+                    aria-label={`Pronounce ${firstEx.jp}`}
+                  >
+                    <AiOutlineSound size={16} />
+                  </button>
+                </div>
+              )}
+
+              <div className={`n4-card-footer ${!unlocked ? 'locked-footer' : ''}`}>
+                {unlocked ? (
+                  <Link
+                    to={`/learn/n3/${lesson.id}`}
+                    className="btn-primary n4-action-btn"
+                  >
+                    {isCompleted ? 'Review & Retake' : 'Start Lesson'} <AiOutlineArrowRight size={14} />
+                  </Link>
+                ) : (
+                  <>
+                    <button type="button" className="btn-secondary n4-action-btn is-locked-btn" disabled>
+                      <AiOutlineLock size={14} /> Locked
+                    </button>
+                    {isN3LevelUnlocked && (
+                      <Link
+                        to={`/learn/n3/${lesson.id}?mode=skip`}
+                        className="lesson-skip-btn"
+                        title="Skip this lesson by passing an assessment quiz"
+                      >
+                        Skip <AiOutlineArrowRight size={12} />
+                      </Link>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="page-content">
       <h1>Learn Japanese</h1>
@@ -988,8 +1099,185 @@ function LearnPage() {
           </section>
 
         </div>
+      ) : activeLevel === 'N3' ? (
+        <div className="learn-sections n4-curriculum-container">
+          {!isLevelUnlocked('N3', progData) && (
+            <div className="level-locked-banner">
+              <div className="level-locked-content">
+                <AiOutlineLock size={28} className="level-locked-icon" />
+                <div>
+                  <h3>JLPT N3 Curriculum is Currently Locked</h3>
+                  <p>Complete and pass the JLPT N4 Comprehensive Level Exam (80%+ score) to unlock the JLPT N3 curriculum.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setActiveLevel('N4')}
+              >
+                Go to N4 Exam <AiOutlineArrowRight size={14} />
+              </button>
+            </div>
+          )}
+
+          {/* 1. Core Study Components (What to Study for JLPT N3) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>{n3StudyComponents.title}</h2>
+                <p className="section-header-sub">
+                  {n3StudyComponents.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="n4-study-components-grid">
+              {n3StudyComponents.checklist.map((item) => (
+                <div key={item.id} className="n4-study-card">
+                  <div className="n4-study-badge">{item.badge}</div>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 2. Essential Grammar Guide (JLPT N3) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Essential Grammar Guide (JLPT N3)</h2>
+                <p className="section-header-sub">
+                  Detailed explanations, formulas, conversational examples, and interactive usage quizzes for 32 core intermediate grammar points from MLC Japanese.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n3GrammarLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n3GrammarLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN3Cards(n3GrammarLessons)}
+          </section>
+
+          {/* 3. Kanji Video Drills & Quizzes (JLPT N3) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Kanji Video Drills & Quizzes (JLPT N3)</h2>
+                <p className="section-header-sub">
+                  Watch official MLC Japanese YouTube video resources with speed drills, stroke recognition, on/kun readings, and 100 interactive kanji quiz challenges.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n3KanjiVideoLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n3KanjiVideoLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN3Cards(n3KanjiVideoLessons)}
+          </section>
+
+          {/* 4. Grammar Skill Drills (JLPT N3) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Grammar Skill Drills (120 Questions)</h2>
+                <p className="section-header-sub">
+                  Master intermediate sentence logic, nuance discrimination, and JLPT-style fill-in-the-blank questions organized in 12 comprehensive sets.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n3DrillLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n3DrillLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN3Cards(n3DrillLessons)}
+          </section>
+
+          {/* 5. Study Plan & Roadmap (JLPT N3) */}
+          <section className="learn-section">
+            <div className="section-header-row">
+              <div>
+                <h2>Study Plan & Preparation Strategy</h2>
+                <p className="section-header-sub">
+                  Recommended 9–12 month study timeline from N4 to N3, study tips, textbook guides, and official MLC study plan PDF reference.
+                </p>
+              </div>
+              <div className="curriculum-progress-badge">
+                <AiOutlineTrophy size={16} />
+                <span>
+                  {n3StrategyLessons.filter((l) => isLessonCompleted(l.id, progData)).length} / {n3StrategyLessons.length} Completed
+                </span>
+              </div>
+            </div>
+            {renderN3Cards(n3StrategyLessons)}
+          </section>
+
+          {/* Capstone Level Exam Section: JLPT N3 */}
+          <section className="learn-section level-exam-section">
+            <div className="level-exam-card">
+              <div className="level-exam-header">
+                <div className="level-exam-badge">
+                  <AiOutlineTrophy size={18} />
+                  <span>JLPT N3 Capstone Certification</span>
+                </div>
+                {progData.exams?.['N3']?.passed ? (
+                  <span className="exam-status-pill passed">
+                    <AiOutlineCheckCircle size={14} /> Passed ({progData.exams['N3'].score || 100}%) • N2 Unlocked
+                  </span>
+                ) : (
+                  <span className="exam-status-pill pending">
+                    Prerequisite for JLPT N2
+                  </span>
+                )}
+              </div>
+
+              <div className="level-exam-body">
+                <h2>{n3LevelExamLesson.title}</h2>
+                <p className="level-exam-sub">{n3LevelExamLesson.subtitle}</p>
+
+                <div className="level-exam-stats-row">
+                  <div className="exam-stat">
+                    <span className="stat-label">Exam Format</span>
+                    <span className="stat-val">25 Questions</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Coverage</span>
+                    <span className="stat-val">Grammar Nuances, Kanji, Video Drills, Logic</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Passing Mark</span>
+                    <span className="stat-val">80% or Higher</span>
+                  </div>
+                  <div className="exam-stat">
+                    <span className="stat-label">Progression Key</span>
+                    <span className="stat-val">Unlocks JLPT N2 Curriculum</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="level-exam-footer">
+                {isLevelUnlocked('N3', progData) ? (
+                  <Link to="/learn/n3/n3-level-exam" className="btn-primary level-exam-cta">
+                    {progData.exams?.['N3']?.passed ? 'Retake JLPT N3 Exam' : 'Take JLPT N3 Exam'} <AiOutlineArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <button type="button" className="btn-secondary level-exam-cta is-locked-btn" disabled>
+                    <AiOutlineLock size={16} /> Prerequisite: Pass N4 Exam First
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+
+        </div>
       ) : (
-        /* Placeholder for N3 - N1 */
+        /* Placeholder for N2 - N1 */
         <div className="learn-sections">
           {!isLevelUnlocked(activeLevel, progData) && (
             <div className="level-locked-banner">
@@ -998,24 +1286,24 @@ function LearnPage() {
                 <div>
                   <h3>JLPT {activeLevel} Curriculum is Locked</h3>
                   <p>
-                    Pass the JLPT {activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2'} Comprehensive Level Exam (80%+ score) to unlock JLPT {activeLevel}.
+                    Pass the JLPT {activeLevel === 'N2' ? 'N3' : 'N2'} Comprehensive Level Exam (80%+ score) to unlock JLPT {activeLevel}.
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 className="btn-primary"
-                onClick={() => setActiveLevel(activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2')}
+                onClick={() => setActiveLevel(activeLevel === 'N2' ? 'N3' : 'N2')}
               >
-                Go to {activeLevel === 'N3' ? 'N4' : activeLevel === 'N2' ? 'N3' : 'N2'} Curriculum <AiOutlineArrowRight size={14} />
+                Go to {activeLevel === 'N2' ? 'N3' : 'N2'} Curriculum <AiOutlineArrowRight size={14} />
               </button>
             </div>
           )}
 
           <div className="jlpt-placeholder-hero">
             <div>
-              <div className="jlpt-placeholder-title">{placeholderData[activeLevel].title}</div>
-              <p className="jlpt-placeholder-sub">{placeholderData[activeLevel].subtitle}</p>
+              <div className="jlpt-placeholder-title">{placeholderData[activeLevel]?.title}</div>
+              <p className="jlpt-placeholder-sub">{placeholderData[activeLevel]?.subtitle}</p>
             </div>
             <div className="jlpt-status-tag">
               <span>Under Active Development</span>
@@ -1025,7 +1313,7 @@ function LearnPage() {
           <section className="learn-section">
             <h2>Planned Curriculum Modules</h2>
             <div className="jlpt-preview-grid">
-              {placeholderData[activeLevel].sections.map((sec, idx) => (
+              {placeholderData[activeLevel]?.sections?.map((sec, idx) => (
                 <div key={idx} className="jlpt-preview-card">
                   <span className="jlpt-preview-badge">Module 0{idx + 1}</span>
                   <h4>{sec.title}</h4>
@@ -1038,7 +1326,7 @@ function LearnPage() {
             </div>
           </section>
 
-          {/* Capstone Level Exam Section for N3 - N1 */}
+          {/* Capstone Level Exam Section for N2 - N1 */}
           <section className="learn-section level-exam-section">
             <div className="level-exam-card">
               <div className="level-exam-header">
@@ -1047,7 +1335,7 @@ function LearnPage() {
                   <span>JLPT {activeLevel} Capstone Certification</span>
                 </div>
                 <span className="exam-status-pill pending">
-                  {activeLevel === 'N1' ? 'Master Certification' : `Prerequisite for JLPT ${activeLevel === 'N3' ? 'N2' : 'N1'}`}
+                  {activeLevel === 'N1' ? 'Master Certification' : 'Prerequisite for JLPT N1'}
                 </span>
               </div>
 
@@ -1068,7 +1356,7 @@ function LearnPage() {
                   </div>
                   <div className="exam-stat">
                     <span className="stat-label">Certification</span>
-                    <span className="stat-val">{activeLevel === 'N1' ? 'Master Certification' : `Unlocks JLPT ${activeLevel === 'N3' ? 'N2' : 'N1'}`}</span>
+                    <span className="stat-val">{activeLevel === 'N1' ? 'Master Certification' : 'Unlocks JLPT N1'}</span>
                   </div>
                 </div>
               </div>
@@ -1143,7 +1431,7 @@ function ReportingPage() {
 
 // Settings Page with SQLite Persistence
 function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
-  const { darkMode, appearance, accent, defaultPracticeMode, showNotifications, autoLaunch, showRomaji = true } = settings;
+  const { darkMode, appearance, accent, defaultPracticeMode, showNotifications, autoLaunch, showRomaji = true, unlockAllLessons = false } = settings;
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
@@ -1243,6 +1531,22 @@ function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
             {showRomaji ? 'On' : 'Off'}
           </button>
         </div>
+
+        <div className="setting-row">
+          <div>
+            <label className="setting-label">Unlock All Lessons (Testing Mode)</label>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              Instantly unlocks all JLPT levels (N5, N4, N3, N2, N1) and lessons for reviewing and testing
+            </div>
+          </div>
+          <button
+            type="button"
+            className={`toggle-pill ${unlockAllLessons ? 'active' : ''}`}
+            onClick={() => onUpdateSetting('unlockAllLessons', !unlockAllLessons)}
+          >
+            {unlockAllLessons ? 'Unlocked' : 'Locked (Default)'}
+          </button>
+        </div>
       </section>
 
       <section className="settings-card settings-danger-card">
@@ -1296,6 +1600,22 @@ function SettingsPage({ settings, onUpdateSetting, onResetProgress }) {
   );
 }
 
+// Scroll to top of both window and the scrollable .app-main container on route change
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const appMain = document.querySelector('.app-main');
+    if (appMain) {
+      appMain.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      appMain.scrollTop = 0;
+    }
+  }, [pathname, search]);
+
+  return null;
+}
+
 // Main App Router Component
 function App() {
   const [settings, setSettings] = useState(() => {
@@ -1307,6 +1627,7 @@ function App() {
       showNotifications: true,
       autoLaunch: false,
       showRomaji: true,
+      unlockAllLessons: false,
     };
     try {
       for (const k of Object.keys(initial)) {
@@ -1333,6 +1654,7 @@ function App() {
             if (saved.showNotifications !== undefined) next.showNotifications = saved.showNotifications;
             if (saved.autoLaunch !== undefined) next.autoLaunch = saved.autoLaunch;
             if (saved.showRomaji !== undefined) next.showRomaji = saved.showRomaji;
+            if (saved.unlockAllLessons !== undefined) next.unlockAllLessons = saved.unlockAllLessons;
 
             // Cache to localStorage for instant startup next time
             try {
@@ -1365,6 +1687,17 @@ function App() {
     document.body.setAttribute('data-appearance', settings.appearance);
   }, [settings.appearance]);
 
+  // Listen for setting updates dispatched from child components (e.g. in-quiz settings)
+  useEffect(() => {
+    const handleRemoteSettingUpdate = (e) => {
+      if (e?.detail?.key) {
+        setSettings((prev) => ({ ...prev, [e.detail.key]: e.detail.value }));
+      }
+    };
+    window.addEventListener('hirakanjee_setting_updated', handleRemoteSettingUpdate);
+    return () => window.removeEventListener('hirakanjee_setting_updated', handleRemoteSettingUpdate);
+  }, []);
+
   const handleUpdateSetting = (key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
     try {
@@ -1372,6 +1705,15 @@ function App() {
     } catch (e) {}
     if (window.db?.saveSetting) {
       window.db.saveSetting(key, value).catch(() => {});
+    }
+    window.dispatchEvent(
+      new CustomEvent('hirakanjee_setting_updated', {
+        detail: { key, value },
+      })
+    );
+    if (key === 'unlockAllLessons') {
+      window.dispatchEvent(new CustomEvent('progressionUpdated'));
+      window.dispatchEvent(new CustomEvent('hirakanjee_global_reset'));
     }
   };
 
@@ -1434,6 +1776,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <ConfirmProvider>
         <div className="app-container">
           <Sidebar />
@@ -1443,6 +1786,7 @@ function App() {
               <Route path="/learn" element={<LearnPage />} />
               <Route path="/learn/n5/:lessonId" element={<N5LessonPage settings={settings} />} />
               <Route path="/learn/n4/:lessonId" element={<N5LessonPage settings={settings} />} />
+              <Route path="/learn/n3/:lessonId" element={<N5LessonPage settings={settings} />} />
               <Route path="/learn/hiragana" element={<HiraganaPage />} />
               <Route path="/learn/katakana" element={<KatakanaPage />} />
               <Route path="/learn/kanji" element={<KanjiPage />} />

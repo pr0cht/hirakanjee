@@ -165,10 +165,10 @@ export const lesson = {
         "はなせます。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3
+        "わたしは",
+        "にほんごが",
+        "すこし",
+        "はなせます。"
       ],
       "explanation": "Standard order: [Subject] は [Language] が [Adverb] [Potential Verb]."
     }

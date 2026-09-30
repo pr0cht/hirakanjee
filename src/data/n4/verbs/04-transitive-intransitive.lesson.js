@@ -180,9 +180,9 @@ export const lesson = {
         "います。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "でんきが",
+        "ついて",
+        "います。"
       ],
       "explanation": "電気が (the light) + ついて (te-form of つく) + います (is in that state)."
     }

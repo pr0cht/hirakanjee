@@ -106,6 +106,21 @@ export const lesson = {
       ],
       "correctAnswer": 1,
       "explanation": "Potential verb (おぼえられる) expressing ability takes ように for purpose."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with visual conjecture (\"looks like it will rain\"): ",
+      "sentence": "雨が___そうです。",
+      "blankWord": "降り",
+      "options": [
+        "降り",
+        "降る",
+        "降った",
+        "降れば"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Verb Masu-stem + そうです expresses immediate visual conjecture: 降りそうです ('it looks like it is going to rain').",
+      "romaji": "Ame ga ___ sou desu."
     }
   ]
 };

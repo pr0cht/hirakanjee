@@ -159,9 +159,9 @@ export const lesson = {
         "のもう。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "いっしょに",
+        "おちゃを",
+        "のもう。"
       ],
       "explanation": "Standard word order: いっしょに (together) おちゃを (tea) のもう (let’s drink)."
     }

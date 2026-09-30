@@ -190,11 +190,11 @@ export const lesson = {
         "ください。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3,
-        4
+        "わたしの",
+        "へやに",
+        "くるように",
+        "つたえて",
+        "ください。"
       ],
       "explanation": "私の (my) 部屋に (to room) 来るように (to come) 伝えてください (please convey)."
     }

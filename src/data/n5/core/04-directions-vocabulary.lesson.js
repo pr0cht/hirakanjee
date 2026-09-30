@@ -266,20 +266,20 @@ export const lesson = {
     {
       "id": "l4-q7",
       "type": "error-hunt",
-      "prompt": "Which sentence has broken prepositional particle syntax?",
+      "prompt": "Which sentence has incorrect particle or direction-noun order?",
       "options": [
         "くるま は いえ の まえ です。",
         "つくえ の うえ に ほん が あります。",
-        "きのう は もくようび でした。",
-        "ぎんこう の は まえ です。"
+        "ぎんこう の は みぎ です。",
+        "ねこ は そと に います。"
       ],
-      "correctAnswer": 3,
-      "explanation": "'ぎんこう の は まえ です' is incorrect because 'の' must connect to a noun (like 'ぎんこう の まえ は ...').",
+      "correctAnswer": 2,
+      "explanation": "'ぎんこう の は みぎ です' is malformed. The topic marker は must follow the complete noun phrase, not split the possessive の chain. Correct form: 'ぎんこう の みぎ に ～ が あります'.",
       "romajiOptions": [
         "kuruma wa ie no mae desu.",
         "tsukue no ue ni hon ga arimasu.",
-        "kinou wa mokuyoubi deshita.",
-        "ginkou no wa mae desu."
+        "ginkou no wa migi desu.",
+        "neko wa soto ni imasu."
       ]
     },
     {

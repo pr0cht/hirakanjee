@@ -99,39 +99,31 @@ export const lesson = {
       ]
     },
     {
-      "type": "multiple-choice",
-      "prompt": "Which pattern is used to report a message spoken by another person?",
-      "question": "ほかの 人が いったことを つたえる ときの ひょうげんは？",
+      "type": "audio-listening",
+      "prompt": "Listen to the directions and choose where the bank is located:",
+      "audioText": "交差点を右に曲がったら、銀行がありますよ。",
       "options": [
-        "〜と言っていました",
-        "〜と思っていました",
-        "〜と聞いていました",
-        "〜と話していました"
+        "Turn right at the intersection",
+        "Turn left at the traffic light",
+        "Go straight past the bridge",
+        "Across from the train station"
       ],
       "correctAnswer": 0,
-      "explanation": "[Person] は [Statement] と言っていました is standard for relaying messages.",
-      "romaji": "Hoka no hito ga itta koto o tsutaeru toki no hyougen wa?",
-      "romajiOptions": [
-        "~to itte imashita",
-        "~to omotte imashita",
-        "~to kiite imashita",
-        "~to hanashite imashita"
-      ]
+      "explanation": "交差点を右に曲がったら: 'When/if you turn right at the intersection, there is a bank.'"
     },
     {
-      "type": "word-bank",
-      "prompt": "Build the sentence: \"Tanaka-san said he would take the day off.\"",
-      "chips": [
-        "たなかさんは",
-        "やすむと",
-        "いっていました。"
+      "type": "fill-blank",
+      "prompt": "Complete the reported speech sentence (\"Tanaka-san said he would be absent\"): ",
+      "sentence": "田中さんは熱があるので休む_____言っていました。",
+      "blankWord": "と",
+      "options": [
+        "と",
+        "を",
+        "に",
+        "で"
       ],
-      "correctOrder": [
-        0,
-        1,
-        2
-      ],
-      "explanation": "田中さんは (Tanaka-san) + 休むと (that he takes off) + 言っていました (was saying)."
+      "correctAnswer": 0,
+      "explanation": "Quotation particle と is used before 言っていました to report what someone said."
     }
   ]
 };

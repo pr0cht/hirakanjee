@@ -104,39 +104,31 @@ export const lesson = {
       ]
     },
     {
-      "type": "multiple-choice",
-      "prompt": "What does the phrasing \"私がしましょうか\" indicate?",
-      "question": "「わたしが しましょうか」の いみは どれですか。",
+      "type": "audio-listening",
+      "prompt": "Listen to the coworker's request and choose what you must do first:",
+      "audioText": "すみません、明日の会議で使うので、これをコピーしてから帰ってください。",
       "options": [
-        "じぶんから てつだいを もうしでている (offering to help)",
-        "めいれいしている (commanding)",
-        "ことわっている (refusing)",
-        "きょかを もとめている (asking permission)"
+        "Make copies before leaving",
+        "Attend the meeting right now",
+        "Go straight home",
+        "Clean the conference room"
       ],
       "correctAnswer": 0,
-      "explanation": "〜ましょうか is used to voluntarily offer assistance to someone in need.",
-      "romaji": "\"Watashi ga shimashou ka\" no imi wa dore desu ka.",
-      "romajiOptions": [
-        "jibun kara tetsudai o moushidete iru (offering to help)",
-        "meirei shite iru (commanding)",
-        "kotowatte iru (refusing)",
-        "kyoka o motomete iru (asking permission)"
-      ]
+      "explanation": "〜てから means 'after doing...'. 'これをコピーしてから帰ってください' means make copies before heading home."
     },
     {
-      "type": "word-bank",
-      "prompt": "Build the sentence: \"Please go home after copying this.\"",
-      "chips": [
-        "これを",
-        "コピーしてから",
-        "かえってください。"
+      "type": "fill-blank",
+      "prompt": "Complete the sequential request (\"after copying\"): ",
+      "sentence": "これをコピーし_____帰ってください。",
+      "blankWord": "てから",
+      "options": [
+        "てから",
+        "ながら",
+        "たあと",
+        "まえに"
       ],
-      "correctOrder": [
-        0,
-        1,
-        2
-      ],
-      "explanation": "これを (this) + コピーしてから (after copying) + 帰ってください (please go home)."
+      "correctAnswer": 0,
+      "explanation": "～てから indicates performing an action after completing the preceding action."
     }
   ]
 };

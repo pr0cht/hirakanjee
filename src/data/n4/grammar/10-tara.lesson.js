@@ -46,6 +46,78 @@ export const lesson = {
         "nomu to",
         "nomu nara"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank (\"when you arrive at the station\"): ",
+      "sentence": "駅に着い___、電話してください。",
+      "blankWord": "たら",
+      "options": [
+        "たら",
+        "なら",
+        "ても",
+        "ので"
+      ],
+      "correctAnswer": 0,
+      "explanation": "駅に着いたら、電話してください: 'When/after you arrive at the station, please call me.'",
+      "romaji": "Eki ni tsui___, denwa shite kudasai."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Choose the conditional for a one-time past discovery:",
+      "question": "家に帰っ___、誰もいなかった。",
+      "options": [
+        "たら",
+        "ば",
+        "と",
+        "なら"
+      ],
+      "correctAnswer": 0,
+      "explanation": "帰ったら、誰もいなかった: ～たら is used for a one-time sequential discovery in the past ('When I got home, nobody was there').",
+      "romaji": "Ie ni kaet___, dare mo inakatta.",
+      "romajiOptions": [
+        "tara",
+        "ba",
+        "to",
+        "nara"
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Which conditional can express a one-time past unexpected discovery?",
+      "question": "Which conditional can express a one-time past unexpected discovery?",
+      "options": [
+        "～ば",
+        "～と",
+        "～たら",
+        "～なら"
+      ],
+      "correctAnswer": 2,
+      "explanation": "～たら can be used with a past tense main clause to express discovering an unexpected fact upon completing an action.",
+      "romaji": "Which conditional can express a one-time past unexpected discovery?",
+      "romajiOptions": [
+        "~ba",
+        "~to",
+        "~tara",
+        "~nara"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"When your homework is done, you may play.\"",
+      "chips": [
+        "宿題が",
+        "終わったら",
+        "遊んで",
+        "いいですよ"
+      ],
+      "correctOrder": [
+        "宿題が",
+        "終わったら",
+        "遊んで",
+        "いいですよ"
+      ],
+      "explanation": "Structure: [Condition ～たら] [Permission ～ていいですよ]."
     }
   ]
 };

@@ -211,9 +211,9 @@ export const lesson = {
         "たべなかった。"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "きのうは",
+        "なにも",
+        "たべなかった。"
       ],
       "explanation": "きのうは (yesterday) + なにも (nothing) + たべなかった (did not eat)."
     }

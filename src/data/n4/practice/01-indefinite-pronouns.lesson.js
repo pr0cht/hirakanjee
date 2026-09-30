@@ -103,10 +103,10 @@ export const lesson = {
         "ください"
       ],
       "correctOrder": [
-        0,
-        1,
-        2,
-        3
+        "だれか",
+        "しゅくだいを",
+        "てつだって",
+        "ください"
       ],
       "explanation": "だれか (someone) + 宿題を (homework) + 手伝って (help) + ください (please)."
     }

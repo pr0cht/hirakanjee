@@ -56,11 +56,66 @@ export const lesson = {
         "んです"
       ],
       "correctOrder": [
-        0,
-        1,
-        2
+        "あたまが",
+        "いたい",
+        "んです"
       ],
       "explanation": "いたい is an i-adjective, so it connects directly: いたいんです."
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with explanatory んです: \"Where are you going?\"",
+      "sentence": "どこへ行く___か。",
+      "blankWord": "んです",
+      "options": [
+        "んです",
+        "ます",
+        "でした",
+        "だから"
+      ],
+      "correctAnswer": 0,
+      "explanation": "In natural conversation, [Plain form + んですか] inquires about context or reasons.",
+      "romaji": "Doko e iku ___ ka."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "How do nouns connect to ～んです in present affirmative?",
+      "question": "How do nouns connect to ～んです in the present affirmative?",
+      "options": [
+        "Noun + なんです",
+        "Noun + だんです",
+        "Noun + んです",
+        "Noun + いんです"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Nouns (and na-adjectives) require な before んです in present affirmative (e.g. 学生なんです).",
+      "romaji": "How do nouns connect to ~n desu?",
+      "romajiOptions": [
+        "Noun + na n desu",
+        "Noun + da n desu",
+        "Noun + n desu",
+        "Noun + in desu"
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Choose the most natural explanatory reply to: 「どうして遅れたのですか。」",
+      "question": "「どうして遅れたのですか。」 「＿＿＿。」",
+      "options": [
+        "バスが来なかったんです",
+        "バスが来ません",
+        "バスが来るんです",
+        "バスが来ないでした"
+      ],
+      "correctAnswer": 0,
+      "explanation": "バスが来なかったんです uses past plain form + んです to provide the explanation for being late.",
+      "romaji": "\"Doushite okureta no desu ka.\" \"___.\"",
+      "romajiOptions": [
+        "Basu ga konakatta n desu",
+        "Basu ga kimasen",
+        "Basu ga kuru n desu",
+        "Basu ga konai deshita"
+      ]
     }
   ]
 };

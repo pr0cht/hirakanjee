@@ -133,6 +133,152 @@ export const lesson = {
       ]
     }
   ],
+  "quizChains": [
+    {
+      "id": "basic-structure-chain-1",
+      "chainTitle": "Structure & Formula",
+      "chainIcon": "📐",
+      "description": "Identify the は～です pattern and its core components",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "multiple-choice",
+          "prompt": "How is the topic-marking particle 'は' pronounced when used after a topic?",
+          "question": "How is the topic-marking particle 'は' pronounced when used after a topic?",
+          "options": ["ha", "wa", "ba", "ya"],
+          "correctAnswer": 1,
+          "explanation": "Although written as 'は' (ha), as a topic marker it is pronounced 'wa'."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "What is the primary role of です (desu)?",
+          "question": "What is the primary role of です (desu)?",
+          "options": [
+            "Polite affirmative copula ('is / am / are')",
+            "Past tense negative marker",
+            "Question particle",
+            "Direct object marker"
+          ],
+          "correctAnswer": 0,
+          "explanation": "です acts as the polite copula meaning 'is / am / are'."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Complete the topic-comment sentence: \"I am Tanaka.\"",
+          "sentence": "わたし___たなかです。",
+          "blankWord": "は",
+          "options": ["は", "が", "を", "に"],
+          "correctAnswer": 0,
+          "explanation": "わたしは flags 'as for me / speaking of me'."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "How do you turn a statement with です into a polite question?",
+          "question": "How do you turn a statement into a question in polite Japanese?",
+          "options": [
+            "Add the particle か to the end of the sentence",
+            "Change the order of the words",
+            "Add です to the beginning",
+            "Replace は with が"
+          ],
+          "correctAnswer": 0,
+          "explanation": "Adding か at the sentence end turns it into a question (e.g., がくせいですか)."
+        }
+      ]
+    },
+    {
+      "id": "basic-structure-chain-2",
+      "chainTitle": "All 4 Polite Tenses",
+      "chainIcon": "🔄",
+      "description": "Practice です, でした, じゃありません, じゃありませんでした",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "multiple-choice",
+          "prompt": "What is the present negative polite form of です?",
+          "question": "What is the present negative polite form of です?",
+          "options": [
+            "じゃありません",
+            "でした",
+            "じゃありませんでした",
+            "ないです"
+          ],
+          "correctAnswer": 0,
+          "explanation": "じゃありません (or ではありません) is the polite present negative form."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the blank (\"Yesterday was Sunday\"): ",
+          "sentence": "きのうはにちようび___。",
+          "blankWord": "でした",
+          "options": ["でした", "です", "じゃありません", "じゃありませんでした"],
+          "correctAnswer": 0,
+          "explanation": "でした is the polite past affirmative form of です."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the blank (\"No, I am not a teacher\"): ",
+          "sentence": "いいえ、せんせい___。",
+          "blankWord": "じゃありません",
+          "options": ["じゃありません", "でした", "です", "でしたか"],
+          "correctAnswer": 0,
+          "explanation": "じゃありません expresses polite present negative."
+        },
+        {
+          "type": "multiple-choice",
+          "prompt": "Which form expresses past negative (\"was not\")?",
+          "question": "Which form expresses past negative (\"was not\")?",
+          "options": [
+            "じゃありませんでした",
+            "じゃありません",
+            "でした",
+            "ではありません"
+          ],
+          "correctAnswer": 0,
+          "explanation": "じゃありませんでした expresses polite past negative ('was not')."
+        }
+      ]
+    },
+    {
+      "id": "basic-structure-chain-3",
+      "chainTitle": "Build Real Sentences",
+      "chainIcon": "🧩",
+      "description": "Construct complete topic-comment sentences and questions",
+      "passMark": 70,
+      "questions": [
+        {
+          "type": "word-bank",
+          "prompt": "Build the sentence: \"I am a student.\"",
+          "chips": ["わたし", "は", "がくせい", "です"],
+          "correctOrder": ["わたし", "は", "がくせい", "です"],
+          "explanation": "Structure: [Topic は] [Noun] [です]."
+        },
+        {
+          "type": "word-bank",
+          "prompt": "Build the question: \"Are you a teacher?\"",
+          "chips": ["あなたは", "せんせい", "ですか"],
+          "correctOrder": ["あなたは", "せんせい", "ですか"],
+          "explanation": "Structure: [Topic は] [Noun] [ですか]."
+        },
+        {
+          "type": "word-bank",
+          "prompt": "Build the past sentence: \"Yesterday was a holiday.\"",
+          "chips": ["きのうは", "やすみ", "でした"],
+          "correctOrder": ["きのうは", "やすみ", "でした"],
+          "explanation": "Structure: [Topic は] [Noun] [でした]."
+        },
+        {
+          "type": "fill-blank",
+          "prompt": "Fill in the blank (\"This is a book\"): ",
+          "sentence": "これ___ほんです。",
+          "blankWord": "は",
+          "options": ["は", "が", "を", "に"],
+          "correctAnswer": 0,
+          "explanation": "これ (this) is marked by topic particle は."
+        }
+      ]
+    }
+  ],
   "quiz": [
     {
       "id": "l1-q1",

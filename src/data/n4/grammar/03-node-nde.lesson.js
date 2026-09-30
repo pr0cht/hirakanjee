@@ -46,6 +46,78 @@ export const lesson = {
         "nara",
         "temo"
       ]
+    },
+    {
+      "type": "fill-blank",
+      "prompt": "Fill in the blank with polite reason connector: \"Since the train is crowded...\"",
+      "sentence": "電車が混んでいる___、バスで行きます。",
+      "blankWord": "ので",
+      "options": [
+        "ので",
+        "のに",
+        "なら",
+        "ても"
+      ],
+      "correctAnswer": 0,
+      "explanation": "電車が混んでいるので: 'Since the train is crowded, I will go by bus.'",
+      "romaji": "Densha ga konde iru ___ , basu de ikimasu."
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "How do Na-adjectives connect to ～ので in the present affirmative?",
+      "question": "How do Na-adjectives connect to ～ので in present affirmative?",
+      "options": [
+        "Na-adj + な + ので (e.g. 暇なので)",
+        "Na-adj + だ + ので (e.g. 暇だので)",
+        "Na-adj + ので (e.g. 暇ので)",
+        "Na-adj + い + ので (e.g. 暇いので)"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Na-adjectives (and nouns) require な before ので in the present affirmative.",
+      "romaji": "How do Na-adjectives connect to ~node?",
+      "romajiOptions": [
+        "Na-adj + na + node",
+        "Na-adj + da + node",
+        "Na-adj + node",
+        "Na-adj + i + node"
+      ]
+    },
+    {
+      "type": "multiple-choice",
+      "prompt": "Why is ～ので preferred over ～から when speaking politely or making apologies?",
+      "question": "Why is ～ので preferred over ～から when speaking politely or making apologies?",
+      "options": [
+        "It frames the reason as an objective natural fact rather than a subjective assertion",
+        "It is only used with past tense verbs",
+        "It expresses frustration and regret",
+        "It can only be used by superiors to subordinates"
+      ],
+      "correctAnswer": 0,
+      "explanation": "～ので sounds milder and more objective than ～から, making it ideal for polite apologies and business interactions.",
+      "romaji": "Why is ~node preferred over ~kara?",
+      "romajiOptions": [
+        "It frames the reason as an objective natural fact",
+        "It is only used with past tense verbs",
+        "It expresses frustration and regret",
+        "It can only be used by superiors to subordinates"
+      ]
+    },
+    {
+      "type": "word-bank",
+      "prompt": "Build the sentence: \"Since I have an errand, I will take my leave early.\"",
+      "chips": [
+        "用事がある",
+        "ので",
+        "お先に",
+        "失礼します"
+      ],
+      "correctOrder": [
+        "用事がある",
+        "ので",
+        "お先に",
+        "失礼します"
+      ],
+      "explanation": "Structure: [Reason: Plain Form + ので] [お先に失礼します]."
     }
   ]
 };
